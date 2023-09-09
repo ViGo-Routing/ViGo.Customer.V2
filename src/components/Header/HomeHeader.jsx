@@ -21,10 +21,12 @@ const HomeHeader = () => {
         style={styles.searchbar}
         placeholder=" 🔍 Tìm dịch vụ, món ngon, địa điểm"
       />
-      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("ProfileTab", { screen: "Home" })}
+      >
         <Image
           source={
-            user.avatarUrl
+            user?.avatarUrl
               ? { uri: user.avatarUrl }
               : require("../../assets/images/no-image.jpg")
           }
@@ -41,8 +43,8 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: "center",
     paddingRight: 16,
-    paddingTop: 20,
-    height: 100,
+    // paddingTop: 20,
+    height: 80,
     backgroundColor: themeColors.primary,
     // borderBottomLeftRadius:16,
     // borderBottomRightRadius:16,

@@ -9,11 +9,7 @@ export const handleError = (alertTitle: string, error: any) => {
 
   eventEmitter.emit(eventNames.SHOW_TOAST, {
     title: alertTitle,
-    description: error.response
-      ? error.response.data
-      : error.message
-        ? error.message
-        : error,
+    description: getErrorMessage(error),
     status: "error",
     isDialog: true,
   });

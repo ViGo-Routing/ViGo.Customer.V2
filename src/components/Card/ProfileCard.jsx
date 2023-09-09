@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 const ProfileCard = ({ name, phoneNumber, imageSource }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("EditProfile")}>
+    <TouchableOpacity>
       <View style={styles.container}>
         <Image source={imageSource} style={styles.image} />
         <View style={styles.textContainer}>

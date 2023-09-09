@@ -18,9 +18,12 @@ import TopupAmountModal from "./TopupAmountModal";
 import { createTopupTransaction } from "../../../service/paymentService";
 import { UserContext } from "../../../context/UserContext";
 import { Text, FlatList, Image, Heading, HStack } from "native-base";
+import { StackActions, useNavigation } from "@react-navigation/native";
+import WebView from "react-native-webview";
 
 const TopupScreen = () => {
   const { user } = useContext(UserContext);
+  const navigation = useNavigation();
 
   const topupMethods = [
     {
@@ -34,6 +37,8 @@ const TopupScreen = () => {
   const [topupAmountModalVisible, setTopupAmountModalVisible] = useState(false);
 
   const [topUpMethod, setTopUpMethod] = useState(null);
+  const [openWebView, setOpenWebView] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState("");
 
   const handleTopupAmountEnter = async (amount) => {
     // console.log(amount);
@@ -45,15 +50,17 @@ const TopupScreen = () => {
       );
 
       const paymentUrl = transactionObj.orderUrl;
+      setPaymentUrl(paymentUrl);
+      setOpenWebView(true);
 
       // console.log(paymentUrl);
-      const supported = await Linking.canOpenURL(paymentUrl);
-      console.log(supported);
-      if (supported) {
-        await Linking.openURL(paymentUrl);
-      } else {
-        Alert.alert("Có lỗi xảy ra khi mở trang thanh toán!");
-      }
+      // const supported = await Linking.canOpenURL(paymentUrl);
+      // console.log(supported);
+      // if (supported) {
+      //   await Linking.openURL(paymentUrl);
+      // } else {
+      //   Alert.alert("Có lỗi xảy ra khi mở trang thanh toán!");
+      // }
       // console.log(transactionObj);
     }
   };
@@ -74,6 +81,15 @@ const TopupScreen = () => {
         <ChevronRightIcon size={20} color={"#999"} />
       </HStack>
     );
+  };
+
+  const handleDoneTopup = (event) => {
+    if (event.url.startsWith("https://vigo-api.azurewebsites.net/api/")) {
+      // Work is done
+      setOpenWebView(false);
+      navigation.dispatch(StackActions.pop(1));
+      // navigation.dispatch(StackActions.replace("Wallet"));
+    }
   };
 
   return (
@@ -109,6 +125,27 @@ const TopupScreen = () => {
         onModalRequestClose={() => setTopUpMethod(null)}
         onModalConfirm={handleTopupAmountEnter}
       />
+      {openWebView && (
+        <View
+          style={{
+            flex: 1,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+          }}
+        >
+          <WebView
+            source={{ uri: paymentUrl }}
+            style={{ flex: 1 }}
+            onNavigationStateChange={(event) => {
+              // console.log(event.url);
+              handleDoneTopup(event);
+            }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

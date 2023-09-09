@@ -10,11 +10,14 @@ import {
   CloseIcon,
   Box,
   Toast,
+  Slide,
+  Center,
 } from "native-base";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 import { eventNames } from "../../utils/alertUtils";
 import { NativeEventEmitter, NativeModules } from "react-native";
+import { ThemeComponentSizeType } from "native-base/lib/typescript/components/types";
 
 interface ViGoAlertProps {
   title: ReactNode;
@@ -28,14 +31,18 @@ interface ViGoAlertProps {
     | "top-left"
     | "bottom-left";
   isDialog: boolean;
+  isSlide: boolean;
   duration: number;
   avoidKeyboard: boolean;
+  primaryButtonText: string;
+  displayCloseButton: boolean;
+  size: ThemeComponentSizeType<"AlertDialog">;
   // isCancelDisplayed: boolean;
   // cancelButtonText: string;
   // onCancelPress: () => void;
   // isOkDisplayed: boolean;
   // okButtonText: string;
-  // onOkPress: () => void;
+  onOkPress: () => void;
 }
 
 // const emitter = new EventEmitter();
@@ -75,10 +82,23 @@ const ViGoAlertProvider = (/*{
   // const [okButtonText, setOkButtonText] = useState("OK");
   // const [onOkPress, setOnOkPress] = useState(() => {});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSlideOpen, setIsSlideOpen] = useState(false);
+
+  const [primaryButtonText, setPrimaryButtonText] = useState("Đã hiểu");
+  const [displayCloseButton, setDisplayCloseButton] = useState(true);
+  const [size, setSize] = useState(
+    "md" as ThemeComponentSizeType<"AlertDialog">
+  );
+
+  // const defaultOkButtonPress = () => {setIsDialogOpen(false);};
+  const [okButtonPress, setOkButtonPress] = useState(() => () => {});
 
   const cancelRef = useRef(null);
+  // const okButtonRef = useRef(null);
 
   // const toast = useToast();
+
+  let timeoutRef = null as any;
 
   const showToast = ({
     title,
@@ -86,9 +106,15 @@ const ViGoAlertProvider = (/*{
     status = "info",
     placement = "bottom",
     isDialog = false,
+    isSlide = false,
     duration = 5000,
     avoidKeyboard = true,
-  }: //   isCancelDisplayed = true,
+    primaryButtonText = "Đã hiểu",
+    displayCloseButton = true,
+    size = "md",
+    onOkPress = () => {},
+  }: // onOkPress = () => {},
+  //   isCancelDisplayed = true,
   // cancelButtonText = "Hủy",
   // onCancelPress = () => {},
   // isOkDisplayed = true,
@@ -96,7 +122,7 @@ const ViGoAlertProvider = (/*{
   // onOkPress = () => {}
   ViGoAlertProps) => {
     // console.log("Event Invoked");
-    if (!isDialog) {
+    if (!isDialog && !isSlide) {
       // Toast
       Toast.show({
         render: ({ id }) => {
@@ -125,12 +151,14 @@ const ViGoAlertProvider = (/*{
                       {title}
                     </Text>
                   </HStack>
-                  <IconButton
-                    variant={"unstyled"}
-                    icon={<CloseIcon size="3" />}
-                    _icon={{ color: "darkText" }}
-                    onPress={() => Toast.close(id)}
-                  />
+                  {displayCloseButton && (
+                    <IconButton
+                      variant={"unstyled"}
+                      icon={<CloseIcon size="3" />}
+                      _icon={{ color: "darkText" }}
+                      onPress={() => Toast.close(id)}
+                    />
+                  )}
                 </HStack>
                 {description && (
                   <Text px="6" color={"darkText"}>
@@ -153,7 +181,37 @@ const ViGoAlertProvider = (/*{
       setTitle(title);
       setDescription(description);
       setStatus(status);
-      setIsDialogOpen(true);
+      setPrimaryButtonText(primaryButtonText);
+      setDisplayCloseButton(displayCloseButton);
+      setSize(size);
+
+      if (isDialog) {
+        setIsDialogOpen(true);
+        console.log(onOkPress);
+        setOkButtonPress(() => onOkPress);
+      } else if (isSlide) {
+        // console.log("Slide open");
+        setIsSlideOpen(true);
+        setPlacement(placement);
+
+        timeoutRef = setTimeout(() => {
+          setIsSlideOpen(false);
+        }, duration);
+      }
+      // setPlacement(placement);
+      // if (okButtonRef != null) {
+      //   okButtonRef.current.setNativeProps({
+      //     onPress: () => {
+      //       setIsDialogOpen(false);
+      //       onOkPress();
+      //     },
+      //   });
+      // }
+      // const okPress = () => {
+      //   setIsDialogOpen(false);
+      //   onOkPress();
+      // };
+      // setOkButtonPress(okPress);
     }
   };
   useEffect(() => {
@@ -166,37 +224,89 @@ const ViGoAlertProvider = (/*{
 
     return () => {
       showToastListener.remove();
+      if (timeoutRef) {
+        clearTimeout(timeoutRef);
+      }
     };
   }, []);
 
   return (
-    <AlertDialog
-      leastDestructiveRef={cancelRef}
-      isOpen={isDialogOpen}
-      onClose={() => setIsDialogOpen(false)}
-    >
-      <AlertDialog.Content>
-        <AlertDialog.CloseButton />
-        {title && <AlertDialog.Header>{title}</AlertDialog.Header>}
-        <AlertDialog.Body>
-          {description}
-          <Box alignItems={"flex-end"} marginTop={2}>
-            <Button.Group space={2}>
-              <Button
-                colorScheme={status}
-                onPress={() => {
-                  setIsDialogOpen(false);
-                }}
-              >
-                {"Đã hiểu"}
-              </Button>
-            </Button.Group>
-          </Box>
-        </AlertDialog.Body>
+    <>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        size={size}
+      >
+        <AlertDialog.Content>
+          {displayCloseButton && <AlertDialog.CloseButton />}
+          {title && <AlertDialog.Header>{title}</AlertDialog.Header>}
+          <AlertDialog.Body>
+            {description}
+            <Box alignItems={"flex-end"} marginTop={2}>
+              <Button.Group space={2}>
+                <Button
+                  colorScheme={status}
+                  onPress={() => {
+                    setIsDialogOpen(false);
+                    okButtonPress();
+                  }}
+                  // ref={okButtonRef}
+                >
+                  {primaryButtonText}
+                </Button>
+              </Button.Group>
+            </Box>
+          </AlertDialog.Body>
 
-        {/* <AlertDialog.Footer></AlertDialog.Footer> */}
-      </AlertDialog.Content>
-    </AlertDialog>
+          {/* <AlertDialog.Footer></AlertDialog.Footer> */}
+        </AlertDialog.Content>
+      </AlertDialog>
+      <Center>
+        <Slide in={isSlideOpen} placement={"top"}>
+          <Alert
+            alignSelf={"center"}
+            flexDirection={"row"}
+            status={status}
+            variant={"subtle"}
+            id={`slide-alert`}
+          >
+            <VStack space={1} flexShrink={1}>
+              <HStack
+                flexShrink={1}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+              >
+                <HStack space={2} flexShrink={1} alignItems="center">
+                  <Alert.Icon />
+                  <Text
+                    fontSize="md"
+                    fontWeight="medium"
+                    flexShrink={1}
+                    color={"darkText"}
+                  >
+                    {title}
+                  </Text>
+                </HStack>
+                {/* {displayCloseButton && (
+                    <IconButton
+                      variant={"unstyled"}
+                      icon={<CloseIcon size="3" />}
+                      _icon={{ color: "darkText" }}
+                      onPress={() => Toast.close(id)}
+                    />
+                  )} */}
+              </HStack>
+              {description && (
+                <Text px="6" color={"darkText"}>
+                  {description}
+                </Text>
+              )}
+            </VStack>
+          </Alert>
+        </Slide>
+      </Center>
+    </>
   );
 };
 

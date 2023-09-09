@@ -1,17 +1,8 @@
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  // Modal,
-} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
+
 import { vigoStyles } from "../../../assets/theme";
 import Header from "../../../components/Header/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { vndFormat } from "../../../utils/numberUtils";
 import {
   Box,
@@ -21,7 +12,9 @@ import {
   InputRightAddon,
   Modal,
   WarningOutlineIcon,
+  Text,
 } from "native-base";
+import { useKeyboard } from "../../../hooks/useKeyboard";
 
 const TopupAmountModal = ({
   modalVisible,
@@ -31,6 +24,7 @@ const TopupAmountModal = ({
 }) => {
   const [amount, setAmount] = useState(null);
   const [isAmountInvalid, setIsAmountInvalid] = useState(false);
+  const { isKeyboardVisible } = useKeyboard();
 
   const handleAmountChange = (newAmount) => {
     if (!newAmount || newAmount < 1000) {
@@ -40,6 +34,11 @@ const TopupAmountModal = ({
       setAmount(newAmount);
     }
   };
+
+  useEffect(() => {
+    setIsAmountInvalid(false);
+    setAmount(null);
+  }, [modalVisible]);
 
   return (
     <Modal
@@ -51,6 +50,7 @@ const TopupAmountModal = ({
         setModalVisible(!modalVisible);
       }}
       size={"xl"}
+      pb={isKeyboardVisible ? "50%" : "0"}
     >
       <Modal.Content>
         <Modal.CloseButton />
@@ -96,10 +96,14 @@ const TopupAmountModal = ({
           <TouchableOpacity
             style={{ ...vigoStyles.buttonPrimary }}
             onPress={() => {
-              onModalConfirm(amount);
-              setModalVisible(!modalVisible);
+              if (!amount || amount < 1000) {
+                setIsAmountInvalid(true);
+              } else {
+                onModalConfirm(amount);
+                setModalVisible(!modalVisible);
+              }
             }}
-            disabled={amount <= 1000}
+            disabled={isAmountInvalid}
             // activeOpacity={amount <= 1000 ? 1 : 0.7}
           >
             <Text style={vigoStyles.buttonPrimaryText}>Xác nhận</Text>

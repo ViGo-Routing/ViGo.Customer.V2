@@ -9,15 +9,15 @@ import {
   ScrollView,
 } from "react-native";
 
-import Map from "../../components/Map/Map.jsx";
-// import BottomSheet from '../../components/BottomSheet/BottomSheetComponent.jsx';
-import { themeColors } from "../../assets/theme/index.jsx";
+import Map from "../../components/Map/Map";
+// import BottomSheet from '../../components/BottomSheet/BottomSheetComponent';
+import { themeColors } from "../../assets/theme/index";
 import { useNavigation } from "@react-navigation/native";
-import InputCard from "../../components/Card/InputCard.jsx";
-import SwtichVehicle from "../../components/Select Box/SwitchVehicle.jsx";
+import InputCard from "../../components/Card/InputCard";
+import SwtichVehicle from "../../components/Select Box/SwitchVehicle";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useToast } from "native-base";
-import { createRoute } from "../../service/routeService.jsx";
+import { createRoute } from "../../service/routeService";
 import axios from "axios";
 
 const BikeBookingScreen = (props) => {
@@ -58,8 +58,8 @@ const BikeBookingScreen = (props) => {
   const routeType = props.route.params.routeType;
   const frequency = props.route.params.frequency;
 
-  const [duration, setDuration] = useState('');
-  const [distance, setDistance] = useState('');
+  const [duration, setDuration] = useState("");
+  const [distance, setDistance] = useState("");
 
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [pickupPosition, setPickupPosition] = useState(pickup);
@@ -69,7 +69,7 @@ const BikeBookingScreen = (props) => {
   useEffect(() => {
     // Function to fetch duration and distance using Google Directions API
     const fetchDirections = async () => {
-      const apiKey = 'AIzaSyCIYCycKF24mQXN1pJYFfCO-6azSETj_Qc';
+      const apiKey = "AIzaSyCIYCycKF24mQXN1pJYFfCO-6azSETj_Qc";
       const origin = `${pickupPosition.geometry.location.lat},${pickupPosition.geometry.location.lng}`;
       const destination = `${destinationPosition.geometry.location.lat},${destinationPosition.geometry.location.lng}`;
       const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}`;
@@ -77,15 +77,12 @@ const BikeBookingScreen = (props) => {
       try {
         const response = await axios.get(apiUrl);
         const { duration, distance } = response.data.routes[0].legs[0];
-        const durationValue = parseFloat(duration.text.split(' ')[0]);
-        const distanceValue = parseFloat(distance.text.split(' ')[0]);
+        const durationValue = parseFloat(duration.text.split(" ")[0]);
+        const distanceValue = parseFloat(distance.text.split(" ")[0]);
         setDuration(durationValue);
         setDistance(distanceValue);
-
-
-
       } catch (error) {
-        console.error('Error fetching directions:', error);
+        console.error("Error fetching directions:", error);
       }
     };
 
@@ -136,20 +133,20 @@ const BikeBookingScreen = (props) => {
     };
     try {
       await createRoute(requestData).then((response) => {
-        const routeId = response.data.id
+        const routeId = response.data.id;
         console.log("response", response.data.id);
-        navigation.navigate("RoutineGenerator", { routeId: routeId, frequency: frequency, routeType: routeType });
-      }
-
-      );
-
+        navigation.navigate("RoutineGenerator", {
+          routeId: routeId,
+          frequency: frequency,
+          routeType: routeType,
+        });
+      });
     } catch (error) {
       toast.show({
         title: "Lỗi tạo lịch trình",
-        placement: "bottom"
-      })
+        placement: "bottom",
+      });
     }
-
   };
   const slideUp = new Animated.Value(0);
   const slideUpHandler = () => {

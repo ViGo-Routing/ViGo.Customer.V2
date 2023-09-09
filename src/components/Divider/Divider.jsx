@@ -6,7 +6,7 @@ export default Divider = ({ style }) => {
 
 const styles = StyleSheet.create({
   divider: {
-    borderBottomColor: "#999",
+    borderBottomColor: "#e0e0e0",
     borderBottomWidth: StyleSheet.hairlineWidth,
     // marginTop: 20,
     // marginBottom: 40,

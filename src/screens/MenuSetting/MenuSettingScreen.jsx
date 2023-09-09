@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-import Header from '../../components/Header/Header.jsx'
+import Header from "../../components/Header/Header";
 
 const MenuSettingScreen = () => {
   return (
@@ -9,9 +9,9 @@ const MenuSettingScreen = () => {
       <Header title="Setting" />
       <Text>MenuSettingScreen</Text>
     </View>
-  )
-}
+  );
+};
 
-export default MenuSettingScreen
+export default MenuSettingScreen;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

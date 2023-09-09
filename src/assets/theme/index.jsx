@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const themeColors = {
   primary: "#00A1A1",
   linear: "#E3F6F5",
+  cardColor: "#f8f8f8",
 };
 
 export const vigoStyles = StyleSheet.create({
@@ -21,7 +22,7 @@ export const vigoStyles = StyleSheet.create({
     paddingBottom: 15,
   },
   body: {
-    backgroundColor: themeColors.linear,
+    backgroundColor: "white",
     padding: 20,
     flex: 1,
   },
@@ -145,10 +146,12 @@ export const vigoStyles = StyleSheet.create({
     // marginTop: 10,
     borderRadius: 10,
     // marginBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 7,
+    paddingBottom: 7,
+    borderWidth: 1,
+    borderColor: themeColors.primary,
   },
   buttonWhiteText: {
     textAlign: "center",

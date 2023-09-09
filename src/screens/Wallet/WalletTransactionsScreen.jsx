@@ -18,6 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import Divider from "../../components/Divider/Divider";
 import { vndFormat } from "../../utils/numberUtils";
 import { Text, FlatList, HStack, Box } from "native-base";
+import TransactionItem from "../../components/WalletTransaction/TransactionItem";
+import InfoAlert from "../../components/Alert/InfoAlert";
 
 const WalletTransactionsScreen = ({ route }) => {
   const { walletId } = route.params;
@@ -85,19 +87,11 @@ const WalletTransactionsScreen = ({ route }) => {
 
   const renderTransactionListItem = (transaction) => {
     return (
-      <HStack>
-        <Box width={"10%"}>
-          {renderTransactionStatus(transaction.status, "list")}
-        </Box>
-        <Box width={"60%"}>{renderTransacionType(transaction, "list")}</Box>
-        <Box width={"30%"} paddingLeft={5}>
-          <Text style={{ fontSize: 16 }}>
-            {`${renderTransactionTypeOperator(transaction.type)}${vndFormat(
-              transaction.amount
-            )}`}
-          </Text>
-        </Box>
-      </HStack>
+      <TransactionItem
+        renderType="list"
+        key={transaction.id}
+        transaction={transaction}
+      />
     );
   };
 
@@ -134,7 +128,7 @@ const WalletTransactionsScreen = ({ route }) => {
             );
           }}
           ItemSeparatorComponent={<Divider style={vigoStyles.listDivider} />}
-          ListEmptyComponent={<Text>Chưa có giao dịch nào!</Text>}
+          ListEmptyComponent={<InfoAlert message="Chưa có giao dịch nào" />}
           refreshing={loading}
           onRefresh={() => getTransacions(walletId)}
           onEndReached={loadMoreTransactions}
@@ -142,6 +136,10 @@ const WalletTransactionsScreen = ({ route }) => {
             setOnScroll(true);
           }}
           onEndReachedThreshold={0.5}
+          contentContainerStyle={{
+            // paddingHorizontal: 20,
+            paddingBottom: 20,
+          }}
         />
       </View>
     </SafeAreaView>

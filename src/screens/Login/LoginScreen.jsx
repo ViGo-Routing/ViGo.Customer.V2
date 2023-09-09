@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 // IMPORT THEME
 import { themeColors, vigoStyles } from "../../assets/theme";
 import { login } from "../../utils/apiManager";
-import SignalRService from "../../utils/signalRUtils.js";
+import SignalRService from "../../utils/signalRUtils";
 // IMPORT FIREBASE
 // import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 // import { firebaseConfig } from "../../config/firebase";
@@ -22,7 +22,6 @@ import messaging from "@react-native-firebase/messaging";
 import { PermissionsAndroid } from "react-native";
 import { updateUserFcmToken } from "../../service/userService";
 import auth from "@react-native-firebase/auth";
-import { initializeApp } from "firebase/compat/app";
 import {
   Box,
   FormControl,
@@ -43,14 +42,15 @@ import {
   Heading,
 } from "native-base";
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
-import LoadingScreen from "../../components/Loading/Loading";
 import { isPhoneNumber } from "../../utils/stringUtils";
 import { eventNames, handleError } from "../../utils/alertUtils";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
+import EnterOtpCodeModal from "../../components/Modal/EnterOtpCodeModal";
+import { Platform } from "react-native";
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
+  // const [password, setPassword] = useState("");
   const { user, setUser } = useContext(UserContext);
   const [enterOtpModalVisible, setEnterOtpModalVisible] = useState(false);
 
@@ -59,9 +59,10 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [firebaseToken, setFirebaseToken] = useState(null);
-  const recaptchaVerifier = useRef(null);
+  // const recaptchaVerifier = useRef(null);
   const [show, setShow] = useState(false);
   const eventEmitter = new NativeEventEmitter();
+  const [code, setCode] = useState("");
 
   // Handle Login by Firebase
   const onAuthStateChanged = (user) => {
@@ -82,40 +83,40 @@ export default function LoginScreen() {
   useEffect(() => {
     // getString("token").then((result) => console.log(result));
     // console.log(firebaseToken);
-    auth().settings.appVerificationDisabledForTesting = true;
+    auth().settings.forceRecaptchaFlowForTesting = true;
     // auth().settings.forceRecaptchaFlowForTesting = true;
     // const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     // return subscriber;
-    if (user) {
-      navigation.navigate("Home");
-    }
+    // if (user) {
+    //   navigation.navigate("Home");
+    // }
   }, []);
 
   const handleLogin = async () => {
     // console.log(firebaseToken);
-    const isValid = isPhoneNumber(phoneNumber);
-    if (!isValid || (phoneNumber == "" && password == "")) {
-      if (password == "") {
-        setIsInputPasswordInvalid(true);
-      }
-      setIsInputPhoneInvalid(true);
-    } else {
-      setIsLoading(true);
-      const phone = `+84${phoneNumber.substring(1, 10)}`;
-      // console.log(phone);
-      login(phone, password)
-        .then(async (response) => {
-          setUser(response.user);
-          // console.log("Token " + (await getString("token")));
-          SignalRService.updateToken(response.token);
-          try {
-            const permissions = [
-              PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            ];
+    // const isValid = isPhoneNumber(phoneNumber);
+    // if (!isValid || (phoneNumber == "" && password == "")) {
+    //   if (password == "") {
+    //     setIsInputPasswordInvalid(true);
+    //   }
+    //   setIsInputPhoneInvalid(true);
+    // } else {
+    setIsLoading(true);
+    const phone = `+84${phoneNumber.substring(1, 10)}`;
+    // console.log(phone);
+    try {
+      const response = await login(phone, firebaseToken);
+      setUser(response.user);
+      // console.log("Token " + (await getString("token")));
+      SignalRService.updateToken(response.token);
 
-            const results = await PermissionsAndroid.requestMultiple(
-              permissions,
+      const permissions = [
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      ];
+
+      const results = await PermissionsAndroid.requestMultiple(
+        permissions /*,
               {
                 title: "Cho phép ViGo gửi thông báo đến bạn",
                 message: `Nhận thông báo về trạng thái giao dịch, nhắc nhở chuyến đi 
@@ -123,67 +124,59 @@ export default function LoginScreen() {
                 buttonNeutral: "Hỏi lại sau",
                 buttonNegative: "Từ chối",
                 buttonPositive: "Đồng ý",
-              }
-            );
-            setIsLoading(false);
-            if (
-              results[PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS] ===
-              PermissionsAndroid.RESULTS.GRANTED &&
-              results[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
-              PermissionsAndroid.RESULTS.GRANTED
-            ) {
-              await messaging().registerDeviceForRemoteMessages();
-              const fcmToken = await messaging().getToken();
-              await updateUserFcmToken(response.user.id, fcmToken);
-            }
+              }*/
+      );
+      // setIsLoading(false);
+      if (
+        (Platform.constants["Version"] < 33 ||
+          results[PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS] ===
+            PermissionsAndroid.RESULTS.GRANTED) &&
+        results[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
+          PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        await messaging().registerDeviceForRemoteMessages();
+        const fcmToken = await messaging().getToken();
+        await updateUserFcmToken(response.user.id, fcmToken);
+      } else {
+        console.log("Some permissions denied");
+      }
 
-            // Alert.alert(
-            //   "Đăng nhập thành công! Hãy nhận chuyến xe đầu tiên của bạn nào",
-            //   "",
-            //   [
-            //     {
-            //       text: "OK",
-            //       onPress: () => navigation.navigate("PickCus"),
-            //     },
-            //   ]
-            // );
+      eventEmitter.emit(eventNames.SHOW_TOAST, {
+        title: "Đăng nhập thành công",
+        description: "",
+        status: "success",
+        placement: "top",
+        duration: 3000,
+        isSlide: true,
+      });
 
-            eventEmitter.emit(eventNames.SHOW_TOAST, {
-              title: "Đăng nhập thành công",
-              description: "",
-              status: "success",
-              placement: "top",
-            });
-
-            navigation.navigate("Home");
-          } catch (err) {
-            handleError("Có lỗi xảy ra", error);
-            // console.warn(err);
-            setIsLoading(false);
-          }
-        })
-        .catch((err) => {
-          setIsLoading(false);
-          // console.error(err.response.status);
-          // const eventEmitter = new NativeEventEmitter();
-          if (err.response && err.response.status != 401) {
-            eventEmitter.emit(eventNames.SHOW_TOAST, {
-              // title: "Đăng nhập không thành công",
-              description: err.response.data,
-              status: "error",
-              // placement: "top-right",
-              isDialog: true,
-            });
-          } else {
-            console.log(err);
-            eventEmitter.emit(eventNames.SHOW_TOAST, {
-              title: "Đăng nhập không thành công",
-              description: "Vui lòng kiểm tra lại thông tin đăng nhập",
-              status: "error",
-              // placement: "top-right",
-            });
-          }
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+    } catch (err) {
+      setIsLoading(false);
+      // console.error(err.response.status);
+      // const eventEmitter = new NativeEventEmitter();
+      if (err.response && err.response.status != 401) {
+        eventEmitter.emit(eventNames.SHOW_TOAST, {
+          // title: "Đăng nhập không thành công",
+          description: err.response.data,
+          status: "error",
+          // placement: "top-right",
+          isDialog: true,
         });
+      } else {
+        // console.log(err);
+        eventEmitter.emit(eventNames.SHOW_TOAST, {
+          title: "Đăng nhập không thành công",
+          description: "Vui lòng kiểm tra lại thông tin đăng nhập",
+          status: "error",
+          // placement: "top-right",
+        });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -194,23 +187,28 @@ export default function LoginScreen() {
   }, [firebaseToken]);
 
   const sendVerification = async () => {
-    console.log(phoneNumber);
-    if (phoneNumber) {
-      console.log(`+84${phoneNumber}`);
+    const isValid = isPhoneNumber(phoneNumber);
+    if (!isValid) {
+      setIsInputPhoneInvalid(true);
+    } else {
       setIsLoading(true);
-      try {
-        // const phoneProvider = new auth.PhoneAuthProvider();
-        // phoneProvider.
-        const confirmation = await auth().signInWithPhoneNumber(
-          `+84${phoneNumber}`
-        );
-        // console.log(confirmation);
-        setConfirm(confirmation);
 
+      try {
+        // const phone = `+84${phoneNumber.substring(1, 10)}`;
+        const confirmation = await auth().signInWithPhoneNumber(
+          `+84${phoneNumber.substring(1, 10)}`
+        );
+        setConfirm(confirmation);
         setEnterOtpModalVisible(true);
       } catch (err) {
-        console.error(err);
-        Alert.alert("Có lỗi xảy ra khi gửi mã OTP", "Chi tiết: " + err.message);
+        setIsLoading(false);
+        // console.log(err);
+        eventEmitter.emit(eventNames.SHOW_TOAST, {
+          title: "Gửi mã OTP không thành công",
+          description: "Vui lòng kiểm tra lại số điện thoại",
+          status: "error",
+          // placement: "top-right",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -221,43 +219,42 @@ export default function LoginScreen() {
     setIsLoading(true);
     try {
       const result = await confirm.confirm(code);
-      console.log(result);
       const credential = auth.PhoneAuthProvider.credential(
         confirm.verificationId,
         code
       );
+      const loginInfo = await auth().signInWithCredential(credential);
 
-      auth()
-        .signInWithCredential(credential)
-        .then(() => {
-          // console.log(user);
-          auth().onAuthStateChanged(onAuthStateChanged);
-        });
-
-      // let userData = await auth().currentUser.linkWithCredential(credential);
-      // console.log(userData);
+      if (loginInfo.user) {
+        auth().onAuthStateChanged(onAuthStateChanged);
+      }
     } catch (err) {
+      setIsLoading(false);
       if (err.code == "auth/invalid-verification-code") {
-        Alert.alert("Mã OTP không chính xác", "Vui lòng kiểm tra lại mã OTP!");
+        handleError(
+          "Mã OTP không chính xác",
+          "Vui lòng kiểm tra lại mã OTP!",
+          navigation
+        );
       } else {
-        Alert.alert("Có lỗi xảy ra", "Chi tiết: " + err.message);
+        handleError("Có lỗi xảy ra", err, navigation);
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const [inputValue, setInputValue] = useState("");
+  // const [inputValue, setInputValue] = useState("");
   const [isInputPhoneInvalid, setIsInputPhoneInvalid] = useState(false);
-  const [isInputPasswordInvalid, setIsInputPasswordInvalid] = useState(false);
+  // const [isInputPasswordInvalid, setIsInputPasswordInvalid] = useState(false);
   const handlePhoneChange = (text) => {
     setPhoneNumber(text);
     setIsInputPhoneInvalid(false); // Reset the input validation when the user starts typing again
   };
-  const handlePasswordChange = (text) => {
-    setPassword(text);
-    setIsInputPasswordInvalid(false); // Reset the input validation when the user starts typing again
-  };
+  // const handlePasswordChange = (text) => {
+  //   setPassword(text);
+  //   setIsInputPasswordInvalid(false); // Reset the input validation when the user starts typing again
+  // };
 
   const handleSubmit = () => {
     // Handle the form submission here with the valid input value
@@ -326,7 +323,7 @@ export default function LoginScreen() {
                 )}
               </FormControl>
             </Box>
-            <Box alignItems="center" pt="1">
+            {/* <Box alignItems="center" pt="1">
               <FormControl
                 style={styles.input}
                 isInvalid={isInputPasswordInvalid}
@@ -359,10 +356,10 @@ export default function LoginScreen() {
                   </FormControl.ErrorMessage>
                 )}
               </FormControl>
-            </Box>
+            </Box> */}
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Đăng nhập</Text>
+            <TouchableOpacity style={styles.button} onPress={sendVerification}>
+              <Text style={styles.buttonText}>Tiếp tục</Text>
             </TouchableOpacity>
             <Text style={styles.link}>Quên mật khẩu?</Text>
 
@@ -377,6 +374,15 @@ export default function LoginScreen() {
           </Box>
         </Box>
       </Box>
+
+      <EnterOtpCodeModal
+        phoneNumber={`+84${phoneNumber.substring(1, 10)}`}
+        setModalVisible={setEnterOtpModalVisible}
+        modalVisible={enterOtpModalVisible}
+        onModalConfirm={() => confirmCode()}
+        onModalRequestClose={() => {}}
+        setCode={setCode}
+      />
     </View>
   );
 }

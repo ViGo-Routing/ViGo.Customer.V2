@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColors } from "../../assets/theme";
 import {
   BanknotesIcon,
@@ -9,30 +9,74 @@ import {
   MapIcon,
   UserIcon,
 } from "react-native-heroicons/solid";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import MyRouteScreen from "../../screens/MyRoute/MyRouteScreen";
+import HomeComponent from "../../screens/Home/HomeComponent";
+import ProfileSreen from "../../screens/Profile/ProfileScreen";
+import { Box } from "native-base";
+
+const Tab = createBottomTabNavigator();
 
 const BottomNavigationBar = () => {
   const navigation = useNavigation();
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-        {/* <Ionicons name="home" size={24} color="white" /> */}
-        <HomeIcon size={24} color="white" />
-      </TouchableOpacity>
-      {/* <TouchableOpacity onPress={() => navigation.navigate("Promotion")}>
-        <BanknotesIcon size={24} color="white" />
-      </TouchableOpacity> */}
-      <TouchableOpacity onPress={() => navigation.navigate("MyRoute")}>
-        {/* <Ionicons name="git-branch" size={24} color="white" /> */}
-        <MapIcon size={24} color="white" />
-      </TouchableOpacity>
-      {/* <TouchableOpacity onPress={() => navigation.navigate("Message")}>
-        <ChatBubbleLeftRightIcon size={24} color="white" />
-      </TouchableOpacity> */}
-      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-        {/* <Ionicons name="person" size={24} color="white" /> */}
-        <UserIcon size={24} color="white" />
-      </TouchableOpacity>
-    </View>
+    <Tab.Navigator
+      // tabBar={(props) => renderTabBar(props)}
+      // sceneContainerStyle={{ backgroundColor: themeColors.primary }}
+      screenOptions={{
+        lazy: true,
+        tabBarStyle: {
+          backgroundColor: themeColors.primary,
+          paddingBottom: 5,
+          paddingTop: 5,
+          height: 55,
+        },
+        tabBarActiveTintColor: "white",
+        tabBarInactiveTintColor: "#b1d1d1",
+      }}
+    >
+      <Tab.Screen
+        name="HomeTab"
+        key="HomeTab"
+        component={HomeComponent}
+        options={{
+          tabBarLabel: "TRANG CHỦ",
+          tabBarIcon: ({ focused, color, size }) => (
+            <HomeIcon size={size} color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
+
+      <Tab.Screen
+        name="ScheduleTab"
+        key="ScheduleTab"
+        component={MyRouteScreen}
+        options={{
+          tabBarLabel: "LỊCH TRÌNH",
+          tabBarIcon: ({ focused, color, size }) => (
+            <MapIcon size={size} color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
+
+      <Tab.Screen
+        name="ProfileTab"
+        key="ProfileTab"
+        component={ProfileSreen}
+        options={{
+          tabBarLabel: "CÁ NHÂN",
+          tabBarIcon: ({ focused, color, size }) => (
+            <UserIcon size={size} color={color} />
+          ),
+          tabBarBackground: () => <Box backgroundColor={themeColors.primary} />,
+          headerShown: false,
+        }}
+      />
+    </Tab.Navigator>
+    // </Box>
   );
 };
 

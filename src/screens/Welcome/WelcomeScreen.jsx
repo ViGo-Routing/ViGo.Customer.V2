@@ -1,8 +1,8 @@
-import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { themeColors } from '../../assets/theme'
-import CustomButton from '../../components/Button/CustomButton.jsx'
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { themeColors } from "../../assets/theme";
+import CustomButton from "../../components/Button/CustomButton";
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -11,7 +11,7 @@ const WelcomeScreen = () => {
       <Text style={styles.title}>
         Xin chào
         {"\n"}
-        chúng tôi là 
+        chúng tôi là
       </Text>
       <Image
         source={require("../../assets/images/ViGo_logo.png")}
@@ -21,7 +21,7 @@ const WelcomeScreen = () => {
         <CustomButton
           style={styles.btn}
           title="Tiếp tục"
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate("Login")}
         />
       </View>
       {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
@@ -34,15 +34,14 @@ const WelcomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: "space-around",
+    alignItems: "center",
     backgroundColor: themeColors.linear,
-
   },
   title: {
-    textAlign:"center",
+    textAlign: "center",
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: themeColors.primary,
   },
   buttonContainer: {

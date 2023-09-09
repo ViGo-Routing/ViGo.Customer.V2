@@ -1,12 +1,12 @@
-import React from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import React from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 // IMPORT COMPONENTS
-import Header from '../../components/Header/Header.jsx'
-import CustomButton from '../../components/Button/CustomButton.jsx'
-import Profile from '../../components/Profile/Profile.jsx'
-import { useNavigation } from '@react-navigation/native'
-import { themeColors } from '../../assets/theme/index.jsx'
+import Header from "../../components/Header/Header";
+import CustomButton from "../../components/Button/CustomButton";
+import Profile from "../../components/Profile/Profile";
+import { useNavigation } from "@react-navigation/native";
+import { themeColors } from "../../assets/theme/index";
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
@@ -19,24 +19,27 @@ const EditProfileScreen = () => {
         <Profile />
       </View>
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BookingDetail')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("BookingDetail")}
+        >
           <Text style={{ color: "white", fontWeight: "bold" }}>Cập nhật</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
+    flexDirection: "column",
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   body: {
     paddingTop: 30,
     flex: 1,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   buttonContainer: {
     padding: 16,

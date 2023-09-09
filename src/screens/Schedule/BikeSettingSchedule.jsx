@@ -1,34 +1,37 @@
-import React from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
-import Header from '../../components/Header/Header.jsx';
-import CalendarCard from '../../components/Calender/CalenderCard.jsx';
-import { themeColors } from '../../assets/theme/index.jsx';
-import InputCard from '../../components/Card/InputCard.jsx';
-import TimeCard from '../../components/Card/TimeCard.jsx';
-import SelectDailyRoute from '../../components/Card/SelectDailyRoute.jsx';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { createFareCalculate } from '../../service/bookingService.jsx';
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import Header from "../../components/Header/Header";
+import CalendarCard from "../../components/Calender/CalenderCard";
+import { themeColors } from "../../assets/theme/index";
+import InputCard from "../../components/Card/InputCard";
+import TimeCard from "../../components/Card/TimeCard";
+import SelectDailyRoute from "../../components/Card/SelectDailyRoute";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { createFareCalculate } from "../../service/bookingService";
 
 const BikeSettingSchedule = () => {
-
   const navigation = useNavigation();
   const route = useRoute();
   // const { sendData } = route.params;
   // const data = { key: sendData };
   // console.log("response", sendData)
   const handleFareCalculate = (response) => {
-
     const requestData = {
       vehicleTypeId: "2788f072-56cd-4fa6-a51a-79e6f473bf9f",
       beginTime: "string",
       duration: 0,
       distance: 0,
       totalNumberOfTickets: 0,
-      routineType: "RANDOMLY"
-    }
-    response = createFareCalculate(requestData)
-  }
-
+      routineType: "RANDOMLY",
+    };
+    response = createFareCalculate(requestData);
+  };
 
   return (
     <View style={styles.container}>
@@ -53,7 +56,10 @@ const BikeSettingSchedule = () => {
           <SelectDailyRoute />
         </View>
         <View style={styles.footer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BookingDetail')}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("BookingDetail")}
+          >
             <Text style={{ color: "white", fontWeight: "bold" }}>Tiếp tục</Text>
           </TouchableOpacity>
         </View>
@@ -64,14 +70,14 @@ const BikeSettingSchedule = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
+    flexDirection: "column",
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   row: {
     marginHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   body: {
     flex: 1,
@@ -84,15 +90,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 20,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   sdr: {
-    padding: 10
+    padding: 10,
   },
   button: {
     padding: 10,

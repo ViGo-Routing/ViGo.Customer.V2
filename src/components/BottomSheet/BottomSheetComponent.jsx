@@ -10,11 +10,11 @@ import {
 } from "react-native";
 import { themeColors } from "../../assets/theme";
 import { useNavigation } from "@react-navigation/native";
-// import AutoCompelete from '../SearchBox/AutoCompelete.jsx';
+// import AutoCompelete from '../SearchBox/AutoCompelete';
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useState } from "react";
 import axios from "axios";
-import { route_create } from "../../utils/swagger.jsx";
+import { route_create } from "../../utils/swagger";
 import apiManager from "../../utils/apiManager";
 import { createRoute } from "../../service/routeService";
 
@@ -31,7 +31,6 @@ const BottomSheet = ({
   const handlePickupPlaceSelection = (data, details) => {
     onPickupPlaceSelect(details);
     setPickSavedDetails(details);
-
   };
   const handleDestinationPlaceSelection = (data, details) => {
     onDestinationPlaceSelect(details);

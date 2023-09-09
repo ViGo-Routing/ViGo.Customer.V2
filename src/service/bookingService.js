@@ -1,5 +1,6 @@
 import { Toast } from "native-base";
 import apiManager from "../utils/apiManager";
+import { getErrorMessage } from "../utils/alertUtils";
 
 export const createFareCalculate = async (requestData) => {
   try {
@@ -19,7 +20,6 @@ export const createFareCalculate = async (requestData) => {
       console.log("Error response structure not recognized.");
       return null;
     }
-
   }
 };
 
@@ -73,7 +73,7 @@ export const getBookingDetail = async (
     const response = await apiManager.get(url);
     return response;
   } catch (error) {
-    console.error("Get Payment failed:", error);
+    console.error("Get Payment failed:", getErrorMessage(error));
   }
 };
 
@@ -101,9 +101,15 @@ export const getBookingById = async (bookingId) => {
     }
   }
 };
-export const getBookingByCustomerId = async (customerId, pageSize, pageNumber) => {
+export const getBookingByCustomerId = async (
+  customerId,
+  pageSize,
+  pageNumber
+) => {
   try {
-    const response = await apiManager.get(`/api/Booking/Customer/${customerId}?PageNumber=${pageNumber}&PageSize=${pageSize}`);
+    const response = await apiManager.get(
+      `/api/Booking/Customer/${customerId}?PageNumber=${pageNumber}&PageSize=${pageSize}`
+    );
     return response;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -131,14 +137,17 @@ export const getBookingDetailByBookingId = async (
     const response = await apiManager.get(url);
     return response;
   } catch (error) {
-    console.error("Get Payment failed:", error);
+    console.error("Get Payment failed:", getErrorMessage(error));
   }
 };
 
 export const updateBookingById = async (bookingId, requestData) => {
-  console.log("updateBookingById", requestData)
+  console.log("updateBookingById", requestData);
   try {
-    const response = await apiManager.put(`/api/Booking/${bookingId}`, requestData);
+    const response = await apiManager.put(
+      `/api/Booking/${bookingId}`,
+      requestData
+    );
     return response;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -153,10 +162,16 @@ export const updateBookingById = async (bookingId, requestData) => {
   }
 };
 
-export const feedbackByBookingDetailId = async (bookingDetailId, requestData) => {
-  console.log("requestData", bookingDetailId, requestData)
+export const feedbackByBookingDetailId = async (
+  bookingDetailId,
+  requestData
+) => {
+  console.log("requestData", bookingDetailId, requestData);
   try {
-    const response = await apiManager.put(`/api/BookingDetail/Feedback/${bookingDetailId}`, requestData);
+    const response = await apiManager.put(
+      `/api/BookingDetail/Feedback/${bookingDetailId}`,
+      requestData
+    );
     return response;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -164,8 +179,8 @@ export const feedbackByBookingDetailId = async (bookingDetailId, requestData) =>
       const errorDetails = error.response.data;
       Toast.show({
         title: errorDetails,
-        placement: "bottom"
-      })
+        placement: "bottom",
+      });
       console.log("update Booking failed", errorDetails);
       return null;
     } else {

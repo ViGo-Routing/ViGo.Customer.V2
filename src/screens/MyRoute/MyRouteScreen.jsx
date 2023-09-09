@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
-import Header from "../../components/Header/Header.jsx";
-import BottomNavigationBar from "../../components/NavBar/BottomNavigationBar.jsx";
-import { themeColors } from "../../assets/theme/index.jsx";
+import Header from "../../components/Header/Header";
+import { themeColors } from "../../assets/theme/index";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import HomeScreen from "../Home/HomeScreen.jsx";
-import HistoryScreen from "../History/HistoryScreen.jsx";
-import OnGoingScreen from "../History/OnGoingScreen.jsx";
-import PendingScreen from "../History/PendingScreen.jsx";
-import CancelScreen from "../History/CancelScreen.jsx";
-import ViGoSpinner from "../../components/Spinner/ViGoSpinner.jsx";
+import HistoryScreen from "../History/HistoryScreen";
+import OnGoingScreen from "../History/OnGoingScreen";
+import PendingScreen from "../History/PendingScreen";
+import CancelScreen from "../History/CancelScreen";
+import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 const MyRouteScreen = () => {
   const [selectedTab, setSelectedTab] = useState("Hành trình");
   const [isGoingLoading, setIsGoingLoading] = useState(false);
@@ -21,9 +19,9 @@ const MyRouteScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.footer}>
-        <Header title="Hành trình" />
-      </View>
+      {/* <View style={styles.footer}> */}
+      <Header isBackButtonShown={false} title="Hành trình" />
+      {/* </View> */}
       {/* <ViGoSpinner
         isLoading={
           isGoingLoading ||
@@ -85,9 +83,6 @@ const MyRouteScreen = () => {
             </Text>
           ))}
         </View> */}
-      </View>
-      <View style={styles.footer}>
-        <BottomNavigationBar />
       </View>
     </View>
   );

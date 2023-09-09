@@ -19,6 +19,9 @@ import { useNavigation } from "@react-navigation/native";
 import Divider from "../../components/Divider/Divider";
 import { BellAlertIcon, BellIcon } from "react-native-heroicons/solid";
 import { toVnDateTimeString } from "../../utils/datetimeUtils";
+import ErrorAlert from "../../components/Alert/ErrorAlert";
+import NotificationListItem from "./NotificationListItem";
+import InfoAlert from "../../components/Alert/InfoAlert";
 
 const MyNotifcationScreen = () => {
   const [notifications, setNotifications] = useState([]);
@@ -89,27 +92,6 @@ const MyNotifcationScreen = () => {
     }
   };
 
-  const renderNotificationListItem = (notification) => {
-    return (
-      <VStack>
-        <HStack>
-          <Box width={"15%"} alignItems={"center"}>
-            <BellAlertIcon size={30} color={themeColors.primary} />
-          </Box>
-          <Box width={"80%"}>
-            <Heading size="sm">{notification.title}</Heading>
-            <Text>{notification.description}</Text>
-          </Box>
-        </HStack>
-        <Box alignItems="flex-end">
-          <Text color={"#999"}>
-            {toVnDateTimeString(notification.createdTime)}
-          </Text>
-        </Box>
-      </VStack>
-    );
-  };
-
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       getMyNotifications(user.id);
@@ -125,55 +107,24 @@ const MyNotifcationScreen = () => {
       </View>
 
       <View style={vigoStyles.body}>
-        {isError && (
-          <Center marginBottom={"2"}>
-            {/* <Text>Hồ sơ của bạn đã được gửi đến ViGo!</Text> */}
-            <Alert status="error" colorScheme={"error"}>
-              <VStack space={1} flexShrink={1} w="100%" alignItems="center">
-                <Alert.Icon size="md" />
-                <Text
-                  fontSize="md"
-                  fontWeight="medium"
-                  _dark={{
-                    color: "coolGray.800",
-                  }}
-                >
-                  Không thể truy vấn thông tin
-                </Text>
-
-                <Box
-                  _text={{
-                    textAlign: "center",
-                  }}
-                  _dark={{
-                    _text: {
-                      color: "coolGray.600",
-                    },
-                  }}
-                >
-                  <Text>{errorMessage}</Text>
-                </Box>
-              </VStack>
-            </Alert>
-          </Center>
-        )}
-        {!isError && (
+        <ErrorAlert isError={isError} errorMessage={errorMessage}>
           <FlatList
             style={vigoStyles.list}
             data={notifications}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
-              return <>{renderNotificationListItem(item)}</>;
+              return <NotificationListItem notification={item} />;
+              // return <>{renderNotificationListItem(item)}</>;
             }}
             ItemSeparatorComponent={<Divider style={vigoStyles.listDivider} />}
-            ListEmptyComponent={<Text>Chưa có thông báo nào!</Text>}
+            ListEmptyComponent={<InfoAlert message="Chưa có thông báo" />}
             refreshing={loading}
             onRefresh={() => getMyNotifications(user.id)}
             onEndReached={loadMoreNotifications}
             onScroll={() => setOnScroll(true)}
             onEndReachedThreshold={0.5}
-          ></FlatList>
-        )}
+          />
+        </ErrorAlert>
       </View>
     </SafeAreaView>
   );

@@ -5,6 +5,23 @@ import Geolocation from "react-native-geolocation-service";
 import MapViewDirections from "react-native-maps-directions";
 import { createRoute } from "../../service/routeService";
 import { useNavigation } from "@react-navigation/native";
+import { themeColors } from "../../assets/theme";
+
+export const mapDirectionLine = {
+  primary: {
+    color: themeColors.primary,
+    stroke: 5,
+  },
+  dashed: {
+    // color: "#95B1B0",
+    color: "#F97B22",
+    stroke: 3.5,
+  },
+  secondary: {
+    color: "#5DD8D8",
+    stroke: 4,
+  },
+};
 
 const Map = ({ pickupPosition, destinationPosition, sendRouteId }) => {
   const [region, setRegion] = useState({
@@ -37,7 +54,6 @@ const Map = ({ pickupPosition, destinationPosition, sendRouteId }) => {
       }));
     }
   }, [destinationPosition]);
-
 
   // const handleDirectionsReady = async (result) => {
   //   const requestData = {
@@ -103,7 +119,7 @@ const Map = ({ pickupPosition, destinationPosition, sendRouteId }) => {
             strokeWidth={3}
             strokeColor="#00A1A1"
             mode="DRIVING"
-          //onReady={handleDirectionsReady}
+            //onReady={handleDirectionsReady}
           />
         )}
       </MapView>
