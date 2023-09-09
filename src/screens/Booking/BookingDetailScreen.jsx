@@ -1,0 +1,361 @@
+import React, { useState, useEffect, useContext } from "react";
+import { StyleSheet, TouchableOpacity, Alert } from "react-native";
+import Header from "../../components/Header/Header.jsx";
+import InputCard from "../../components/Card/InputCard.jsx";
+import { themeColors } from "../../assets/theme/index.jsx";
+import DetailCard from "../../components/Card/DetailCard";
+import { CommonActions, useNavigation } from "@react-navigation/native";
+import { createBooking, createFareCalculate } from "../../service/bookingService.jsx";
+import { getRouteById } from "../../service/routeService.jsx";
+import { getVehicleTypeById } from "../../service/vehicleTypeService.jsx";
+import { getWalletByUserId } from "../../service/walletService.jsx";
+import { UserContext } from "../../context/UserContext.jsx";
+import { MapPinIcon, UserCircleIcon } from "react-native-heroicons/solid";
+import { Box, HStack, View, Text, VStack, ScrollView } from "native-base";
+import { createRoutine } from "../../service/routineService.jsx";
+
+const BookingDetailScreen = ({ route }) => {
+  const { user } = useContext(UserContext);
+  const { routines, data, routeId, daysOfWeek } = route.params;
+  const currentDate = new Date();
+  console.log("routinesroutines", currentDate, daysOfWeek, data[0]?.routineDate, data.length, data[0]?.pickupTime, vehicle?.name, routeData?.tripType)
+  const [fareCalculation, setFareCalculation] = useState(null);
+  const [vehicle, setVehicle] = useState(null);
+  const [routeData, setRoute] = useState(null);
+  const [vnDays, setVnDays] = useState(null);
+  const navigation = useNavigation();
+
+  const [pickupPosition, setPickupPosition] = useState(null);
+  const [destinationPosition, setDestinationPosition] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getRouteById(routeId)
+      if (result != null) {
+        const dataResponse = {
+          vehicleTypeId: "2788f072-56cd-4fa6-a51a-79e6f473bf9f",
+          beginTime: data[0].pickupTime,
+          distance: result.data.distance,
+          duration: result.data.duration,
+          totalNumberOfTickets: data.length,
+          tripType: result.data.type,
+          routineType: result.data.routineType,
+          roundTripBeginTime: data[0].pickupTime,
+        };
+        setRoute(dataResponse);
+        handelPosition(result.data)
+        setPickupPosition(result.data.startStation)
+        setDestinationPosition(result.data.endStation)
+        await createFareCalculate(dataResponse).then((response) => {
+          setFareCalculation(response);
+        });
+        await getVehicleTypeById(
+          dataResponse.vehicleTypeId
+        ).then((response) => {
+          setVehicle(response.data);
+        });
+
+
+
+      }
+
+
+    };
+    fetchData();
+    convertToVietnameseWeekdays(daysOfWeek);
+  }, [routeId]);
+  const requestData = {
+    customerId: user.id,
+    customerRouteId: routeId,
+    startDate: data[0].routineDate,
+    endDate: data[data.length - 1].routineDate,
+    daysOfWeek: vnDays,
+    totalPrice: fareCalculation?.finalFare,
+    priceAfterDiscount: 0,
+    isShared: true,
+    duration: routeData?.duration,
+    distance: routeData?.distance,
+    promotionId: "",
+    vehicleTypeId: "2788f072-56cd-4fa6-a51a-79e6f473bf9f",
+    customerRoundTripDesiredPickupTime: data[0].pickupTime,
+  }
+  const handelPosition = (item) => {
+    console.log(item)
+    const pickupPositionLocal =
+      item?.startStation?.latitude && item?.startStation?.longitude
+        ? {
+          geometry: {
+            location: {
+              lat: item.startStation.latitude,
+              lng: item.startStation.longitude,
+            },
+          },
+          address: item.startStation.address,
+          name: item.startStation.name,
+          formatted_address: item.startStation.address,
+        }
+        : null;
+
+    const destinationPositionLocal =
+      item?.endStation?.latitude && item?.endStation?.longitude
+        ? {
+          geometry: {
+            location: {
+              lat: item.endStation.latitude,
+              lng: item.endStation.longitude,
+            },
+          },
+          address: item.endStation.address,
+          name: item.endStation.name,
+          formatted_address: item.endStation.address,
+        }
+        : null;
+  }
+  const formatDateString = (date) => {
+    if (date) {
+      const dateObj = new Date(date);
+      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+      const year = dateObj.getFullYear().toString();
+
+      const formattedDate = `${day}/${month}/${year}`;
+      return formattedDate; // Output: 25/07/2023
+    } else {
+      console.log("Date is undefined or null");
+      return '';
+    }
+  };
+  const formatTime = (time) => {
+    const timeOnly = time ? time.split('T')[1].slice(0, 5) : null;
+    return timeOnly;
+  }
+
+  const formatMoney = (money) => {
+    console.log(money)
+    const formattedCurrency = (money / 1000).toLocaleString('vi-VN', { minimumFractionDigits: 0 }) + '.000 VND';
+    console.log(formattedCurrency)
+    return formattedCurrency;
+  }
+  const checkBalance = async () => {
+    try {
+      console.log("Xác nhận")
+      await getWalletByUserId(user.id).then(async (s) => {
+        const walletBalance = s.balance;
+        if (walletBalance < fareCalculation?.finalFare) {
+          Alert.alert(
+            "Rất tiếc",
+            "Số dư của bạn không đủ. Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi."
+          );
+        } else {
+          Alert.alert(
+            "Xác nhận",
+            "Bạn có muốn đặt tài xế theo lịch trình này!",
+            [
+              {
+                text: "Không",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              {
+                text: "Có",
+                onPress: async () => {
+                  try {
+                    await createRoutine(routines).then((response) => {
+                      createBooking(requestData).then((response) => {
+                        if (response != null) {
+
+                          Alert.alert("Hoàn Thành",
+                            "Bạn vừa hoàn tất đặt chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
+                            [
+                              {
+                                text: "Tiếp tục",
+                                onPress: () => navigation.dispatch(
+                                  CommonActions.reset({
+                                    index: 0,
+                                    routes: [{ name: "MyRoute" }],
+                                  })
+                                ),
+                              },
+                            ],
+                            { cancelable: false })
+                        }
+                      })
+                    })
+
+                  } catch (error) {
+                    console.error("Error creating booking:", error);
+                  }
+                },
+              },
+            ],
+          );
+        }
+      });
+    } catch (error) {
+      console.log("Error fetching wallet balance:", error);
+    }
+  };
+  const convertToVietnameseWeekdays = (englishWeekdays) => {
+    const weekdaysMap = {
+      Monday: 'Thứ 2 ',
+      Tuesday: 'Thứ 3 ',
+      Wednesday: 'Thứ 4 ',
+      Thursday: 'Thứ 5 ',
+      Friday: 'Thứ 6 ',
+      Saturday: 'Thứ 7 ',
+      Sunday: 'Chủ nhật ',
+    };
+
+    const vietnameseWeekdays = englishWeekdays.map((weekday) => {
+      const dayNumber = weekdaysMap[weekday].split(' ')[1];
+      return `${weekdaysMap[weekday]}`;
+    });
+    const result = vietnameseWeekdays.join(', ');
+    setVnDays(result);
+    return vietnameseWeekdays.join(', ');
+  };
+  return (
+    <View style={styles.container}>
+      <View>
+        <Header style={styles.header} title="Chi tiết" />
+      </View>
+      <ScrollView>
+        <View m={1}>
+          <View style={styles.card}>
+            <Box
+              style={styles.cardInsideDateTime}
+            >
+              <VStack >
+                <HStack alignItems="center">
+                  <UserCircleIcon p={2} size={20} color="blue" />
+                  {pickupPosition !== null ? (<Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                    {pickupPosition.name}
+                  </Text>) : (<Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                    Đang tải ...
+                  </Text>)}
+
+                </HStack>
+                <Divider my="2" _light={{
+                  bg: "muted.800"
+                }} _dark={{
+                  bg: "muted.50"
+                }} />
+                <HStack alignItems="center">
+                  <MapPinIcon p={2} size={20} color="orange" />
+                  {destinationPosition !== null ? (<Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                    {destinationPosition.name}
+                  </Text>) : (<Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                    Đang tải ...
+                  </Text>)}
+                </HStack>
+              </VStack>
+            </Box>
+          </View>
+          <Text fontSize={25} bold color="black" >Chuyến đi:</Text>
+          <View style={styles.cardInsideDateTime} m={2} >
+
+            <DetailCard title="Loại xe" info={vehicle?.name === null ? "" : vehicle?.name} />
+            <DetailCard
+              title="Loại Chuyến"
+              info={routeData === null ? "" : (routeData?.tripType === "ONE_WAY" ? "Một chiều" : "Hai chiều")}
+            />
+            <DetailCard title="Ngày bắt đầu" info={data[0]?.routineDate === null ? "" : formatDateString(data[0]?.routineDate)} />
+            <DetailCard title="Giờ đi" info={data[0]?.pickupTime === null ? "" : data[0]?.pickupTime} />
+            <DetailCard title="Ngày trong tuần" info={vnDays === null ? "" : vnDays} />
+            <DetailCard title="Ngày đặt" info={currentDate === null ? "" : formatDateString(currentDate)} />
+            <DetailCard title="Số ngày đi" info={data === null ? "" : data.length} />
+
+          </View>
+          <Text fontSize={25} bold color="black" >Thanh Toán:</Text>
+          <View style={styles.cardInsideDateTime} m={2} >
+
+            <DetailCard title="Giá gốc" info={formatMoney(fareCalculation?.originalFare)} />
+            <DetailCard title="Phụ phí" info={formatMoney(fareCalculation?.additionalFare)} />
+            <DetailCard title="Tổng tiền" info={formatMoney(fareCalculation?.finalFare)} />
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={checkBalance}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>Tiếp tục</Text>
+          </TouchableOpacity>
+
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  cardInsideDateTime: {
+    flexGrow: 1,
+    backgroundColor: 'white',
+    borderRadius: 10,
+
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    flexDirection: 'column',
+    flexGrow: 1,
+    margin: 5
+
+  },
+  payment: {
+    paddingTop: 10,
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "gray",
+  },
+  container: {
+    flex: 1,
+  },
+  detail: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  row: {
+    marginHorizontal: 20,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  body: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  calen: {
+    padding: 20,
+  },
+  card: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+
+  },
+  sdr: {
+    padding: 10,
+  },
+  button: {
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    backgroundColor: themeColors.primary,
+    alignItems: "center",
+  },
+  footer: {
+    padding: 10,
+  },
+});
+
+export default BookingDetailScreen;
