@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
-import { getBookingDetail, getBookingDetailByBookingId } from "../../service/bookingService";
+import {
+  getBookingDetail,
+  getBookingDetailByBookingId,
+} from "../../service/bookingService";
 import CardHistory from "../../components/CardSchedule/CardHistory";
 import { themeColors, vigoStyles } from "../../assets/theme";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
@@ -27,7 +30,7 @@ const OnGoingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
       setList(items);
       setIsLoading(false);
 
-      console.log("elementelement", items);
+      console.log("ongoig", id);
     });
   };
 
@@ -78,7 +81,7 @@ const OnGoingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
         </View>
       )} */}
       <FlatList
-        style={vigoStyles.list}
+        // style={vigoStyles.list}
         data={list}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
@@ -90,6 +93,9 @@ const OnGoingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
         onEndReached={loadMoreTrips}
         onScroll={() => setOnScroll(true)}
         onEndReachedThreshold={0.5}
+        contentContainerStyle={{
+          paddingBottom: 50,
+        }}
       />
     </View>
   );
@@ -98,6 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    // paddingBottom: 10,
   },
   scrollViewContainer: {
     padding: 10,

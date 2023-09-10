@@ -7,7 +7,6 @@ import HomeScreen from "../screens/Home/HomeScreen";
 import WelcomeScreen from "../screens/Welcome/WelcomeScreen";
 import LoginScreen from "../screens/Login/LoginScreen";
 import MenuSettingScreen from "../screens/MenuSetting/MenuSettingScreen";
-import MessageScreen from "../screens/Message/MessageScreen";
 import PromotionScreen from "../screens/Promotion/PromotionScreen";
 import HistoryScreen from "../screens/History/HistoryScreen";
 import MyRouteScreen from "../screens/MyRoute/MyRouteScreen";
@@ -38,6 +37,7 @@ import UpdateRouteAndRoutineScreen from "../screens/Route/UpdateRouteAndRoutine"
 import ViGoSpinner from "../components/Spinner/ViGoSpinner";
 import MyReportScreen from "../screens/Report/MyReportScreen";
 import ReportDetailScreen from "../screens/Report/ReportDetailScreen";
+import MessageScreen from "../screens/Chat/MessageScreen";
 // import TopupAmountScreen from "../screens/Wallet/Topup/TopupAmountModal";
 
 const Stack = createNativeStackNavigator();
@@ -84,11 +84,6 @@ export default function AppNavigation() {
           name="MenuSetting"
           options={{ headerShown: false }}
           component={MenuSettingScreen}
-        />
-        <Stack.Screen
-          name="Message"
-          options={{ headerShown: false }}
-          component={MessageScreen}
         />
         <Stack.Screen
           name="Promotion"
@@ -225,6 +220,11 @@ export default function AppNavigation() {
           name="ReportDetail"
           options={{ headerShown: false }}
           component={ReportDetailScreen}
+        />
+        <Stack.Screen
+          name="Message"
+          options={{ headerShown: false, animation: "slide_from_bottom" }}
+          component={MessageScreen}
         />
       </Stack.Navigator>
     </>
