@@ -13,6 +13,7 @@ import { PaperAirplaneIcon } from "react-native-heroicons/outline";
 import firestore from "@react-native-firebase/firestore";
 import { getErrorMessage, handleError } from "../../utils/alertUtils";
 import { getVehicles } from "../../service/vehicleService";
+import { sendMessage } from "../../service/firebaseService";
 
 const MessageScreen = () => {
   const navigation = useNavigation();
@@ -104,16 +105,17 @@ const MessageScreen = () => {
         sentTo: driver.id,
         createdAt: new Date(),
       };
-      console.log(userMsg);
+      // console.log(userMsg);
       setMessages((prevMessages) => GiftedChat.append(prevMessages, userMsg));
-      await firestore()
-        .collection("vigo-messages")
-        .doc(bookingDetailId)
-        .collection("messages")
-        .add({
-          ...userMsg,
-          createdAt: firestore.FieldValue.serverTimestamp(),
-        });
+      // await firestore()
+      //   .collection("vigo-messages")
+      //   .doc(bookingDetailId)
+      //   .collection("messages")
+      //   .add({
+      //     ...userMsg,
+      //     createdAt: firestore.FieldValue.serverTimestamp(),
+      //   });
+      await sendMessage(bookingDetailId, userMsg);
     } catch (error) {
       handleError("Có lỗi xảy ra", getErrorMessage(error));
     }
