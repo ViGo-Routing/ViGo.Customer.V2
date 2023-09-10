@@ -55,6 +55,8 @@ const HomeComponent = () => {
   const fetchData = async () => {
     setIsLoading(true);
 
+    console.log(user.id);
+
     await getBookingByCustomerId(user.id, pageSize, 1).then((result) => {
       const items = result.data.data;
       setList(items);

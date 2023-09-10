@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:513319776338:android:9de6ebf3dcbd3a402fef8b",
+        "mobilesdk_app_id": "1:513319776338:android:ce0a4a110b09eeb12fef8b",
         "android_client_info": {
           "package_name": "com.vigocustomerv2"
         }
@@ -137,43 +137,6 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.vigomobilenew",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "513319776338-p93tc047uo0er9apt2i74g1de629u9ei.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCIYCycKF24mQXN1pJYFfCO-6azSETj_Qc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "513319776338-p93tc047uo0er9apt2i74g1de629u9ei.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:513319776338:android:704f88b5949df0352fef8b",
-        "android_client_info": {
-          "package_name": "com.vigotestphoneauth"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "513319776338-a9qa990t78c2a7fubfs9j7kii1c3j235.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vigotestphoneauth",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
