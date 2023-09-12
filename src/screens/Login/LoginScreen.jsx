@@ -91,12 +91,12 @@ export default function LoginScreen() {
     //   navigation.navigate("Home");
     // }
 
-    const authUnsubscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    // const authUnsubscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
-    return () => {
-      authUnsubscriber();
-      // unsubscribe();
-    };
+    // return () => {
+    //   authUnsubscriber();
+    //   // unsubscribe();
+    // };
   }, []);
 
   const handleLogin = async () => {
@@ -225,6 +225,7 @@ export default function LoginScreen() {
   const confirmCode = async () => {
     setIsLoading(true);
     try {
+      auth().onAuthStateChanged(onAuthStateChanged);
       const result = await confirm.confirm(code);
       // const credential = auth.PhoneAuthProvider.credential(
       //   confirm.verificationId,
