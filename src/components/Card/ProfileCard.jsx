@@ -3,10 +3,10 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { themeColors } from "../../assets/theme";
 import { useNavigation } from "@react-navigation/native";
 
-const ProfileCard = ({ name, phoneNumber, imageSource }) => {
+const ProfileCard = ({ name, phoneNumber, imageSource, onPress }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <View style={styles.container}>
         <Image source={imageSource} style={styles.image} />
         <View style={styles.textContainer}>
