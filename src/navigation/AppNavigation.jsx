@@ -38,6 +38,7 @@ import ViGoSpinner from "../components/Spinner/ViGoSpinner";
 import MyReportScreen from "../screens/Report/MyReportScreen";
 import ReportDetailScreen from "../screens/Report/ReportDetailScreen";
 import MessageScreen from "../screens/Chat/MessageScreen";
+import TrackingOnGoingLocationScreen from "../screens/TrackingLocation/TrackingOnGoinglocation";
 // import TopupAmountScreen from "../screens/Wallet/Topup/TopupAmountModal";
 
 const Stack = createNativeStackNavigator();
@@ -194,6 +195,11 @@ export default function AppNavigation() {
           name="TrackingLocation"
           options={{ headerShown: false }}
           component={TrackingLocationScreen}
+        />
+        <Stack.Screen
+          name="TrackingOnGoingLocation"
+          options={{ headerShown: false }}
+          component={TrackingOnGoingLocationScreen}
         />
         <Stack.Screen
           name="MyNotification"

@@ -92,7 +92,7 @@ const RecommendedLocation = ({ title, items, routeType, frequency }) => {
 
 const styles = StyleSheet.create({
   card: {
-    height: 380,
+    height: 300,
     borderRadius: 10,
     backgroundColor: "#fff",
     shadowColor: "#000",

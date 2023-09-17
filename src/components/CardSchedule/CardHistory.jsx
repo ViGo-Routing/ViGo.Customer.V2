@@ -100,7 +100,7 @@ const CardHistory = ({ element }) => {
     });
   }
   function handleTrackingDriverLocation(bookingDetail) {
-    navigation.navigate("TrackingLocation", { bookingDetail: bookingDetail });
+    navigation.navigate("TrackingLocation", { bookingDetailId: bookingDetail.id });
   }
   const { isOpen, onToggle } = useDisclose();
   return (
@@ -121,16 +121,17 @@ const CardHistory = ({ element }) => {
         overflow="hidden"
         borderColor="coolGray.200"
         borderWidth="1"
+        shadow={4}
         _dark={{
           borderColor: "coolGray.600",
-          backgroundColor: "gray.700",
+          backgroundColor: "white",
         }}
         _web={{
           shadow: 6,
           borderWidth: 0,
         }}
         _light={{
-          backgroundColor: "gray.50",
+          backgroundColor: "white",
         }}
       >
         <VStack alignItems="flex-end" alignSelf="flex-end">
@@ -204,19 +205,27 @@ const CardHistory = ({ element }) => {
             </VStack>
             <VStack>
               <HStack>
-                <Text width={75} color="gray.500" bold fontSize={15}>
+                <Text width={75} color="black" bold fontSize={15}>
                   Bắt đầu:{" "}
                 </Text>
-                <Text numberOfLines={1} color="black" ellipsizeMode="tail">
+                <Text numberOfLines={1} ellipsizeMode="tail">
                   {element.customerRoute.startStation.name}
                 </Text>
               </HStack>
               <HStack>
-                <Text w={75} color="gray.500" bold fontSize={15}>
+                <Text w={75} color="black" bold fontSize={15}>
                   Kết thúc:
                 </Text>
-                <Text numberOfLines={1} color="black" ellipsizeMode="tail">
+                <Text numberOfLines={1} ellipsizeMode="tail">
                   {element.customerRoute.endStation.name}
+                </Text>
+              </HStack>
+              <HStack>
+                <Text w={75} color="black" bold fontSize={15}>
+                  Đã đi:
+                </Text>
+                <Text numberOfLines={1} color="green.500" ellipsizeMode="tail">
+                  {element.totalAssignedBookingDetailsCount}/ {element.totalBookingDetailsCount}
                 </Text>
               </HStack>
             </VStack>

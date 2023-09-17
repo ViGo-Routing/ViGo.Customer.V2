@@ -5,7 +5,7 @@ import { getBookingDetail, getBookingDetailByBookingId } from "../../service/boo
 import CardHistory from "../../components/CardSchedule/CardHistory";
 import { themeColors, vigoStyles } from "../../assets/theme";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
-import { FlatList } from "native-base";
+import { Center, FlatList } from "native-base";
 import CardBookingDetail from "../../components/CardSchedule/CardBookingDeetail";
 
 const HistoryScreen = ({ id, navigation, isLoading, setIsLoading }) => {
@@ -83,7 +83,9 @@ const HistoryScreen = ({ id, navigation, isLoading, setIsLoading }) => {
         renderItem={({ item }) => {
           return <CardBookingDetail item={item} />;
         }}
-        ListEmptyComponent={<Text style={styles.text}>Chưa có dữ liệu</Text>}
+        ListEmptyComponent={<Center>
+          <Text style={styles.text}>Chưa có dữ liệu</Text>
+        </Center>}
         refreshing={isLoading}
         onRefresh={() => fetchData()}
         onEndReached={loadMoreTrips}

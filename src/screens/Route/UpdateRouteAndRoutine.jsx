@@ -43,7 +43,13 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                 setStartDay(bookingDetail?.startDate);
                 setRouteType(bookingDetail?.customerRoute.type);
                 setRouteId(bookingDetail?.customerRoute.id);
-                getBookingDetailByBookingId(bookingDetailId, undefined, 1, 1).then((response) => setChosenTime(response.data.data[0].customerDesiredPickupTime))
+                setRoundTripRouteId(bookingDetail?.customerRoute.roundTripRouteId);
+
+                getBookingDetailByBookingId(bookingDetailId, undefined, 2, 1,).then((response) => {
+                    console.log("response", response.data.data)
+                    setChosenTime(response.data.data[0].customerDesiredPickupTime)
+                    setChosenBackTime(response.data.data[1].customerDesiredPickupTime)
+                })
             });
         } catch (error) {
             console.error(error);
@@ -94,6 +100,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
     const [numberOfOccurrences, setNumberOfOccurrences] = useState(0);
     const [numberOfWeeks, setNumberOfWeeks] = useState("");
     const [routeId, setRouteId] = useState("");
+    const [roundTripRouteId, setRoundTripRouteId] = useState("");
     const [frequency, setFrequency] = useState(bookingDetail?.customerRoute.routineType);
     const [routeType, setRouteType] = useState(bookingDetail?.customerRoute.type);
     const [selectedDate, setSelectedDate] = useState('');
@@ -170,9 +177,9 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
         }
     };
     const submitRoute = async () => {
-        generateRoutines(routeId)
+        generateRoutines(routeId, roundTripRouteId)
     }
-    const generateRoutines = (routeId) => {
+    const generateRoutines = (routeId, roundTripRouteId) => {
         const currentDate = new Date(startDay);
         const nextMonthsLater = new Date();
         const number = parseInt(numberOfOccurrences);
@@ -188,13 +195,16 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
 
             while (currentDate < nextWeeks) {
                 // Check if the current day is in the selected days and is greater than or equal to the start day
-                if (!(selectedDays.includes(currentDate.getDay()) && currentDate >= startDay)) {
-                    // Check if the current date is in the future
+                if (weekdays.includes(currentDate.getDay()) && startDay <= currentDate) {
                     if (currentDate > new Date()) {
+                        const options = {
+                            day: '2-digit', // Two-digit day (e.g., "01", "02", ..., "31")
+                            month: '2-digit', // Two-digit month (e.g., "01", "02", ..., "12")
+                            year: 'numeric', // Four-digit year (e.g., "2023")
+                        };
                         const day = currentDate.getDate();
                         const month = currentDate.getMonth() + 1;
                         const year = currentDate.getFullYear();
-
                         if (routeType === "ONE_WAY") {
                             routines.push({
                                 routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
@@ -202,6 +212,11 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                                 status: "ACTIVE",
                             });
                         } else {
+                            routines.push({
+                                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                                pickupTime: chosenTime,
+                                status: "ACTIVE",
+                            });
                             roundRoutines.push({
                                 routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
                                 pickupTime: chosenBackTime,
@@ -209,15 +224,17 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                             });
                         }
                     }
+
+                    //weekdaysList.push(new Date(currentDate)); // Store a new instance of the date to avoid modifying the original date
+
+
                 }
-                // Move to the next day
-                currentDate.setDate(currentDate.getDate() + 1);
+                currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
             }
         } else {
-
             const validTargetDays = weekdays.map((day) => day % 7);
             while (currentDate < nextThreeMonths) {
-                if (!(validTargetDays.includes(currentDate.getDay()) && startDay <= currentDate)) {
+                if (validTargetDays.includes(currentDate.getDay()) && startDay <= currentDate) {
                     if (currentDate > new Date()) {
                         const newDays = new Date(currentDate)
                         const day = newDays.getDate()
@@ -230,6 +247,11 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                                 status: "ACTIVE",
                             });
                         } else {
+                            routines.push({
+                                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                                pickupTime: chosenTime,
+                                status: "ACTIVE",
+                            });
                             roundRoutines.push({
                                 routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
                                 pickupTime: chosenBackTime,
@@ -241,16 +263,13 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                 }
                 currentDate.setDate(currentDate.getDate() + 1);
             }
-
-
         }
 
-
-        console.log(routines.length, selectedDays, frequency, chosenTime)
-        handelCreateRoutine(routines, roundRoutines, routeId);
+        console.log(routines.length, selectedDays, frequency, chosenTime, routeId)
+        handelCreateRoutine(routines, roundRoutines, routeId, roundTripRouteId);
     };
 
-    const handelCreateRoutine = async (routines, roundRoutines, routeId) => {
+    const handelCreateRoutine = async (routines, roundRoutines, routeId, roundTripRouteId) => {
         console.log(routines);
         try {
             let requestData = {}
@@ -267,6 +286,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                             console.log("Tao thanh coong")
                             navigation.navigate("UpdateBooking", {
                                 routines: requestData,
+                                roundTrip: null,
                                 pickupPosition: pickupPositionLocal,
                                 destinationPosition: destinationPositionLocal,
                                 routineType: frequency,
@@ -286,23 +306,43 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                     });
                 }
             } else {
-                requestData = {
+                let requestData1 = {
                     routeId: routeId,
-                    routeRoutines: routines,
-                    roundTripRoutines: roundRoutines,
+                    routeRoutines: routines
                 };
+                let requestData2 = {
+                    routeId: roundTripRouteId,
+                    routeRoutines: roundRoutines,
+                };
+                console.log("length", roundRoutines.length, routines.length)
                 if (routines.length > 0 && roundRoutines.length > 0) {
-                    console.log("Tao thanh coong")
-                    await checkRoutine(requestData).then((response) => {
-                        if (response != null) {
-                            console.log("Tao thanh coong")
-                        } else {
-                            toast.show({
-                                title: "Bạn đã trùng thời gian với lịch trình khác",
-                                placement: "bottom"
-                            })
-                        }
-                    });
+
+                    const check1 = await checkRoutine(requestData1);
+                    //const check2 = await checkRoutine(requestData2);
+
+                    if (check1 != null) {
+                        navigation.navigate("UpdateBooking", {
+                            routines: requestData1,
+                            roundTrip: requestData2,
+                            pickupPosition: pickupPositionLocal,
+                            destinationPosition: destinationPositionLocal,
+                            routineType: frequency,
+                            type: routeType,
+                            pickupTime: chosenTime,
+                            pickupBackTime: chosenBackTime,
+                            daysOfWeek: selectedDays,
+                            startDay: startDay,
+                            bookingId: bookingDetailId,
+                        })
+                    }
+                    else {
+                        toast.show({
+                            title: "Lỗi tạo lịch trình",
+                            placement: "bottom"
+                        })
+                    }
+
+
                 }
             }
 
@@ -647,7 +687,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: "center",
         flex: 1,
-        backgroundColor: themeColors.linear,
+        backgroundColor: "#feffff",
     },
     imageContainer: {
         width: 100,

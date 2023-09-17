@@ -19,7 +19,7 @@ import { createRoutine } from "../../service/routineService";
 
 const BookingDetailScreen = ({ route }) => {
   const { user } = useContext(UserContext);
-  const { routines, data, routeId, daysOfWeek } = route.params;
+  const { routines, roundTrip, data, dataRoundTrip, routeId, daysOfWeek } = route.params;
   const currentDate = new Date();
   console.log(
     "routinesroutines",
@@ -34,6 +34,7 @@ const BookingDetailScreen = ({ route }) => {
   const [fareCalculation, setFareCalculation] = useState(null);
   const [vehicle, setVehicle] = useState(null);
   const [routeData, setRoute] = useState(null);
+  const [routetype, setRouteType] = useState(null);
   const [vnDays, setVnDays] = useState(null);
   const navigation = useNavigation();
 
@@ -49,11 +50,12 @@ const BookingDetailScreen = ({ route }) => {
           beginTime: data[0].pickupTime,
           distance: result.data.distance,
           duration: result.data.duration,
-          totalNumberOfTickets: data.length,
+          totalNumberOfTickets: result.data.type != "ROUND_TRIP" ? data.length : (data.length * 2),
           tripType: result.data.type,
           routineType: result.data.routineType,
-          roundTripBeginTime: data[0].pickupTime,
+          roundTripBeginTime: (dataRoundTrip != null && result.data.type == "ROUND_TRIP") ? dataRoundTrip[0].pickupTime : data[0].pickupTime,
         };
+        setRouteType(result.data.type)
         setRoute(dataResponse);
         handelPosition(result.data);
         setPickupPosition(result.data.startStation);
@@ -77,7 +79,8 @@ const BookingDetailScreen = ({ route }) => {
     startDate: data[0].routineDate,
     endDate: data[data.length - 1].routineDate,
     daysOfWeek: vnDays,
-    totalPrice: fareCalculation?.finalFare,
+    totalPrice: (fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare),
+    roundTripTotalPrice: fareCalculation?.roundTripFinalFare,
     priceAfterDiscount: 0,
     isShared: true,
     duration: routeData?.duration,
@@ -91,31 +94,31 @@ const BookingDetailScreen = ({ route }) => {
     const pickupPositionLocal =
       item?.startStation?.latitude && item?.startStation?.longitude
         ? {
-            geometry: {
-              location: {
-                lat: item.startStation.latitude,
-                lng: item.startStation.longitude,
-              },
+          geometry: {
+            location: {
+              lat: item.startStation.latitude,
+              lng: item.startStation.longitude,
             },
-            address: item.startStation.address,
-            name: item.startStation.name,
-            formatted_address: item.startStation.address,
-          }
+          },
+          address: item.startStation.address,
+          name: item.startStation.name,
+          formatted_address: item.startStation.address,
+        }
         : null;
 
     const destinationPositionLocal =
       item?.endStation?.latitude && item?.endStation?.longitude
         ? {
-            geometry: {
-              location: {
-                lat: item.endStation.latitude,
-                lng: item.endStation.longitude,
-              },
+          geometry: {
+            location: {
+              lat: item.endStation.latitude,
+              lng: item.endStation.longitude,
             },
-            address: item.endStation.address,
-            name: item.endStation.name,
-            formatted_address: item.endStation.address,
-          }
+          },
+          address: item.endStation.address,
+          name: item.endStation.name,
+          formatted_address: item.endStation.address,
+        }
         : null;
   };
   const formatDateString = (date) => {
@@ -169,7 +172,13 @@ const BookingDetailScreen = ({ route }) => {
                 text: "Có",
                 onPress: async () => {
                   try {
-                    await createRoutine(routines).then((response) => {
+
+                    const responseCreateRoutines = await createRoutine(routines)
+                    let responseCreateRoundTrip = null
+                    if (roundTrip != null) {
+                      responseCreateRoundTrip = await createRoutine(roundTrip)
+                    }
+                    if (responseCreateRoutines != null || (responseCreateRoutines != null && responseCreateRoundTrip != null)) {
                       createBooking(requestData).then((response) => {
                         if (response != null) {
                           Alert.alert(
@@ -182,7 +191,7 @@ const BookingDetailScreen = ({ route }) => {
                                   navigation.dispatch(
                                     CommonActions.reset({
                                       index: 0,
-                                      routes: [{ name: "MyRoute" }],
+                                      routes: [{ name: "Home" }],
                                     })
                                   ),
                               },
@@ -191,7 +200,9 @@ const BookingDetailScreen = ({ route }) => {
                           );
                         }
                       });
-                    });
+                    }
+
+
                   } catch (error) {
                     console.error("Error creating booking:", error);
                   }
@@ -225,7 +236,7 @@ const BookingDetailScreen = ({ route }) => {
     return vietnameseWeekdays.join(", ");
   };
   return (
-    <View style={styles.container}>
+    <View bg="white" style={styles.container}>
       <View>
         <Header style={styles.header} title="Chi tiết" />
       </View>
@@ -279,13 +290,13 @@ const BookingDetailScreen = ({ route }) => {
               info={vehicle?.name === null ? "" : vehicle?.name}
             />
             <DetailCard
-              title="Loại Chuyến"
+              title="Loại chuyến"
               info={
                 routeData === null
                   ? ""
                   : routeData?.tripType === "ONE_WAY"
-                  ? "Một chiều"
-                  : "Hai chiều"
+                    ? "Một chiều"
+                    : "Hai chiều"
               }
             />
             <DetailCard
@@ -310,13 +321,17 @@ const BookingDetailScreen = ({ route }) => {
             />
             <DetailCard
               title="Số ngày đi"
-              info={data === null ? "" : data.length}
+              info={data === null ? 0 : data.length}
+            />
+            <DetailCard
+              title="Số chuyến đi"
+              info={data === null ? 0 : data.length}
             />
           </View>
           <Text fontSize={25} bold color="black">
-            Thanh Toán:
+            Thanh toán:
           </Text>
-          <View style={styles.cardInsideDateTime} m={2}>
+          {fareCalculation != null && <View style={styles.cardInsideDateTime} m={2}>
             <DetailCard
               title="Giá gốc"
               info={formatMoney(fareCalculation?.originalFare)}
@@ -329,12 +344,14 @@ const BookingDetailScreen = ({ route }) => {
               title="Tổng tiền"
               info={formatMoney(fareCalculation?.finalFare)}
             />
-          </View>
+          </View>}
         </View>
         <View style={styles.footer}>
-          <TouchableOpacity style={styles.button} onPress={checkBalance}>
+          {fareCalculation != null ? (<TouchableOpacity style={styles.button} onPress={checkBalance}>
             <Text style={{ color: "white", fontWeight: "bold" }}>Tiếp tục</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>) : (<TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+            <Text style={{ color: "white", fontWeight: "bold" }}>Quay lại</Text>
+          </TouchableOpacity>)}
         </View>
       </ScrollView>
     </View>

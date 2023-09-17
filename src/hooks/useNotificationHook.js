@@ -3,6 +3,8 @@ import messaging from "@react-native-firebase/messaging";
 import { paymentNotificationHandlers } from "../utils/notificationUtils/paymentNotificationHandlers";
 import { useNavigation } from "@react-navigation/native";
 import PushNotification from "react-native-push-notification";
+import { trackingNotificationHandlers, trackingOnGoingNotificationHandlers } from "../utils/notificationUtils/trackingNotificationHandlers";
+import { feedbackNotificationHandlers } from "../utils/notificationUtils/completeTripNotificationHandlers";
 
 export const useNotificationHook = () => {
   const navigation = useNavigation();
@@ -30,6 +32,28 @@ export const useNotificationHook = () => {
         // });
         // ;
         navigation.navigate("Login");
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      if (remoteMessage.data.action == "bookingDetail") {
+        if (remoteMessage.data.status == "ARRIVE_AT_DROPOFF") {
+          feedbackNotificationHandlers(remoteMessage.data.bookingDetailId, navigation);
+        } else if (remoteMessage.data.status == "GOING_TO_PICKUP") {
+          trackingNotificationHandlers(remoteMessage.data.bookingDetailId, navigation);
+        } else if (remoteMessage.data.status == "GOING_TO_DROPOFF") {
+          trackingOnGoingNotificationHandlers(remoteMessage.data.bookingDetailId, navigation);
+        }
+      } else if (remoteMessage.data.action == "login") {
+        setUser(null);
+        // await setUserData(null);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
       }
     });
 

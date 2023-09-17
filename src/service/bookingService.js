@@ -15,6 +15,10 @@ export const createFareCalculate = async (requestData) => {
       // Assuming the error response has a 'data' property containing error details
       const errorDetails = error.response.data;
       console.log("Fail to create booking calculate fare", errorDetails);
+      Toast.show({
+        title: errorDetails,
+        placement: "bottom"
+      })
       return null;
     } else {
       console.log("Error response structure not recognized.");
@@ -24,6 +28,7 @@ export const createFareCalculate = async (requestData) => {
 };
 
 export const createBooking = async (requestData) => {
+  console.log(requestData)
   try {
     const response = await apiManager.post("/api/Booking", requestData);
     return response;
@@ -32,6 +37,10 @@ export const createBooking = async (requestData) => {
       // Assuming the error response has a 'data' property containing error details
       const errorDetails = error.response.data;
       console.log("Create Booking failed", errorDetails);
+      Toast.show({
+        title: errorDetails,
+        placement: "bottom"
+      })
       return null;
     } else {
       console.log("Error response structure not recognized.");
@@ -127,13 +136,14 @@ export const getBookingDetailByBookingId = async (
   bookingId,
   status = undefined,
   pageSize = 10,
-  pageNumber = -1
+  pageNumber = -1,
+  type = "MAIN_ROUTE,ROUND_TRIP_ROUTE"
 ) => {
   try {
     const url = status
       ? `api/BookingDetail/Booking/${bookingId}?status=${status}&
       pageSize=${pageSize}&pageNumber=${pageNumber}`
-      : `api/BookingDetail/Booking/${bookingId}?pageSize=${pageSize}&pageNumber=${pageNumber}`;
+      : `api/BookingDetail/Booking/${bookingId}?Type=${type}&pageSize=${pageSize}&pageNumber=${pageNumber}`;
     const response = await apiManager.get(url);
     return response;
   } catch (error) {
@@ -153,7 +163,10 @@ export const updateBookingById = async (bookingId, requestData) => {
     if (error.response && error.response.data) {
       // Assuming the error response has a 'data' property containing error details
       const errorDetails = error.response.data;
-      console.log("update Booking failed", errorDetails);
+      Toast.show({
+        title: errorDetails,
+        placement: "bottom"
+      })
       return null;
     } else {
       console.log("Error response structure not recognized.");
@@ -188,4 +201,19 @@ export const feedbackByBookingDetailId = async (
       return null;
     }
   }
+};
+export const getAvailableBookings = async (
+  userId,
+  pageSize = 10,
+  pageNumber = 10
+) => {
+  const response = await apiManager.get(
+    `api/Booking/Driver/Available/${userId}?pageSize=${pageSize}&pageNumber=${pageNumber}`
+  );
+  return response.data;
+};
+
+export const getBooking = async (bookingId) => {
+  const response = await apiManager.get(`api/Booking/${bookingId}`);
+  return response.data;
 };

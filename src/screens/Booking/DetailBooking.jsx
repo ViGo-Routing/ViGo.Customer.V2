@@ -17,7 +17,7 @@ import {
     Flex,
     Center,
 } from "native-base";
-import { CalendarIcon, StarIcon } from "react-native-heroicons/solid";
+import { ArrowsRightLeftIcon, CalendarIcon, StarIcon } from "react-native-heroicons/solid";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -44,6 +44,7 @@ import OnGoingScreen from "../History/OnGoingScreen";
 import CancelScreen from "../History/CancelScreen";
 import HistoryScreen from "../History/HistoryScreen";
 import PendingScreen from "../History/PendingScreen";
+import SelectRouteHeader from "../../components/Header/SelectRouteHeader";
 export const DetailBookingScreen = ({ route }) => {
     const { bookingDetail } = route.params
     const theme = useTheme();
@@ -75,8 +76,13 @@ export const DetailBookingScreen = ({ route }) => {
     // }, []);
     console.log("bookingDetailssss", bookingDetail)
     return (
-        <View flex={1} backgroundColor={themeColors.linear}>
-            <Header style={styles.header} title="Chi tiết chuyến đi" />
+        <View flex={1} backgroundColor="white">
+            <SelectRouteHeader
+                title="Chi tiết chuyến đi"
+                subtitle="Bạn có thể xem lại chuyến đi theo màn hiện tại."
+                onBack={() => navigation.goBack()}
+            />
+
             <Flex direction="column" alignItems="center" justifyContent="center" >
                 {/* <SelectRouteHeader
                 title="Đánh giá"
@@ -146,7 +152,7 @@ export const DetailBookingScreen = ({ route }) => {
 
                                         </HStack>
                                     </Box>
-                                    <Text py={3} bold fontSize={25}>Khoảng cách</Text>
+                                    <Text py={1} bold fontSize={25}>Khoảng cách</Text>
                                     <Box p={3} style={[styles.cardInsideLocation, styles.shadowProp]}>
                                         <HStack space={5} alignItems="center">
                                             <Text w={160} fontSize={18} fontWeight="bold">
@@ -173,17 +179,18 @@ export const DetailBookingScreen = ({ route }) => {
                                             </Text>
                                         </HStack>
                                     </Box>
-                                    <HStack alignContent="center">
+                                    <HStack my={1} space={5} alignContent="center">
                                         <Text alignSelf="center" bold fontSize={25} pr={5}> Lộ trình đi</Text>
-                                        <Box borderWidth="1" borderColor={themeColors.primary} p={2} mt={5} borderRadius={10}>
+                                        <Box borderWidth="1" borderColor={themeColors.primary} py={2} borderRadius={10}>
                                             <HStack alignContent="center" >
-                                                <ArrowSmallRightIcon size={25} alignSelf="center" color="black" />
+                                                {bookingDetail.customerRoute.type == "ONE_WAY" ? (<ArrowSmallRightIcon size={25} alignSelf="center" color="black" />) :
+                                                    (<ArrowsRightLeftIcon size={25} alignSelf="center" color="black" />)}
                                                 <Text p={1} bold>
-                                                    Một chiều
+                                                    {bookingDetail.customerRoute.type == "ONE_WAY" ? "Một chiều" : "Hai chiều"}
                                                 </Text >
                                                 <CalendarDaysIcon size={25} alignSelf="center" color="black" />
                                                 <Text p={1} bold>
-                                                    Theo tháng
+                                                    {bookingDetail.customerRoute.routineType == "WEEKLY" ? "Theo tuần" : "Theo tháng"}
                                                 </Text>
                                             </HStack>
 
@@ -251,6 +258,7 @@ export const DetailBookingScreen = ({ route }) => {
                             </Box>
                         </View>)}
             </Flex>
+
             {/* <Box borderRadius={8} backgroundColor="#00A1A1" my={5} w="83%" alignSelf="center" alignItems="center">
                 <Button onPress={handlePickBooking} backgroundColor="#00A1A1">Nhận chuyến</Button>
             </Box> */}
@@ -270,7 +278,7 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 5,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -291,7 +299,7 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 5,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -310,12 +318,12 @@ const styles = StyleSheet.create({
         // marginHorizontal: 10,
         shadowColor: "#000",
         shadowOffset: {
-            width: 0,
-            height: 1,
+            width: 5,
+            height: 20,
         },
-        shadowOpacity: 0.25,
+        shadowOpacity: 1,
         shadowRadius: 3.84,
-        elevation: 2,
+        elevation: 5,
     },
     body: {
         flex: 1,

@@ -7,6 +7,8 @@ import SignalR from "../utils/signalRUtils";
 import { getUserIdViaToken, isValidToken } from "../utils/tokenUtils";
 import { getProfile } from "../service/userService";
 import { getString } from "../utils/storageUtils";
+import { trackingNotificationHandlers, trackingNotificationOnClickHandlers, trackingOnGoingNotificationOnClickHandlers } from "../utils/notificationUtils/trackingNotificationHandlers";
+import { feedbackNotificationOnClickHandlers } from "../utils/notificationUtils/completeTripNotificationHandlers";
 
 export const useOnNotificationClickHook = (setIsLoading) => {
   const navigation = useNavigation();
@@ -60,6 +62,60 @@ export const useOnNotificationClickHook = (setIsLoading) => {
       });
     }
   }, [initialScreen]);
+
+  useEffect(() => {
+    handleInitialScreen();
+    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      if (remoteMessage.data.action == "bookingDetail") {
+        if (remoteMessage.data.status == "ARRIVE_AT_DROPOFF") {
+          feedbackNotificationOnClickHandlers(remoteMessage.data.bookingDetailId, navigation);
+        } else if (remoteMessage.data.status == "GOING_TO_PICKUP") {
+          trackingNotificationOnClickHandlers(remoteMessage.data.bookingDetailId, navigation);
+        } else if (remoteMessage.data.status == "GOING_TO_DROPOFF") {
+          trackingOnGoingNotificationOnClickHandlers(remoteMessage.data.bookingDetailId, navigation);
+        }
+      } else if (remoteMessage.data.action == "login") {
+        setUser(null);
+        // await setUserData(null);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      }
+    });
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          if (remoteMessage.data.action == "bookingDetail") {
+            if (remoteMessage.data.status == "ARRIVE_AT_DROPOFF") {
+              setInitialScreen("Feedback");
+              setInitialParams({
+                bookingDetailId: remoteMessage.data.bookingDetailId,
+              });
+            } else if (remoteMessage.data.status == "GOING_TO_PICKUP") {
+              setInitialScreen("TrackingLocation");
+              setInitialParams({
+                bookingDetailId: remoteMessage.data.bookingDetailId,
+              });
+            } else if (remoteMessage.data.status == "GOING_TO_DROPOFF") {
+              setInitialScreen("TrackingOngoingLocation");
+              setInitialParams({
+                bookingDetailId: remoteMessage.data.bookingDetailId,
+              });
+            }
+
+          } else if (remoteMessage.data.action == "login") {
+            setUser(null);
+            // await setUserData(null);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          }
+        }
+      });
+  }, []);
 
   useEffect(() => {
     handleInitialScreen();

@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const themeColors = {
   primary: "#00A1A1",
-  linear: "#E3F6F5",
+  linear: "#F3FFFE",
   cardColor: "#f8f8f8",
 };
 
@@ -23,7 +23,7 @@ export const vigoStyles = StyleSheet.create({
   },
   body: {
     backgroundColor: "white",
-    padding: 20,
+    padding: 10,
     flex: 1,
   },
   heading: {

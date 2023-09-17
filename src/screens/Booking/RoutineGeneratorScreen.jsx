@@ -13,18 +13,21 @@ import { useNavigation } from "@react-navigation/native";
 import SelectRouteHeader from "../../components/Header/SelectRouteHeader";
 import { Picker } from '@react-native-picker/picker';
 import { CalendarDaysIcon, CalendarIcon, ClockIcon } from "react-native-heroicons/solid";
-import { Box, CheckIcon, Select, View, useToast } from "native-base";
+import { Box, CheckIcon, HStack, Select, VStack, View, useToast } from "native-base";
 import { createRoute } from "../../service/routeService";
 import axios from "axios";
 
 
+
 const RoutineGenerator = ({ route }) => {
   const navigation = useNavigation();
-  const { routeId, frequency, routeType } = route.params;
+  const { routeId, roundTripRouteId, frequency, routeType } = route.params;
   const [selectedDays, setSelectedDays] = useState([]);
   const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+  const [isTimeBackPickerVisible, setTimeBackPickerVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false)
   const [chosenTime, setChosenTime] = useState("");
+  const [chosenBackTime, setChosenBackTime] = useState("");
   const [numberOfOccurrences, setNumberOfOccurrences] = useState(0);
   const [numberOfWeeks, setNumberOfWeeks] = useState("");
   //const [routeId, setRouteId] = useState("");
@@ -71,6 +74,18 @@ const RoutineGenerator = ({ route }) => {
 
     setTimePickerVisible(false);
   };
+  const handleBackTimeConfirm = (time) => {
+    const selectedHours = time.getHours();
+    const selectedMinutes = time.getMinutes();
+
+    // Combine them to format the time as "hh:mm:00"
+    const formattedTime = `${selectedHours.toString().padStart(2, '0')}:${selectedMinutes.toString().padStart(2, '0')}:00`;
+
+    // Set the chosen time
+    setChosenBackTime(formattedTime);
+
+    setTimeBackPickerVisible(false);
+  };
   const getDayOfWeek = (date) => {
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     return daysOfWeek[date.getDay()];
@@ -87,9 +102,9 @@ const RoutineGenerator = ({ route }) => {
     }
   };
   const submitRoute = async () => {
-    generateRoutines(routeId)
+    generateRoutines(routeId, roundTripRouteId)
   }
-  const generateRoutines = (routeId) => {
+  const generateRoutines = (routeId, roundTripRouteId) => {
     const currentDate = new Date(startDay);
     const nextMonthsLater = new Date();
     const number = parseInt(numberOfOccurrences);
@@ -99,7 +114,9 @@ const RoutineGenerator = ({ route }) => {
     nextThreeMonths = new Date(currentDate.getFullYear(), currentDate.getMonth() + number, 1)
     const weekdays = selectedDays.map((day) => ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(day));;
     const routines = [];
+    const roundRoutines = [];
     console.log("nextThreeMonths", nextThreeMonths);
+    console.log("validTargetDays", (startDay <= currentDate))
     if (frequency === "WEEKLY") {
 
       while (currentDate < nextWeeks) {
@@ -113,11 +130,24 @@ const RoutineGenerator = ({ route }) => {
             const day = currentDate.getDate();
             const month = currentDate.getMonth() + 1;
             const year = currentDate.getFullYear();
-            routines.push({
-              routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
-              pickupTime: chosenTime,
-              status: "ACTIVE",
-            });
+            if (routeType === "ONE_WAY") {
+              routines.push({
+                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                pickupTime: chosenTime,
+                status: "ACTIVE",
+              });
+            } else {
+              routines.push({
+                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                pickupTime: chosenTime,
+                status: "ACTIVE",
+              });
+              roundRoutines.push({
+                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                pickupTime: chosenBackTime,
+                status: "ACTIVE",
+              });
+            }
           }
 
           //weekdaysList.push(new Date(currentDate)); // Store a new instance of the date to avoid modifying the original date
@@ -129,19 +159,34 @@ const RoutineGenerator = ({ route }) => {
     } else {
 
       const validTargetDays = weekdays.map((day) => day % 7);
+
       while (currentDate < nextThreeMonths) {
+
+
         if (validTargetDays.includes(currentDate.getDay()) && startDay <= currentDate) {
           if (currentDate > new Date()) {
-            console.log("ssssssssssssssssss")
             const newDays = new Date(currentDate)
             const day = newDays.getDate()
             const month = newDays.getMonth() + 1
             const year = newDays.getFullYear()
-            routines.push({
-              routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
-              pickupTime: chosenTime, // Make sure chosenTime is defined somewhere
-              status: "ACTIVE",
-            });
+            if (routeType === "ONE_WAY") {
+              routines.push({
+                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                pickupTime: chosenTime,
+                status: "ACTIVE",
+              });
+            } else {
+              routines.push({
+                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                pickupTime: chosenTime,
+                status: "ACTIVE",
+              });
+              roundRoutines.push({
+                routineDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                pickupTime: chosenBackTime,
+                status: "ACTIVE",
+              });
+            }
 
           }
         }
@@ -150,28 +195,58 @@ const RoutineGenerator = ({ route }) => {
     }
 
     console.log(routines.length, selectedDays, frequency, chosenTime, routeId)
-    handelCreateRoutine(routines, routeId);
+    handelCreateRoutine(routines, roundRoutines, routeId, roundTripRouteId);
   };
 
-  const handelCreateRoutine = async (routines, routeId) => {
+  const handelCreateRoutine = async (routines, roundRoutines, routeId, roundTripRouteId) => {
     console.log(routines);
     try {
-      const requestData = {
-        routeId: routeId,
-        routeRoutines: routines,
-      };
-      if (routines.length > 0) {
-        await checkRoutine(requestData).then((response) => {
-          if (response != null) {
-            navigation.navigate("BookingDetail", { routines: requestData, data: routines, routeId: routeId, daysOfWeek: selectedDays })
-          } else {
+      let requestData = {}
+      if (routeType === "ONE_WAY") {
+        requestData = {
+          routeId: routeId,
+          routeRoutines: routines,
+        };
+        if (routines.length > 0) {
+          await checkRoutine(requestData).then((response) => {
+            if (response != null) {
+              navigation.navigate("BookingDetail", { routines: requestData, data: routines, dataRoundTrip: roundRoutines, routeId: routeId, daysOfWeek: selectedDays })
+            } else {
+              toast.show({
+                title: "Lỗi tạo lịch trình",
+                placement: "bottom"
+              })
+            }
+          });
+        }
+      } else {
+        let requestData1 = {
+          routeId: routeId,
+          routeRoutines: routines
+        };
+        let requestData2 = {
+          routeId: roundTripRouteId,
+          routeRoutines: roundRoutines,
+        };
+        if (routines.length > 0 && roundRoutines.length > 0) {
+
+          const check1 = await checkRoutine(requestData1);
+          const check2 = await checkRoutine(requestData2);
+
+          if (check1 != null && check2 != null) {
+            navigation.navigate("BookingDetail", { routines: requestData1, roundTrip: requestData2, data: routines, dataRoundTrip: roundRoutines, routeId: routeId, daysOfWeek: selectedDays })
+          }
+          else {
             toast.show({
               title: "Lỗi tạo lịch trình",
               placement: "bottom"
             })
           }
-        });
+
+
+        }
       }
+
 
     } catch (error) {
       toast.show({
@@ -287,96 +362,165 @@ const RoutineGenerator = ({ route }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-      <View style={styles.inputContainer}>
-        {frequency === 'MONTHLY' ? (
-          <Text style={styles.inputTitle}>Số tháng bạn muốn đi:</Text>
-        ) : (
-          <Text style={styles.inputTitle}>Số tuần bạn muốn đi:</Text>
-        )}
-        <View style={styles.inputBorder}>
-          <TextInput
-            value={numberOfOccurrences}
-            onChangeText={handleOccurrencesChange}
-            keyboardType="numeric"
-            style={{ height: 50 }}
-          // style={{ borderWidth: 2, borderColor: "gray", padding: 5 }}
-          />
-        </View>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Box style={[styles.cardInsideDateTime, styles.shadowProp]}>
-          <TouchableOpacity style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'center' }} onPress={() => setTimePickerVisible(true)}>
-            <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><ClockIcon name="time-outline" size={25} color="#00A1A1" /></View>
 
-            <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} >
-              <Text style={styles.title}>
-                Thời gian đón
-              </Text>
-
-              <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{chosenTime}</Text>
+        <View w="full">
+          <VStack>
+            <View style={styles.horizontalContainer}>
+              {frequency === 'MONTHLY' ? (
+                <Text style={styles.inputTitle}>Số tháng bạn muốn đi:</Text>
+              ) : (
+                <Text style={styles.inputTitle}>Số tuần bạn muốn đi:</Text>
+              )}
+              <View >
+                <TextInput
+                  value={numberOfOccurrences}
+                  onChangeText={handleOccurrencesChange}
+                  keyboardType="numeric"
+                  style={{ height: 50 }}
+                // style={{ borderWidth: 2, borderColor: "gray", padding: 5 }}
+                />
+              </View>
             </View>
-            <DateTimePickerModal
-              isVisible={isTimePickerVisible}
-              mode="time"
-              onConfirm={handleTimeConfirm}
-              onCancel={() => setTimePickerVisible(false)}
-            />
-          </TouchableOpacity>
-        </Box>
-        <View style={[styles.cardInsideDateTime, styles.shadowProp]}>
-          <TouchableOpacity style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'center' }} onPress={() => setDatePickerVisible(true)}>
-            <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><CalendarDaysIcon size={24} color="#00A1A1" /></View>
 
-            <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} >
-              <Text style={styles.title}>
-                Ngày bắt đầu
-              </Text>
+          </VStack>
 
-              <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{formatDateString(startDay)}</Text>
-            </View>
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleDateConfirm}
-              onCancel={() => setDatePickerVisible(false)}
-            />
-          </TouchableOpacity>
         </View>
+        {(routeType !== "ONE_WAY" ? (<Box>
+          <View style={[styles.cardInsideDateTime, styles.shadowProp]}>
+            <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center' }} onPress={() => setDatePickerVisible(true)}>
+              <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><CalendarDaysIcon size={25} color="#00A1A1" /></View>
+
+              <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'start' }} >
+                <Text style={styles.title}>
+                  Ngày bắt đầu
+                </Text>
+
+                <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{formatDateString(startDay)}</Text>
+              </View>
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDateConfirm}
+                onCancel={() => setDatePickerVisible(false)}
+              />
+            </TouchableOpacity>
+          </View>
+          <View>
+
+            <HStack justifyContent="space-between" >
+              <Box w="49%" style={[styles.cardInsideDateTime, styles.shadowProp]}>
+                <TouchableOpacity style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'center' }} onPress={() => setTimePickerVisible(true)}>
+                  <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><ClockIcon name="time-outline" size={25} color="#00A1A1" /></View>
+
+                  <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} >
+                    <Text style={styles.title}>
+                      Thời gian đón(Chiều đi)
+                    </Text>
+
+                    <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{chosenTime}</Text>
+                  </View>
+                  <DateTimePickerModal
+                    isVisible={isTimePickerVisible}
+                    mode="time"
+                    onConfirm={handleTimeConfirm}
+                    onCancel={() => setTimePickerVisible(false)}
+                  />
+                </TouchableOpacity>
+              </Box>
+              <Box w="49%" style={[styles.cardInsideDateTime, styles.shadowProp]}>
+                <TouchableOpacity style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'center' }} onPress={() => setTimeBackPickerVisible(true)}>
+                  <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><ClockIcon name="time-outline" size={25} color="#00A1A1" /></View>
+
+                  <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} >
+                    <Text style={styles.title}>
+                      Thời gian đón(Chiều về)
+                    </Text>
+
+                    <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{chosenBackTime}</Text>
+                  </View>
+                  <DateTimePickerModal
+                    isVisible={isTimeBackPickerVisible}
+                    mode="time"
+                    onConfirm={handleBackTimeConfirm}
+                    onCancel={() => setTimeBackPickerVisible(false)}
+                  />
+                </TouchableOpacity>
+              </Box>
+
+            </HStack>
+          </View >
+        </Box>) : <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Box w="49%" style={[styles.cardInsideDateTime, styles.shadowProp]}>
+            <TouchableOpacity style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'center' }} onPress={() => setTimePickerVisible(true)}>
+              <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><ClockIcon name="time-outline" size={25} color="#00A1A1" /></View>
+
+              <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} >
+                <Text style={styles.title}>
+                  Thời gian đón
+                </Text>
+
+                <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{chosenTime}</Text>
+              </View>
+              <DateTimePickerModal
+                isVisible={isTimePickerVisible}
+                mode="time"
+                onConfirm={handleTimeConfirm}
+                onCancel={() => setTimePickerVisible(false)}
+              />
+            </TouchableOpacity>
+          </Box>
+          <View w="49%" style={[styles.cardInsideDateTime, styles.shadowProp]}>
+            <TouchableOpacity style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'center' }} onPress={() => setDatePickerVisible(true)}>
+              <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} ><CalendarDaysIcon size={24} color="#00A1A1" /></View>
+
+              <View style={{ flexDirection: 'column', flexGrow: 1, justifyContent: 'center' }} >
+                <Text style={styles.title}>
+                  Ngày bắt đầu
+                </Text>
+
+                <Text style={{ paddingLeft: 10, paddingBottom: 5, fontSize: 15, fontWeight: 'bold', }}>{formatDateString(startDay)}</Text>
+              </View>
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDateConfirm}
+                onCancel={() => setDatePickerVisible(false)}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>)}
+
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={submitRoute}
+        >
+          <Text style={styles.continueButtonText}>Tạo lịch đi </Text>
+        </TouchableOpacity>
+
       </View>
-
-      <TouchableOpacity
-        style={styles.continueButton}
-        onPress={submitRoute}
-      >
-        <Text style={styles.continueButtonText}>Tạo lịch đi </Text>
-      </TouchableOpacity>
-
-
     </View>
   );
 };
 const styles = StyleSheet.create({
+  card: {
+    alignItems: "center",
+    width: "100%",
+  },
   cardInsideDateTime: {
-    flexGrow: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
 
-    paddingHorizontal: 10,
-    width: '40%',
+    paddingHorizontal: 15,
     marginVertical: 10,
-    shadowColor: '#000',
+    // marginHorizontal: 10,
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
-    flexDirection: 'row',
-    flexGrow: 1,
-    margin: 5
-
+    elevation: 2,
   },
   inputDayContainer: {
     padding: 10,
@@ -429,9 +573,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   inputBorder: {
-    borderWidth: 1,
-    borderColor: "#000",
-    borderRadius: 10,
+
     padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -439,33 +581,46 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   horizontalContainer: {
-    backgroundColor: themeColors.linear,
+    backgroundColor: "#ffffff",
     borderRadius: 10,
+
+    paddingHorizontal: 15,
+    marginVertical: 10,
+    // marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 2,
   },
   input: {
     height: 40,
     padding: 10,
   },
   circleButton: {
-    padding: 10,
-    width: 50,
-    height: 50,
+    borderWidth: 1.5,
+    borderColor: themeColors.primary,
+    padding: 5,
+    width: 40,
+    height: 40,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 10,
   },
   circleButtonText: {
-    fontSize: 20,
+    fontSize: 15,
+
   },
   continueButton: {
-    position: "absolute",
-    bottom: 50,
     alignItems: "center",
+    justifyItems: "flex-end",
     backgroundColor: themeColors.primary,
     borderRadius: 10,
     justifyContent: "center",
-    width: "90%",
     height: 50,
 
   },

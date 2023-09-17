@@ -2,13 +2,13 @@ import { Alert } from "react-native";
 import apiManager from "../utils/apiManager";
 
 export const getAvailableBookingDetails = async (
-  driverId,
+  userId,
   pageSize,
   pageNumber
 ) => {
   // try {
   const response = await apiManager.get(
-    `/api/BookingDetail/Driver/Available/${driverId}?
+    `/api/BookingDetail/Driver/Available/${userId}?
       pageSize=${pageSize}&pageNumber=${pageNumber}`
   );
   return response;
@@ -18,13 +18,13 @@ export const getAvailableBookingDetails = async (
 };
 
 export const getAvailableBookingDetailsByBooking = async (
-  driverId,
+  userId,
   bookingId,
   pageSize = -1,
   pageNumber = 1
 ) => {
   const response = await apiManager.get(
-    `api/BookingDetail/Driver/Available/${driverId}/${bookingId}?pageSize=${pageSize}&pageNumber=${pageNumber}`
+    `api/BookingDetail/Driver/Available/${userId}/${bookingId}?pageSize=${pageSize}&pageNumber=${pageNumber}`
   );
   return response.data;
 };
@@ -46,8 +46,8 @@ export const pickBookingDetails = async (bookingDetailIds) => {
   return response.data;
 };
 
-export const getBookingDetailByDriverId = async (
-  driverId,
+export const getBookingDetailByuserId = async (
+  userId,
   minDate = null,
   maxDate = null,
   minPickupTime = null,
@@ -57,7 +57,7 @@ export const getBookingDetailByDriverId = async (
   orderBy = null
 ) => {
   // try {
-  let endpoint = `/api/BookingDetail/Driver/${driverId}?pageSize=${pageSize}&pageNumber=${pageNumber}`;
+  let endpoint = `/api/BookingDetail/Driver/${userId}?pageSize=${pageSize}&pageNumber=${pageNumber}`;
   if (minDate != null) {
     endpoint += `&minDate=${minDate}`;
   }
@@ -125,17 +125,17 @@ export const getDriverSchedulesForPickingTrip = async (bookingDetailId) => {
   return response.data;
 };
 
-export const getUpcomingTrip = async (driverId) => {
+export const getUpcomingTrip = async (userId) => {
   const response = await apiManager.get(
-    `api/BookingDetail/Upcoming/${driverId}`
+    `api/BookingDetail/Upcoming/${userId}`
   );
 
   return response.status == 204 ? null : response.data;
 };
 
-export const getCurrentTrip = async (driverId) => {
+export const getCurrentTrip = async (userId) => {
   const response = await apiManager.get(
-    `api/BookingDetail/Current/${driverId}`
+    `api/BookingDetail/Current/${userId}`
   );
 
   return response.status == 204 ? null : response.data;

@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
+  Alert
 } from "react-native";
 
 import Map from "../../components/Map/Map";
 // import BottomSheet from '../../components/BottomSheet/BottomSheetComponent';
 import { themeColors } from "../../assets/theme/index";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import InputCard from "../../components/Card/InputCard";
 import SwtichVehicle from "../../components/Select Box/SwitchVehicle";
 import {
@@ -31,7 +32,6 @@ import {
   VStack,
   useToast,
   Divider,
-  Alert,
 } from "native-base";
 import { SwipeablePanel } from "../../components/SwipeablePanel/Panel";
 import DetailCard from "../../components/Card/DetailCard";
@@ -64,6 +64,8 @@ const UpdateBookingScreen = (props) => {
   const pickupTime = props.route.params.pickupTime;
   const pickupBackTime = props.route.params.pickupBackTime;
   const routines = props.route.params.routines;
+  const roundTrip = props.route.params.roundTrip;
+  const type = props.route.params.type;
   const startDay = props.route.params.startDay;
   const daysOfWeek = props.route.params.daysOfWeek;
   const bookingId = props.route.params.bookingId;
@@ -154,7 +156,7 @@ const UpdateBookingScreen = (props) => {
         beginTime: pickupTime,
         distance: distance,
         duration: duration,
-        totalNumberOfTickets: routines.routeRoutines.length,
+        totalNumberOfTickets: routeType != "ROUND_TRIP" ? routines.routeRoutines.length : (routines.routeRoutines.length * 2),
         tripType: routeType,
         routineType: routineType,
         roundTripBeginTime:
@@ -199,7 +201,11 @@ const UpdateBookingScreen = (props) => {
       console.log("routeRoutines", routines);
       let routeId = routines.routeId;
       let routeRoutines = routines.routeRoutines;
-      let roundTripRoutines = routines.roundTripRoutines;
+      let roundTripRoutines = null
+      if (routeType == "ROUND_TRIP") {
+        roundTripRoutines = roundTrip.routeRoutines;
+      }
+
       const requestData = {
         // Request body data
         routeId: routeId,
@@ -229,16 +235,16 @@ const UpdateBookingScreen = (props) => {
           startDate: routines.routeRoutines[0].routineDate,
           endDate: routines.routeRoutines[routeRoutines.length - 1].routineDate,
           daysOfWeek: vnDays,
-          totalPrice: fareCalculation?.finalFare,
+          totalPrice: (fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare),
           priceAfterDiscount: 0,
           isShared: true,
           duration: duration,
           distance: distance,
-          roundTripTotalPrice: fareCalculation?.finalFare,
+          roundTripTotalPrice: fareCalculation?.roundTripFinalFare,
         },
       };
 
-      Alert.alert("Xác nhận", "Bạn có muốn đặt tài xế theo lịch trình này!", [
+      Alert.alert("Xác nhận", "Bạn có muốn cập nhật theo lịch trình này!", [
         {
           text: "Không",
           onPress: () => console.log("Cancel Pressed"),
@@ -261,7 +267,7 @@ const UpdateBookingScreen = (props) => {
                             navigation.dispatch(
                               CommonActions.reset({
                                 index: 0,
-                                routes: [{ name: "MyRoute" }],
+                                routes: [{ name: "Home" }],
                               })
                             ),
                         },
@@ -365,9 +371,9 @@ const UpdateBookingScreen = (props) => {
               </HStack>
               <HStack alignItems="center" justifyContent="center">
                 <Box p={2}>
-                  {routineType === null ? (
+                  {type === null ? (
                     ""
-                  ) : routineType === "ONE_WAY" ? (
+                  ) : type === "ONE_WAY" ? (
                     <ArrowRightIcon size={20} color={themeColors.primary} />
                   ) : (
                     <ArrowsRightLeftIcon
@@ -382,11 +388,11 @@ const UpdateBookingScreen = (props) => {
                     Loại Chuyến:{" "}
                   </Text>
                   <Text fontSize={15}>
-                    {routineType === null
+                    {type === null
                       ? ""
-                      : routineType === "ONE_WAY"
-                      ? "Một chiều"
-                      : "Hai chiều"}
+                      : type === "ONE_WAY"
+                        ? "Một chiều"
+                        : "Hai chiều"}
                   </Text>
                 </VStack>
               </HStack>
@@ -403,8 +409,8 @@ const UpdateBookingScreen = (props) => {
                     {routeType === null
                       ? ""
                       : routineType === "WEEKLY"
-                      ? "Mỗi tuần"
-                      : "Mỗi tháng"}
+                        ? "Mỗi tuần"
+                        : "Mỗi tháng"}
                   </Text>
                 </VStack>
               </HStack>
@@ -618,7 +624,7 @@ const UpdateBookingScreen = (props) => {
           // openLarge={openLargePanel}
           ref={panelRef}
           largePanelHeight={500}
-          // onlySmall
+        // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}
         </SwipeablePanel>

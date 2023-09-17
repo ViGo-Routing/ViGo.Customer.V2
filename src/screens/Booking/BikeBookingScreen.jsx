@@ -134,9 +134,11 @@ const BikeBookingScreen = (props) => {
     try {
       await createRoute(requestData).then((response) => {
         const routeId = response.data.id;
-        console.log("response", response.data.id);
+        const roundTripRouteId = response.data.roundTripRouteId
+        console.log("response", response.data.id, response.data.roundTripRouteId);
         navigation.navigate("RoutineGenerator", {
           routeId: routeId,
+          roundTripRouteId: roundTripRouteId,
           frequency: frequency,
           routeType: routeType,
         });

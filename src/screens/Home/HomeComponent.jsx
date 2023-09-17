@@ -23,6 +23,8 @@ import {
   AntDesign,
   Icon,
   AddIcon,
+  Button,
+  Flex,
 } from "native-base";
 import { UserContext } from "../../context/UserContext";
 import {
@@ -35,6 +37,9 @@ import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import InfoAlert from "../../components/Alert/InfoAlert";
 import ErrorAlert from "../../components/Alert/ErrorAlert";
 import { useErrorHandlingHook } from "../../hooks/useErrorHandlingHook";
+import { getCurrentTrip, getUpcomingTrip } from "../../service/bookingDetailService";
+import { getErrorMessage } from "../../utils/alertUtils";
+import HomeTripInformationCard from "../../components/Card/HomeTripInformationCard";
 
 const HomeComponent = () => {
   // const auth = getAuth();
@@ -48,6 +53,9 @@ const HomeComponent = () => {
   const [onScroll, setOnScroll] = useState(false);
   const [nextPageNumber, setNextPageNumber] = useState(1);
 
+  const [currentTrip, setCurrentTrip] = useState(null);
+  const [upcomingTrip, setUpcomingTrip] = useState(null);
+
   const { isError, setIsError, errorMessage, setErrorMessage } =
     useErrorHandlingHook();
   const pageSize = 10;
@@ -55,20 +63,33 @@ const HomeComponent = () => {
   const fetchData = async () => {
     setIsLoading(true);
 
-    console.log(user.id);
+    try {
 
-    await getBookingByCustomerId(user.id, pageSize, 1).then((result) => {
-      const items = result.data.data;
-      setList(items);
+      await getBookingByCustomerId(user.id, pageSize, 1).then(async (result) => {
+        const items = result.data.data;
+        setList(items);
+        setIsLoading(false);
+        console.log("itemsitems", result.data);
+        if (result.data.hasNextPage == true) {
+          setNextPageNumber(2);
+        } else {
+          setNextPageNumber(null);
+        }
+        // console.log("elementelement", items)
+        const currentTrip = await getCurrentTrip(user.id);
+        setCurrentTrip(currentTrip);
+        if (currentTrip == null) {
+          // Has no Current trip
+          const upcomingTrip = await getUpcomingTrip(user.id);
+          setUpcomingTrip(upcomingTrip);
+        }
+      });
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+      setIsError(true);
+    } finally {
       setIsLoading(false);
-      console.log("itemsitems", result.data);
-      if (result.data.hasNextPage == true) {
-        setNextPageNumber(2);
-      } else {
-        setNextPageNumber(null);
-      }
-      // console.log("elementelement", items)
-    });
+    }
   };
 
   const loadMoreTrips = async () => {
@@ -117,20 +138,35 @@ const HomeComponent = () => {
       </View>
 
       {/* <ViGoSpinner isLoading={isLoading} /> */}
-      <View style={vigoStyles.body}>
+      <View style={vigoStyles.body} >
         <ErrorAlert isError={isError} errorMessage={errorMessage}>
-          <Heading fontSize="2xl" mt="0" ml="0">
+          <Button onPress={() => navigation.navigate("SelectRoute")} bg={themeColors.primary}>
+            <Flex direction="row" alignItems="center">
+              <AddIcon color="white" alignSelf="center" />
+              <Text px={2} bold color="white">
+                Đặt xe với lộ trình mới
+              </Text>
+            </Flex>
+          </Button>
+          <Heading fontSize="2xl" mt="2" ml="0">
             Hành trình của bạn
+
           </Heading>
           <FlatList
             // style={[vigoStyles.list]}
-            marginTop="3"
+            p={1}
+            my="3"
             data={list}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
               return <CardHistory key={item.id} element={item} />;
             }}
-            ListEmptyComponent={<InfoAlert message="Chưa có dữ liệu" />}
+            ListEmptyComponent={<Center h="full" >
+              <Center>
+                <Text bold fontSize={25} color={themeColors.primary}>Chưa có dữ liệu</Text>
+              </Center>
+
+            </Center>}
             refreshing={isLoading}
             onRefresh={() => fetchData()}
             onEndReached={loadMoreTrips}
@@ -142,21 +178,15 @@ const HomeComponent = () => {
               paddingBottom: 10,
             }}
           />
-          <Fab
-            onPress={() => navigation.navigate("SelectRoute")}
-            bg={themeColors.primary}
-            renderInPortal={false}
-            shadow={2}
-            // right={5}
-            // bottom={0}
-            size="sm"
-            icon={<AddIcon color="white" />}
-            label={
-              <Text bold color="white">
-                Đặt xe với lộ trình mới
-              </Text>
-            }
+
+
+          <HomeTripInformationCard
+            currentTrip={currentTrip}
+            upcomingTrip={upcomingTrip}
+            navigation={navigation}
           />
+
+
         </ErrorAlert>
       </View>
     </>
