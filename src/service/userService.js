@@ -20,6 +20,21 @@ export const updateUserFcmToken = async (userId, fcmToken) => {
   // }
 };
 
+export const editProfile = async (id, requestData) => {
+  // console.log("requestData", requestData);
+  const response = await apiManager.put(
+    `/api/User/${id}`,
+    requestData /*{
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json-patch+json",
+      },
+    }*/
+  );
+
+  return response.data;
+};
+
 export const getProfile = async (id) => {
   // try {
   const response = await apiManager.get(

@@ -125,7 +125,10 @@ const ProfileSreen = () => {
   // };
 
   useEffect(() => {
-    loadInitialData();
+    const unsubcribe = navigation.addListener("focus", () => {
+      loadInitialData();
+    });
+    return unsubcribe;
   }, []);
 
   // const listAccountUtilities = [
@@ -193,9 +196,7 @@ const ProfileSreen = () => {
         <ErrorAlert isError={isError} errorMessage={errorMessage}>
           <Box style={{ paddingHorizontal: 20 }}>
             <ProfileCard
-              // onPress={() =>
-              //   navigation.navigate("EditProfile", { data: response })
-              // }
+              onPress={() => navigation.navigate("EditProfile")}
               name={name ?? ""}
               phoneNumber={user?.phone ?? ""}
               imageSource={
