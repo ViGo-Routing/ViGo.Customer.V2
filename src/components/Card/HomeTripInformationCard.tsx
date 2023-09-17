@@ -60,12 +60,17 @@ const HomeTripInformationCard = ({
           }
         >
           <VStack>
-            <Text
+            <HStack mt="2">
+              <Badge colorScheme={"info"}>
+                {getBookingDetailStatusString(currentTrip.status)}
+              </Badge>
+            </HStack>
+            {/* <Text
               opacity={0.5}
               color={getBookingDetailStatusColor(currentTrip.status)}
             >
               {getBookingDetailStatusString(currentTrip.status)}
-            </Text>
+            </Text> */}
             <Text fontSize={18} bold isTruncated>
               {currentTrip.startStation.name} - {currentTrip.endStation.name}
             </Text>
@@ -82,7 +87,9 @@ const HomeTripInformationCard = ({
           }
         >
           <VStack>
-            <Text opacity={0.5}>Sắp tới</Text>
+            <HStack mt="2">
+              <Badge colorScheme={"info"}>Sắp tới</Badge>
+            </HStack>
             <Text fontSize={18} bold isTruncated width="95%">
               {upcomingTrip.startStation.name} - {upcomingTrip.endStation.name}
             </Text>

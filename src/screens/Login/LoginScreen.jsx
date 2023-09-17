@@ -314,6 +314,7 @@ export default function LoginScreen() {
                   variant="unstyled"
                   value={phoneNumber}
                   onChangeText={handlePhoneChange}
+                  keyboardType="phone-pad"
                   InputLeftElement={
                     <Text fontSize="xs" bold>
                       +84
