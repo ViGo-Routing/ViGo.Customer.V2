@@ -50,7 +50,7 @@ import {
 import ViGoSpinner from "../Spinner/ViGoSpinner";
 import { handleError } from "../../utils/alertUtils";
 import { NativeEventEmitter } from "react-native";
-import { CustomReportModal, MyModal, ReportModal } from "../Modal/ReportModal";
+import ReportModal from "../Modal/ReportModal";
 const CardBookingDetail = ({ item }) => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
