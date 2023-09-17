@@ -2211,6 +2211,11 @@
   resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-18.3.2.tgz"
   integrity sha512-An8cRsYjpUdE5S9NU1d/8+pc8mGxqsPEB7yGbRps2JzaJsII8I63LdT/j2P2QYMx4a3RVQN4Nauw4Y07rrVVhA==
 
+"@react-native-firebase/storage@^18.4.0":
+  version "18.4.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-18.4.0.tgz"
+  integrity sha512-XN2lk/GdtXqkqmm8kWf6TzhKcc20R/KnIx5LMFI/3zbaUIyH7gpqx2CJKX3i6w4U4Ybu9cLiB/ratp3y40kHvA==
+
 "@react-native-picker/picker@^2.4.10":
   version "2.5.0"
   resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.5.0.tgz"
