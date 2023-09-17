@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { View, StyleSheet } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { MapPinIcon, UserCircleIcon } from "react-native-heroicons/solid";
@@ -16,7 +16,6 @@ const InputCard = ({
 
   const [pickupPosition, setPickupPosition] = useState(null);
   const [destinationPosition, setDestinationPosition] = useState(null);
-
 
   const handlePlaceSelection = (details) => {
     setSelectedPlace(details);
@@ -47,8 +46,8 @@ const InputCard = ({
       );
       destinationPositionRef.setAddressText(
         destinationLocation?.name +
-        ", " +
-        destinationLocation?.formatted_address
+          ", " +
+          destinationLocation?.formatted_address
       );
     }
   }, []);
@@ -151,4 +150,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InputCard;
+export default memo(InputCard);

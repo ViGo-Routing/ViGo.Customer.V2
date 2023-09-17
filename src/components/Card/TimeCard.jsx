@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { themeColors } from "../../assets/theme";
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TimeCard;
+export default memo(TimeCard);

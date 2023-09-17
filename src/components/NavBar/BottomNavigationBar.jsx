@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColors } from "../../assets/theme";
@@ -90,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BottomNavigationBar;
+export default memo(BottomNavigationBar);

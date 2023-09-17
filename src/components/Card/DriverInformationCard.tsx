@@ -8,6 +8,7 @@ import call from "react-native-phone-call";
 import { handleError } from "../../utils/alertUtils";
 import { getCancelRateTextColor } from "../../utils/userUtils";
 import { useNavigation } from "@react-navigation/native";
+import { memo } from "react";
 interface DriverInformationCardProps {
   driver: any;
   displayCustomerText?: boolean | undefined;
@@ -97,4 +98,4 @@ const DriverInformationCard = ({
   );
 };
 
-export default DriverInformationCard;
+export default memo(DriverInformationCard);

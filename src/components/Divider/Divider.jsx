@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { StyleSheet, View } from "react-native";
 
-export default Divider = ({ style }) => {
+const Divider = ({ style }) => {
   return <View style={{ ...styles.divider, ...style }} />;
 };
 
@@ -12,3 +13,5 @@ const styles = StyleSheet.create({
     // marginBottom: 40,
   },
 });
+
+export default memo(Divider);

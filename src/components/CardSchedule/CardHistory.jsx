@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { themeColors } from "../../assets/theme";
 import {
@@ -100,7 +100,9 @@ const CardHistory = ({ element }) => {
     });
   }
   function handleTrackingDriverLocation(bookingDetail) {
-    navigation.navigate("TrackingLocation", { bookingDetailId: bookingDetail.id });
+    navigation.navigate("TrackingLocation", {
+      bookingDetailId: bookingDetail.id,
+    });
   }
   const { isOpen, onToggle } = useDisclose();
   return (
@@ -225,7 +227,8 @@ const CardHistory = ({ element }) => {
                   Đã đi:
                 </Text>
                 <Text numberOfLines={1} color="green.500" ellipsizeMode="tail">
-                  {element.totalAssignedBookingDetailsCount}/ {element.totalBookingDetailsCount}
+                  {element.totalAssignedBookingDetailsCount}/{" "}
+                  {element.totalBookingDetailsCount}
                 </Text>
               </HStack>
             </VStack>
@@ -351,4 +354,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CardHistory;
+export default memo(CardHistory);
