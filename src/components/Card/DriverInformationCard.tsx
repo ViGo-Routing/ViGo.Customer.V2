@@ -9,16 +9,19 @@ import { handleError } from "../../utils/alertUtils";
 import { getCancelRateTextColor } from "../../utils/userUtils";
 import { useNavigation } from "@react-navigation/native";
 import { memo } from "react";
+import { ChatBubbleLeftRightIcon } from "react-native-heroicons/outline";
 interface DriverInformationCardProps {
   driver: any;
-  displayCustomerText?: boolean | undefined;
+  displayDriverText?: boolean | undefined;
   displayCall?: boolean;
+  bookingDetailId?: string;
 }
 
 const DriverInformationCard = ({
   driver,
-  displayCustomerText = true,
+  displayDriverText = true,
   displayCall = false,
+  bookingDetailId = undefined,
 }: DriverInformationCardProps) => {
   const navigation = useNavigation();
 
@@ -51,12 +54,12 @@ const DriverInformationCard = ({
               borderRadius={100}
             />
             <VStack paddingLeft={5}>
-              {displayCustomerText && (
+              {displayDriverText && (
                 <Text>
-                  Khách hàng <Text bold>{driver.name}</Text>
+                  Tài xế <Text bold>{driver.name}</Text>
                 </Text>
               )}
-              {!displayCustomerText && <Text bold>{driver.name}</Text>}
+              {!displayDriverText && <Text bold>{driver.name}</Text>}
               <HStack>
                 <Text>
                   {`${driver.gender == true ? "Nam" : "Nữ"}${
@@ -85,6 +88,28 @@ const DriverInformationCard = ({
               >
                 <Pressable onPress={() => handleCall(driver.phone)}>
                   <PhoneArrowUpRightIcon
+                    size={25}
+                    color={themeColors.primary}
+                  />
+                </Pressable>
+              </Box>
+
+              <Box
+                borderWidth={1}
+                rounded="md"
+                p="1"
+                borderColor={themeColors.primary}
+                ml={"5"}
+              >
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("Message", {
+                      bookingDetailId: bookingDetailId,
+                      driver: driver,
+                    })
+                  }
+                >
+                  <ChatBubbleLeftRightIcon
                     size={25}
                     color={themeColors.primary}
                   />
