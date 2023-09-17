@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { themeColors } from "../../assets/theme";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SelectRouteHeader;
+export default memo(SelectRouteHeader);

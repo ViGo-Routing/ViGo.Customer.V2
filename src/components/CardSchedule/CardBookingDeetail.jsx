@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { themeColors } from "../../assets/theme";
 import {
@@ -36,9 +36,17 @@ import {
 } from "react-native-heroicons/solid";
 import { toVnDateString, toVnTimeString } from "../../utils/datetimeUtils";
 import { vndFormat } from "../../utils/numberUtils";
-import { ChatBubbleLeftRightIcon, StarIcon, XCircleIcon, MapPinIcon } from "react-native-heroicons/outline";
+import {
+  ChatBubbleLeftRightIcon,
+  StarIcon,
+  XCircleIcon,
+  MapPinIcon,
+} from "react-native-heroicons/outline";
 import ConfirmAlert from "../Alert/ConfirmAlert";
-import { cancelBookingDetail, getCancelFee } from "../../service/bookingDetailService";
+import {
+  cancelBookingDetail,
+  getCancelFee,
+} from "../../service/bookingDetailService";
 import ViGoSpinner from "../Spinner/ViGoSpinner";
 import { handleError } from "../../utils/alertUtils";
 import { NativeEventEmitter } from "react-native";
@@ -112,12 +120,12 @@ const CardBookingDetail = ({ item }) => {
       return (
         <VStack>
           <Text>
-            Với việc hủy chuyến xe, bạn sẽ phải chịu một khoản phí hủy chuyến (nếu
-            có) tùy vào thời gian và chuyến xe mà bạn hủy.
+            Với việc hủy chuyến xe, bạn sẽ phải chịu một khoản phí hủy chuyến
+            (nếu có) tùy vào thời gian và chuyến xe mà bạn hủy.
           </Text>
           <Text>
-            Phí nhận chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được hoàn về ví
-            của bạn sau khi hủy chuyến thành công.
+            Phí nhận chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được hoàn về
+            ví của bạn sau khi hủy chuyến thành công.
           </Text>
           <Text marginTop="2">
             Phí hủy chuyến tạm tính: <Text bold>{vndFormat(cancelFee)}</Text>
@@ -157,7 +165,6 @@ const CardBookingDetail = ({ item }) => {
     setIsModalOpen(!isModalOpen);
   };
   return (
-
     <Center flex={1}>
       <ViGoSpinner isLoading={isLoading} key="spinner-navigation" />
       <Box
@@ -195,7 +202,7 @@ const CardBookingDetail = ({ item }) => {
             Tài xế
           </Text>
           <Text marginLeft={2} bold color="black">
-            {(item.driver) == null ? "Chưa có tài xế" : (item.driver.name)}
+            {item.driver == null ? "Chưa có tài xế" : item.driver.name}
           </Text>
         </HStack>
 
@@ -206,77 +213,66 @@ const CardBookingDetail = ({ item }) => {
             Số điện thoại
           </Text>
           <Text marginLeft={2} bold color="black">
-            {(item.driver) == null ? "Chưa có tài xế" : (item.driver.phone)}
+            {item.driver == null ? "Chưa có tài xế" : item.driver.phone}
           </Text>
         </HStack>
 
         {/* Row 5 */}
         <VStack mt={2} space={4} alignItems="flex-end">
           <HStack space={4} alignItems="flex-end">
-            {item.driver !== null && (<Pressable
-              onPress={toggleModal}
-            >
-              <FlagIcon
-                size={25}
-                color={themeColors.primary}
-              />
-
-            </Pressable>
-
+            {item.driver !== null && (
+              <Pressable onPress={toggleModal}>
+                <FlagIcon size={25} color={themeColors.primary} />
+              </Pressable>
             )}
-            {item.driver !== null && (<HStack space={4} >
-              <Tooltip label="Nhắn tin" placement="auto">
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("Message", {
-                      bookingDetailId: item.id,
-                      driver: item.driver,
-                    })
-                  }
-                >
-                  <ChatBubbleLeftRightIcon
-                    size={25}
-                    color={themeColors.primary}
-                  />
-                </Pressable>
-              </Tooltip>
-              <Tooltip label="Gọi điện" openDelay={500}>
-                <Pressable
-                  onPress={() =>
-                    handleCall(item.driver.phone)
-                  }
-                >
-                  <PhoneArrowUpRightIcon
-                    size={25}
-                    color={themeColors.primary}
-                  />
-                </Pressable>
-              </Tooltip>
-            </HStack>
+            {item.driver !== null && (
+              <HStack space={4}>
+                <Tooltip label="Nhắn tin" placement="auto">
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("Message", {
+                        bookingDetailId: item.id,
+                        driver: item.driver,
+                      })
+                    }
+                  >
+                    <ChatBubbleLeftRightIcon
+                      size={25}
+                      color={themeColors.primary}
+                    />
+                  </Pressable>
+                </Tooltip>
+                <Tooltip label="Gọi điện" openDelay={500}>
+                  <Pressable onPress={() => handleCall(item.driver.phone)}>
+                    <PhoneArrowUpRightIcon
+                      size={25}
+                      color={themeColors.primary}
+                    />
+                  </Pressable>
+                </Tooltip>
+              </HStack>
             )}
             {item.status === "COMPLETED" && (
               <Tooltip label="Đánh giá" placement="auto">
                 <Pressable
                   onPress={() =>
-                    navigation.navigate("Feedback", { bookingDetailId: item.id })
+                    navigation.navigate("Feedback", {
+                      bookingDetailId: item.id,
+                    })
                   }
                 >
-                  <StarIcon
-                    size={25}
-                    color={themeColors.primary}
-                  />
+                  <StarIcon size={25} color={themeColors.primary} />
                 </Pressable>
-              </Tooltip>)}
-            {(item.status === "PENDING_ASSIGN" || item.status === "ASSIGNED") && (<Tooltip label="Đánh giá" openDelay={500}>
-              <Pressable
-                onPress={openConfirmCancelTrip}
-              >
-                <XCircleIcon
-                  size={25}
-                  color={themeColors.primary}
-                />
-              </Pressable>
-            </Tooltip>)}
+              </Tooltip>
+            )}
+            {(item.status === "PENDING_ASSIGN" ||
+              item.status === "ASSIGNED") && (
+              <Tooltip label="Đánh giá" openDelay={500}>
+                <Pressable onPress={openConfirmCancelTrip}>
+                  <XCircleIcon size={25} color={themeColors.primary} />
+                </Pressable>
+              </Tooltip>
+            )}
           </HStack>
         </VStack>
         <CancelBookingDetailConfirmAlert
@@ -284,14 +280,16 @@ const CardBookingDetail = ({ item }) => {
           confirmOpen={isCancelConfirmOpen}
           setConfirmOpen={setIsCancelConfirmOpen}
           handleOkPress={() => handleConfirmCancelTrip()}
-          cancelFee={cancelFee} />
+          cancelFee={cancelFee}
+        />
         {/* <ReportModal isVisible={modalVisible} closeModal={closeModal} /> */}
-        <ReportModal bookingDetailId={item.id} isOpen={isModalOpen} onClose={toggleModal} />
+        <ReportModal
+          bookingDetailId={item.id}
+          isOpen={isModalOpen}
+          onClose={toggleModal}
+        />
       </Box>
-
     </Center>
-
-
   );
 };
 
@@ -300,8 +298,7 @@ const styles = StyleSheet.create({
     // flexGrow: 1,
     backgroundColor: "white",
     borderBottomWidth: 1,
-    borderColor: themeColors.primary
-
+    borderColor: themeColors.primary,
   },
 });
-export default CardBookingDetail;
+export default memo(CardBookingDetail);

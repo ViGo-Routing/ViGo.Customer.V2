@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { memo, useContext } from "react";
 import {
   View,
   TextInput,
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeHeader;
+export default memo(HomeHeader);

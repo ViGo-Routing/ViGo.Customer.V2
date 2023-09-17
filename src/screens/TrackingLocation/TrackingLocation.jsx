@@ -4,7 +4,17 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
 import SignalRService from "../../utils/signalRUtils"; // Adjust the path
 import { UserContext } from "../../context/UserContext";
-import { ArrowRightIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, MapPinIcon, PhoneIcon, RocketLaunchIcon, UserCircleIcon, UserIcon } from "react-native-heroicons/solid";
+import {
+  ArrowRightIcon,
+  CalendarDaysIcon,
+  CalendarIcon,
+  ClockIcon,
+  MapPinIcon,
+  PhoneIcon,
+  RocketLaunchIcon,
+  UserCircleIcon,
+  UserIcon,
+} from "react-native-heroicons/solid";
 import { themeColors } from "../../assets/theme/index";
 import {
   Alert,
@@ -24,10 +34,12 @@ import { SwipeablePanel } from "../../components/SwipeablePanel/Panel";
 import { getBookingDetailById } from "../../service/bookingService";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import { Animated } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-const TrackingLocationScreen = ({ route }) => {
+import { useNavigation, useRoute } from "@react-navigation/native";
+import DriverInformationCard from "../../components/Card/DriverInformationCard";
+const TrackingLocationScreen = ({}) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
+  const route = useRoute();
   const { bookingDetailId } = route.params;
   const customerId = `${user.id}`; // Replace with actual customer ID
   const tripId = bookingDetailId; // Replace with actual trip ID
@@ -60,7 +72,7 @@ const TrackingLocationScreen = ({ route }) => {
     slideUpHandler();
     const focus_unsub = navigation.addListener("focus", () => {
       loadBookingDetailWithId();
-    })
+    });
     const locationUpdateInterval = setInterval(() => {
       Geolocation.getCurrentPosition(
         (position) => {
@@ -83,10 +95,9 @@ const TrackingLocationScreen = ({ route }) => {
 
   loadBookingDetailWithId = () => {
     getBookingDetailById(tripId).then((response) => {
-      setBookingDetail(response.data)
+      setBookingDetail(response.data);
     });
-  }
-
+  };
 
   let calculatedRegion = null;
   if (
@@ -153,18 +164,30 @@ const TrackingLocationScreen = ({ route }) => {
     return (
       <Box>
         <View style={styles.cardInsideDateTime} m={2}>
-          {bookingDetail == null ? (<Spinner color={themeColors.primary} />) : (
+          {bookingDetail == null ? (
+            <Spinner color={themeColors.primary} />
+          ) : (
             <VStack justifyContent="space-evenly">
               <Box style={styles.cardInsideDateTime}>
                 <VStack>
                   <HStack alignItems="center">
                     <UserCircleIcon p={2} size={20} color="blue" />
                     {bookingDetail !== null ? (
-                      <Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                      <Text
+                        p={2}
+                        w={300}
+                        alignItems="center"
+                        color={"gray.500"}
+                      >
                         {bookingDetail.startStation.name}
                       </Text>
                     ) : (
-                      <Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                      <Text
+                        p={2}
+                        w={300}
+                        alignItems="center"
+                        color={"gray.500"}
+                      >
                         Đang tải ...
                       </Text>
                     )}
@@ -181,18 +204,28 @@ const TrackingLocationScreen = ({ route }) => {
                   <HStack alignItems="center">
                     <MapPinIcon p={2} size={20} color="orange" />
                     {bookingDetail !== null ? (
-                      <Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                      <Text
+                        p={2}
+                        w={300}
+                        alignItems="center"
+                        color={"gray.500"}
+                      >
                         {bookingDetail.endStation.name}
                       </Text>
                     ) : (
-                      <Text p={2} w={300} alignItems="center" color={"gray.500"}>
+                      <Text
+                        p={2}
+                        w={300}
+                        alignItems="center"
+                        color={"gray.500"}
+                      >
                         Đang tải ...
                       </Text>
                     )}
                   </HStack>
                 </VStack>
               </Box>
-              <VStack my={1} p={1} justifyContent="space-between">
+              {/* <VStack my={1} p={1} justifyContent="space-between">
                 <HStack
                   borderWidth={1}
                   width="100%"
@@ -244,15 +277,21 @@ const TrackingLocationScreen = ({ route }) => {
                     </Text>
                   </VStack>
                 </HStack>
-              </VStack>
+              </VStack> */}
+              <Box mt="3">
+                <DriverInformationCard
+                  driver={bookingDetail.driver}
+                  displayDriverText={true}
+                  displayCall={true}
+                  bookingDetailId={bookingDetail.id}
+                />
+              </Box>
             </VStack>
           )}
-
         </View>
       </Box>
     );
   };
-
 
   return (
     <View style={{ flex: 1 }}>
@@ -295,7 +334,7 @@ const TrackingLocationScreen = ({ route }) => {
               strokeWidth={3}
               strokeColor="#00A1A1"
               mode="motobike"
-            //onReady={handleDirectionsReady}
+              //onReady={handleDirectionsReady}
             />
 
             <Marker
@@ -329,7 +368,7 @@ const TrackingLocationScreen = ({ route }) => {
           // openLarge={openLargePanel}
           ref={panelRef}
           largePanelHeight={500}
-        // onlySmall
+          // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}
         </SwipeablePanel>
