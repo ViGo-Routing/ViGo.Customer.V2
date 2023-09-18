@@ -6,6 +6,7 @@ import { themeColors, vigoStyles } from "../../assets/theme/index";
 import { useNavigation } from "@react-navigation/native";
 import {
   ArrowLeftOnRectangleIcon,
+  BanknotesIcon,
   BellAlertIcon,
   ClipboardDocumentListIcon,
   DocumentCheckIcon,
@@ -52,6 +53,7 @@ import {
 } from "native-base";
 import { getCancelRateTextColor } from "../../utils/userUtils";
 import { toPercent } from "../../utils/numberUtils";
+import FareModal from "../../components/Modal/FareModal";
 
 const ProfileSreen = () => {
   const navigation = useNavigation();
@@ -74,6 +76,8 @@ const ProfileSreen = () => {
 
   const [dob, setDob] = useState(defaultDob);
   const [canceledTripRate, setCanceledTripRate] = useState(0);
+
+  const [fareModalVisible, setFareModalVisible] = useState(false);
 
   const formatDate = (rawDate) => {
     let date = new Date(rawDate);
@@ -250,6 +254,18 @@ const ProfileSreen = () => {
                 <HStack>
                   <FlagIcon size={24} color={themeColors.primary} />
                   <Text style={{ marginLeft: 10 }}>Báo cáo của tôi</Text>
+                </HStack>
+              </TouchableOpacity>
+              <TouchableOpacity
+                key={"app-fare"}
+                // style={styles.list}
+                onPress={() => {
+                  setFareModalVisible(true);
+                }}
+              >
+                <HStack>
+                  <BanknotesIcon size={24} color={themeColors.primary} />
+                  <Text style={{ marginLeft: 10 }}>Thông tin biểu phí</Text>
                 </HStack>
               </TouchableOpacity>
             </HStack>
@@ -433,6 +449,10 @@ const ProfileSreen = () => {
             </TouchableOpacity>
 
           </ScrollView> */}
+          <FareModal
+            modalVisible={fareModalVisible}
+            setModalVisible={setFareModalVisible}
+          />
         </ErrorAlert>
       </View>
     </SafeAreaView>
