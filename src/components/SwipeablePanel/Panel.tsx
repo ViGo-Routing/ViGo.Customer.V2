@@ -112,8 +112,8 @@ class SwipeablePanel extends React.Component<
       currentHeight: this.props.smallPanelHeight
         ? FULL_HEIGHT - this.props.smallPanelHeight
         : this.state.orientation === "portrait"
-        ? FULL_HEIGHT - 400
-        : FULL_HEIGHT / 3,
+          ? FULL_HEIGHT - 400
+          : FULL_HEIGHT / 3,
     };
 
     this.pan = new Animated.ValueXY({ x: 0, y: FULL_HEIGHT });
@@ -133,7 +133,7 @@ class SwipeablePanel extends React.Component<
         if (
           (this.state.status === STATUS.SMALL &&
             Math.abs((this.state.pan.y as any)._value) <=
-              (this.state.pan.y as any)._offset) ||
+            (this.state.pan.y as any)._offset) ||
           (this.state.status === STATUS.LARGE &&
             (this.state.pan.y as any)._value > -1)
         )
@@ -183,10 +183,10 @@ class SwipeablePanel extends React.Component<
         onlySmall
           ? STATUS.SMALL
           : openLarge
-          ? STATUS.LARGE
-          : onlyLarge
-          ? STATUS.LARGE
-          : STATUS.SMALL
+            ? STATUS.LARGE
+            : onlyLarge
+              ? STATUS.LARGE
+              : STATUS.SMALL
       );
 
     Dimensions.addEventListener("change", this._onOrientationChange);
@@ -226,10 +226,10 @@ class SwipeablePanel extends React.Component<
           onlySmall
             ? STATUS.SMALL
             : openLarge
-            ? STATUS.LARGE
-            : onlyLarge
-            ? STATUS.LARGE
-            : STATUS.SMALL
+              ? STATUS.LARGE
+              : onlyLarge
+                ? STATUS.LARGE
+                : STATUS.SMALL
         );
       } else {
         this._animateTo();
@@ -253,8 +253,8 @@ class SwipeablePanel extends React.Component<
       newY = this.props.smallPanelHeight
         ? FULL_HEIGHT - this.props.smallPanelHeight
         : this.state.orientation === "portrait"
-        ? FULL_HEIGHT - 400
-        : FULL_HEIGHT / 3;
+          ? FULL_HEIGHT - 400
+          : FULL_HEIGHT / 3;
     } else if (newStatus === STATUS.LARGE) {
       newY = this.props.largePanelHeight
         ? FULL_HEIGHT - this.props.largePanelHeight
@@ -417,6 +417,7 @@ const SwipeablePanelStyles = StyleSheet.create({
     shadowRadius: 1.0,
     elevation: 1,
     // zIndex: 2,
+    borderRadius: 10,
   },
   scrollViewContentContainerStyle: {
     width: "100%",

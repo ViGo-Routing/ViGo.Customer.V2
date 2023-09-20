@@ -14,12 +14,12 @@ import { getVehicleTypeById } from "../../service/vehicleTypeService";
 import { getWalletByUserId } from "../../service/walletService";
 import { UserContext } from "../../context/UserContext";
 import { MapPinIcon, UserCircleIcon } from "react-native-heroicons/solid";
-import { Box, HStack, View, Text, VStack, ScrollView } from "native-base";
+import { Box, HStack, View, Text, VStack, ScrollView, Divider } from "native-base";
 import { createRoutine } from "../../service/routineService";
 
 const BookingDetailScreen = ({ route }) => {
   const { user } = useContext(UserContext);
-  const { routines, roundTrip, data, dataRoundTrip, routeId, daysOfWeek } = route.params;
+  const { routines, roundTrip, data, dataRoundTrip, routeId, daysOfWeek, numberOfOccurrences } = route.params;
   const currentDate = new Date();
   console.log(
     "routinesroutines",
@@ -51,6 +51,8 @@ const BookingDetailScreen = ({ route }) => {
           distance: result.data.distance,
           duration: result.data.duration,
           totalNumberOfTickets: result.data.type != "ROUND_TRIP" ? data.length : (data.length * 2),
+          eachWeekTripsCount: daysOfWeek.length,
+          totalFrequencyCount: numberOfOccurrences,
           tripType: result.data.type,
           routineType: result.data.routineType,
           roundTripBeginTime: (dataRoundTrip != null && result.data.type == "ROUND_TRIP") ? dataRoundTrip[0].pickupTime : data[0].pickupTime,
@@ -61,6 +63,7 @@ const BookingDetailScreen = ({ route }) => {
         setPickupPosition(result.data.startStation);
         setDestinationPosition(result.data.endStation);
         await createFareCalculate(dataResponse).then((response) => {
+          console.log("dataResponse", response)
           setFareCalculation(response);
         });
         await getVehicleTypeById(dataResponse.vehicleTypeId).then(
@@ -260,10 +263,10 @@ const BookingDetailScreen = ({ route }) => {
                 <Divider
                   my="2"
                   _light={{
-                    bg: "muted.800",
+                    bg: "gray.200",
                   }}
                   _dark={{
-                    bg: "muted.50",
+                    bg: "gray.50",
                   }}
                 />
                 <HStack alignItems="center">
@@ -325,7 +328,9 @@ const BookingDetailScreen = ({ route }) => {
             />
             <DetailCard
               title="Số chuyến đi"
-              info={data === null ? 0 : data.length}
+              info={routeData === null
+                ? ""
+                : routeData.tripType != "ROUND_TRIP" ? data.length : (data.length * 2)}
             />
           </View>
           <Text fontSize={25} bold color="black">
@@ -334,15 +339,19 @@ const BookingDetailScreen = ({ route }) => {
           {fareCalculation != null && <View style={styles.cardInsideDateTime} m={2}>
             <DetailCard
               title="Giá gốc"
-              info={formatMoney(fareCalculation?.originalFare)}
+              info={formatMoney(fareCalculation?.originalFare + fareCalculation?.roundTripOriginalFare)}
+            />
+            <DetailCard
+              title="Tổng khuyến mãi"
+              info={formatMoney(fareCalculation?.routineTypeDiscount + fareCalculation?.roundTripRoutineTypeDiscount)}
             />
             <DetailCard
               title="Phụ phí"
-              info={formatMoney(fareCalculation?.additionalFare)}
+              info={formatMoney(fareCalculation?.additionalFare + fareCalculation?.roundTripAdditionalFare)}
             />
             <DetailCard
               title="Tổng tiền"
-              info={formatMoney(fareCalculation?.finalFare)}
+              info={formatMoney(fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare)}
             />
           </View>}
         </View>

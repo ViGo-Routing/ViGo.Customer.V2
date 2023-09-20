@@ -210,7 +210,7 @@ const RoutineGenerator = ({ route }) => {
         if (routines.length > 0) {
           await checkRoutine(requestData).then((response) => {
             if (response != null) {
-              navigation.navigate("BookingDetail", { routines: requestData, data: routines, dataRoundTrip: roundRoutines, routeId: routeId, daysOfWeek: selectedDays })
+              navigation.navigate("BookingDetail", { routines: requestData, data: routines, dataRoundTrip: roundRoutines, routeId: routeId, daysOfWeek: selectedDays, numberOfOccurrences: parseInt(numberOfOccurrences) })
             } else {
               toast.show({
                 title: "Lỗi tạo lịch trình",
@@ -234,7 +234,7 @@ const RoutineGenerator = ({ route }) => {
           const check2 = await checkRoutine(requestData2);
 
           if (check1 != null && check2 != null) {
-            navigation.navigate("BookingDetail", { routines: requestData1, roundTrip: requestData2, data: routines, dataRoundTrip: roundRoutines, routeId: routeId, daysOfWeek: selectedDays })
+            navigation.navigate("BookingDetail", { routines: requestData1, roundTrip: requestData2, data: routines, dataRoundTrip: roundRoutines, routeId: routeId, daysOfWeek: selectedDays, numberOfOccurrences: parseInt(numberOfOccurrences) })
           }
           else {
             toast.show({

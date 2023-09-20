@@ -88,22 +88,22 @@ export const useOnNotificationClickHook = (setIsLoading) => {
       .then(async (remoteMessage) => {
         if (remoteMessage) {
           if (remoteMessage.data.action == "bookingDetail") {
-            if (remoteMessage.data.status == "ARRIVE_AT_DROPOFF") {
-              setInitialScreen("Feedback");
-              setInitialParams({
-                bookingDetailId: remoteMessage.data.bookingDetailId,
-              });
-            } else if (remoteMessage.data.status == "GOING_TO_PICKUP") {
-              setInitialScreen("TrackingLocation");
-              setInitialParams({
-                bookingDetailId: remoteMessage.data.bookingDetailId,
-              });
-            } else if (remoteMessage.data.status == "GOING_TO_DROPOFF") {
-              setInitialScreen("TrackingOngoingLocation");
-              setInitialParams({
-                bookingDetailId: remoteMessage.data.bookingDetailId,
-              });
-            }
+            // if (remoteMessage.data.status == "ARRIVE_AT_DROPOFF") {
+            //   setInitialScreen("Feedback");
+            //   setInitialParams({
+            //     bookingDetailId: remoteMessage.data.bookingDetailId,
+            //   });
+            // } else if (remoteMessage.data.status == "GOING_TO_PICKUP") {
+            //   setInitialScreen("TrackingLocation");
+            //   setInitialParams({
+            //     bookingDetailId: remoteMessage.data.bookingDetailId,
+            //   });
+            // } else if (remoteMessage.data.status == "GOING_TO_DROPOFF") {
+            //   setInitialScreen("TrackingOngoingLocation");
+            //   setInitialParams({
+            //     bookingDetailId: remoteMessage.data.bookingDetailId,
+            //   });
+            // }
 
           } else if (remoteMessage.data.action == "login") {
             setUser(null);

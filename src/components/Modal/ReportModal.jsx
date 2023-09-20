@@ -17,7 +17,7 @@ function ReportModal({ bookingDetailId, isOpen, onClose }) {
   const [inputValue, setInputValue] = useState("");
   const [selectedValue, setSelectedValue] = useState("DRIVER_NOT_COMING");
   const [textareaValue, setTextareaValue] = useState("");
-
+  const navigation = useNavigation();
   const handleInputChange = (text) => {
     setInputValue(text);
   };
@@ -43,13 +43,16 @@ function ReportModal({ bookingDetailId, isOpen, onClose }) {
       setInputValue("");
       setSelectedValue("DRIVER_NOT_COMING");
       setTextareaValue("");
-
+      navi
       Toast.show({
         title: "Báo cáo thành công",
         variant: "top-accent",
         description: "Cảm ơn bạn đã báo cáo ",
         placement: "bottom",
       });
+      navigation.navigate("ReportDetail", {
+        reportId: response.id,
+      })
       onClose();
     }
   };

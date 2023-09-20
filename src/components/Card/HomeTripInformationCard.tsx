@@ -23,7 +23,7 @@ const HomeTripInformationCard = ({
     switch (status) {
       case "GOING_TO_PICKUP":
         return `Giờ đón khách: ${toVnTimeString(
-          upcomingTrip.customerDesiredPickupTime
+          bookingDetail.customerDesiredPickupTime
         )}`;
       // break;
       case "ARRIVE_AT_PICKUP":
@@ -54,8 +54,8 @@ const HomeTripInformationCard = ({
       {currentTrip && (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("CurrentStartingTrip", {
-              bookingDetailId: currentTrip.id,
+            navigation.navigate("TrackingOnGoingLocation", {
+              bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01",
             })
           }
         >
@@ -83,7 +83,7 @@ const HomeTripInformationCard = ({
       {upcomingTrip && !currentTrip && (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("StartRoute", { item: upcomingTrip })
+            navigation.navigate("TrackingOnGoingLocation", { bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01", })
           }
         >
           <VStack>
@@ -91,12 +91,12 @@ const HomeTripInformationCard = ({
               <Badge colorScheme={"info"}>Sắp tới</Badge>
             </HStack>
             <Text fontSize={18} bold isTruncated width="95%">
-              {upcomingTrip.startStation.name} - {upcomingTrip.endStation.name}
+              {upcomingTrip?.startStation.name} - {upcomingTrip.endStation.name}
             </Text>
             <HStack justifyContent="space-between" width="95%">
               <Text>
                 Giờ đón khách:{" "}
-                {toVnTimeString(upcomingTrip.customerDesiredPickupTime)}
+                {/* {toVnTimeString(upcomingTrip?.customerDesiredPickupTime)} */}
               </Text>
               <Text>{toVnDateString(upcomingTrip.date)}</Text>
             </HStack>

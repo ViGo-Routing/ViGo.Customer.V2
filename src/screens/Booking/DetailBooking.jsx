@@ -169,7 +169,7 @@ export const DetailBookingScreen = ({ route }) => {
                                         <HStack space={5} alignItems="center">
                                             <Text w={160} fontSize={18} fontWeight="bold">
 
-                                                khoảng thời gian
+                                                Khoảng thời gian:
                                             </Text>
                                             <Text w={50} fontSize={18} >
                                                 {bookingDetail.customerRoute.duration}

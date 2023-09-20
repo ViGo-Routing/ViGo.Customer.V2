@@ -43,6 +43,7 @@ import {
 import { getRouteById } from "../../service/routeService";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
+import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 
 const UpdateBookingScreen = (props) => {
   const navigation = useNavigation();
@@ -83,6 +84,8 @@ const UpdateBookingScreen = (props) => {
   const [route, setRoute] = useState("");
   const [vnDays, setVnDays] = useState(null);
   const toast = useToast();
+
+  const [isLoading, setIsLoading] = useState(false);
   const currentDate = new Date();
   const panelRef = useRef(null);
 
@@ -198,7 +201,7 @@ const UpdateBookingScreen = (props) => {
   };
   const updateBooking = async () => {
     try {
-      console.log("routeRoutines", routines);
+      console.log("routeRoutines", type);
       let routeId = routines.routeId;
       let routeRoutines = routines.routeRoutines;
       let roundTripRoutines = null
@@ -254,9 +257,11 @@ const UpdateBookingScreen = (props) => {
           text: "Có",
           onPress: async () => {
             try {
+              setIsLoading(true)
               await updateBookingById(bookingId, requestData).then(
                 (response) => {
                   if (response != null) {
+                    setIsLoading(false)
                     Alert.alert(
                       "Hoàn Thành",
                       "Bạn vừa hoàn tất cập nhật lại chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
@@ -563,6 +568,7 @@ const UpdateBookingScreen = (props) => {
 
   return (
     <View style={styles.container}>
+      <ViGoSpinner isLoading={isLoading} />
       <View style={styles.body}>
         <Map
           pickupPosition={pickupPosition}

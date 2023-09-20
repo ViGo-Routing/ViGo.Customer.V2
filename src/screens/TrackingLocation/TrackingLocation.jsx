@@ -9,6 +9,7 @@ import {
   CalendarDaysIcon,
   CalendarIcon,
   ClockIcon,
+  FlagIcon,
   MapPinIcon,
   PhoneIcon,
   RocketLaunchIcon,
@@ -22,8 +23,10 @@ import {
   Box,
   Center,
   CloseIcon,
+  Divider,
   HStack,
   IconButton,
+  Pressable,
   Spinner,
   Text,
   VStack,
@@ -36,7 +39,8 @@ import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import { Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import DriverInformationCard from "../../components/Card/DriverInformationCard";
-const TrackingLocationScreen = ({}) => {
+import ReportModal from "../../components/Modal/ReportModal";
+const TrackingLocationScreen = ({ }) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -51,27 +55,28 @@ const TrackingLocationScreen = ({}) => {
 
   const [customerLocation, setCustomerLocation] = useState(null); // Initialize as null
   const [bookingDetail, setBookingDetail] = useState(null); // Initialize as null
+  const slideUp = new Animated.Value(0);
+  const slideUpHandler = () => {
+    Animated.timing(slideUp, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
   const panelRef = useRef(null);
   useEffect(() => {
+
     SignalRService.registerCustomer(tripId);
     const locationTrackingListener = SignalRService.onLocationTracking(
       (latitude, longitude) => {
         setDriverLocation({ latitude, longitude });
       }
     );
-    const slideUp = new Animated.Value(0);
-    const slideUpHandler = () => {
-      Animated.timing(slideUp, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    };
     loadBookingDetailWithId();
 
-    slideUpHandler();
     const focus_unsub = navigation.addListener("focus", () => {
       loadBookingDetailWithId();
+      slideUpHandler();
     });
     const locationUpdateInterval = setInterval(() => {
       Geolocation.getCurrentPosition(
@@ -85,11 +90,11 @@ const TrackingLocationScreen = ({}) => {
         { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
       );
     }, 3000);
-
     return () => {
       focus_unsub();
       locationTrackingListener && locationTrackingListener.off(); // Check if the listener exists
       clearInterval(locationUpdateInterval);
+      slideUpHandler();
     };
   }, []);
 
@@ -118,41 +123,45 @@ const TrackingLocationScreen = ({}) => {
     return (
       <Box>
         <View style={styles.card}>
-          <Box style={styles.cardInsideDateTime}>
-            <VStack>
-              <HStack alignItems="center">
-                <UserCircleIcon p={2} size={20} color="blue" />
-                {bookingDetail !== null ? (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    {bookingDetail.startStation.name}
+          <Box >
+            <VStack >
+              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                <Box pr={2}>
+                  <MapPinIcon size={30} color={themeColors.primary} />
+                </Box>
+
+                <VStack w="95%">
+                  <Text fontSize={15} color="black" bold>
+                    Điểm đi:{" "}
                   </Text>
-                ) : (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    Đang tải ...
+                  <Text fontSize={15}>
+                    {bookingDetail.startStation.address}
                   </Text>
-                )}
-              </HStack>
-              <Divider
-                my="2"
-                _light={{
-                  bg: "muted.800",
-                }}
-                _dark={{
-                  bg: "muted.50",
-                }}
-              />
-              <HStack alignItems="center">
-                <MapPinIcon p={2} size={20} color="orange" />
-                {bookingDetail !== null ? (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    {bookingDetail.endStation.name}
+                </VStack>
+              </HStack>)}
+              {/* <Divider
+                    my="2"
+                    _light={{
+                      bg: "muted.800",
+                    }}
+                    _dark={{
+                      bg: "muted.50",
+                    }}
+                  /> */}
+              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                <Box pr={2}>
+                  <MapPinIcon size={30} color={themeColors.primary} />
+                </Box>
+
+                <VStack w="95%">
+                  <Text fontSize={15} color="black" bold>
+                    Điểm đến:{" "}
                   </Text>
-                ) : (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    Đang tải ...
+                  <Text fontSize={15}>
+                    {bookingDetail.endStation.address}
                   </Text>
-                )}
-              </HStack>
+                </VStack>
+              </HStack>)}
             </VStack>
           </Box>
         </View>
@@ -163,36 +172,28 @@ const TrackingLocationScreen = ({}) => {
   const renderFullTripInformation = () => {
     return (
       <Box>
-        <View style={styles.cardInsideDateTime} m={2}>
+        <View m={2}>
           {bookingDetail == null ? (
             <Spinner color={themeColors.primary} />
           ) : (
             <VStack justifyContent="space-evenly">
-              <Box style={styles.cardInsideDateTime}>
-                <VStack>
-                  <HStack alignItems="center">
-                    <UserCircleIcon p={2} size={20} color="blue" />
-                    {bookingDetail !== null ? (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        {bookingDetail.startStation.name}
+              <Box p={2}>
+                <VStack >
+                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                    <Box pr={2}>
+                      <MapPinIcon size={30} color={themeColors.primary} />
+                    </Box>
+
+                    <VStack w="95%">
+                      <Text fontSize={15} color="black" bold>
+                        Điểm đi:{" "}
                       </Text>
-                    ) : (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        Đang tải ...
+                      <Text fontSize={15}>
+                        {bookingDetail.startStation.address}
                       </Text>
-                    )}
-                  </HStack>
-                  <Divider
+                    </VStack>
+                  </HStack>)}
+                  {/* <Divider
                     my="2"
                     _light={{
                       bg: "muted.800",
@@ -200,29 +201,21 @@ const TrackingLocationScreen = ({}) => {
                     _dark={{
                       bg: "muted.50",
                     }}
-                  />
-                  <HStack alignItems="center">
-                    <MapPinIcon p={2} size={20} color="orange" />
-                    {bookingDetail !== null ? (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        {bookingDetail.endStation.name}
+                  /> */}
+                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                    <Box pr={2}>
+                      <MapPinIcon size={30} color={themeColors.primary} />
+                    </Box>
+
+                    <VStack w="95%">
+                      <Text fontSize={15} color="black" bold>
+                        Điểm đến:{" "}
                       </Text>
-                    ) : (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        Đang tải ...
+                      <Text fontSize={15}>
+                        {bookingDetail.endStation.address}
                       </Text>
-                    )}
-                  </HStack>
+                    </VStack>
+                  </HStack>)}
                 </VStack>
               </Box>
               {/* <VStack my={1} p={1} justifyContent="space-between">
@@ -278,21 +271,28 @@ const TrackingLocationScreen = ({}) => {
                   </VStack>
                 </HStack>
               </VStack> */}
-              <Box mt="3">
+              {bookingDetail != null && (<Box mt="3" p={3}>
                 <DriverInformationCard
                   driver={bookingDetail.driver}
                   displayDriverText={true}
                   displayCall={true}
                   bookingDetailId={bookingDetail.id}
                 />
-              </Box>
+                <Pressable onPress={toggleModal}>
+                  <FlagIcon size={25} color={themeColors.primary} />
+                </Pressable>
+              </Box>)}
             </VStack>
           )}
         </View>
       </Box>
     );
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
   return (
     <View style={{ flex: 1 }}>
       <Header title="Chi tiết" />
@@ -334,7 +334,7 @@ const TrackingLocationScreen = ({}) => {
               strokeWidth={3}
               strokeColor="#00A1A1"
               mode="motobike"
-              //onReady={handleDirectionsReady}
+            //onReady={handleDirectionsReady}
             />
 
             <Marker
@@ -356,27 +356,58 @@ const TrackingLocationScreen = ({}) => {
             </Marker>
           </MapView>
         )}
-      <Box>
-        <SwipeablePanel
-          isActive={true}
-          fullWidth={true}
-          noBackgroundOpacity
-          // showCloseButton
-          allowTouchOutside
-          smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
-          smallPanelHeight={300}
-          // openLarge={openLargePanel}
-          ref={panelRef}
-          largePanelHeight={500}
+      {customerLocation != null &&
+        driverLocation.latitude !== 0 &&
+        driverLocation.longitude !== 0 && (<Box>
+          <SwipeablePanel
+            isActive={true}
+            fullWidth={true}
+            noBackgroundOpacity
+            // showCloseButton
+            allowTouchOutside
+            smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
+            smallPanelHeight={300}
+            // openLarge={openLargePanel}
+            ref={panelRef}
+            largePanelHeight={500}
           // onlySmall
-        >
-          {<Box px="6">{renderFullTripInformation()}</Box>}
-        </SwipeablePanel>
-      </Box>
+          >
+            {<Box px="6">{renderFullTripInformation()}</Box>}
+          </SwipeablePanel>
+          <ReportModal
+            bookingDetailId={bookingDetail.id}
+            isOpen={isModalOpen}
+            onClose={toggleModal}
+          />
+        </Box>)}
     </View>
   );
 };
 const styles = StyleSheet.create({
+  cardInsideDateTime: {
+    flexGrow: 1,
+    backgroundColor: "white",
+    borderRadius: 10,
+
+    paddingHorizontal: 5,
+    marginVertical: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    flexDirection: "column",
+    flexGrow: 1,
+    margin: 5,
+  },
+  card: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
   container: {
     flexDirection: "column",
     flexGrow: 1,

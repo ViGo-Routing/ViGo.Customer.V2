@@ -15,21 +15,21 @@ import {
 } from "native-base";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
-import { eventNames } from "../../utils/alertUtils";
 import { NativeEventEmitter, NativeModules } from "react-native";
 import { ThemeComponentSizeType } from "native-base/lib/typescript/components/types";
+import { eventNames } from "../../utils/alertUtils";
 
 interface ViGoAlertProps {
   title: ReactNode;
   description: ReactNode;
   status: "info" | (string & {}) | "error" | "success" | "warning";
   placement:
-    | "bottom-right"
-    | "bottom"
-    | "top"
-    | "top-right"
-    | "top-left"
-    | "bottom-left";
+  | "bottom-right"
+  | "bottom"
+  | "top"
+  | "top-right"
+  | "top-left"
+  | "bottom-left";
   isDialog: boolean;
   isSlide: boolean;
   duration: number;
@@ -63,12 +63,12 @@ const ViGoAlertProvider = (/*{
   );
   const [placement, setPlacement] = useState(
     "bottom" as
-      | "bottom-right"
-      | "bottom"
-      | "top"
-      | "top-right"
-      | "top-left"
-      | "bottom-left"
+    | "bottom-right"
+    | "bottom"
+    | "top"
+    | "top-right"
+    | "top-left"
+    | "bottom-left"
   );
   const [isDialog, setIsDialog] = useState(false);
   const [duration, setDuration] = useState(5000);
@@ -91,7 +91,7 @@ const ViGoAlertProvider = (/*{
   );
 
   // const defaultOkButtonPress = () => {setIsDialogOpen(false);};
-  const [okButtonPress, setOkButtonPress] = useState(() => () => {});
+  const [okButtonPress, setOkButtonPress] = useState(() => () => { });
 
   const cancelRef = useRef(null);
   // const okButtonRef = useRef(null);
@@ -112,15 +112,15 @@ const ViGoAlertProvider = (/*{
     primaryButtonText = "Đã hiểu",
     displayCloseButton = true,
     size = "md",
-    onOkPress = () => {},
+    onOkPress = () => { },
   }: // onOkPress = () => {},
-  //   isCancelDisplayed = true,
-  // cancelButtonText = "Hủy",
-  // onCancelPress = () => {},
-  // isOkDisplayed = true,
-  // okButtonText = "OK",
-  // onOkPress = () => {}
-  ViGoAlertProps) => {
+    //   isCancelDisplayed = true,
+    // cancelButtonText = "Hủy",
+    // onCancelPress = () => {},
+    // isOkDisplayed = true,
+    // okButtonText = "OK",
+    // onOkPress = () => {}
+    ViGoAlertProps) => {
     // console.log("Event Invoked");
     if (!isDialog && !isSlide) {
       // Toast
@@ -251,7 +251,7 @@ const ViGoAlertProvider = (/*{
                     setIsDialogOpen(false);
                     okButtonPress();
                   }}
-                  // ref={okButtonRef}
+                // ref={okButtonRef}
                 >
                   {primaryButtonText}
                 </Button>

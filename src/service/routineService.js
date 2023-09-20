@@ -11,6 +11,7 @@ export const createRoutine = async requestData => {
         if (error.response && error.response.data) {
             // Assuming the error response has a 'data' property containing error details
             const errorDetails = error.response.data;
+            console.log("createRoutine", errorDetails)
             Toast.show({
                 title: errorDetails,
                 placement: "bottom",

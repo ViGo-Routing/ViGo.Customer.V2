@@ -25,6 +25,7 @@ const DriverInformationCard = ({
 }: DriverInformationCardProps) => {
   const navigation = useNavigation();
 
+  console.log("Driver ", driver)
   const handleCall = (phoneNumber: string) => {
     const args = {
       number: phoneNumber,
@@ -62,11 +63,10 @@ const DriverInformationCard = ({
               {!displayDriverText && <Text bold>{driver.name}</Text>}
               <HStack>
                 <Text>
-                  {`${driver.gender == true ? "Nam" : "Nữ"}${
-                    driver.dateOfBirth
-                      ? ` | ${calculateAge(driver.dateOfBirth)} tuổi`
-                      : ""
-                  }`}
+                  {`${driver.gender == true ? "Nam" : "Nữ"}${driver.dateOfBirth
+                    ? ` | ${calculateAge(driver.dateOfBirth)} tuổi`
+                    : ""
+                    }`}
                 </Text>
               </HStack>
               <Text>

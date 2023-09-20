@@ -20,6 +20,7 @@ import { UserContext } from "../../../context/UserContext";
 import { Text, FlatList, Image, Heading, HStack } from "native-base";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import WebView from "react-native-webview";
+import Divider from "../../../components/Divider/Divider";
 
 const TopupScreen = () => {
   const { user } = useContext(UserContext);

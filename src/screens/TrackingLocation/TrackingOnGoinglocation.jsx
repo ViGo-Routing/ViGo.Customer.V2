@@ -9,6 +9,7 @@ import {
   CalendarDaysIcon,
   CalendarIcon,
   ClockIcon,
+  FlagIcon,
   MapPinIcon,
   PhoneIcon,
   RocketLaunchIcon,
@@ -22,8 +23,10 @@ import {
   Box,
   Center,
   CloseIcon,
+  Divider,
   HStack,
   IconButton,
+  Pressable,
   Spinner,
   Text,
   VStack,
@@ -36,6 +39,7 @@ import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import { Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import DriverInformationCard from "../../components/Card/DriverInformationCard";
+import ReportModal from "../../components/Modal/ReportModal";
 const TrackingOnGoingLocationScreen = ({ route }) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
@@ -68,15 +72,17 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
         { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
       );
     }, 3000);
-    slideUpHandler();
+
     getBookingDetailById();
     const focus_unsub = navigation.addListener("focus", () => {
       loadBookingDetailWithId();
     });
+    slideUpHandler();
+
     return () => {
       focus_unsub();
-      locationTrackingListener && locationTrackingListener.off(); // Check if the listener exists
       clearInterval(locationUpdateInterval);
+      slideUpHandler();
     };
   }, []);
 
@@ -89,82 +95,24 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
   const renderSmallTripInformation = () => {
     return (
       <Box>
-        <View style={styles.card}>
-          <Box style={styles.cardInsideDateTime}>
-            <VStack>
-              <HStack alignItems="center">
-                <UserCircleIcon p={2} size={20} color="blue" />
-                {bookingDetail !== null ? (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    {bookingDetail.startStation.name}
-                  </Text>
-                ) : (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    Đang tải ...
-                  </Text>
-                )}
-              </HStack>
-              <Divider
-                my="2"
-                _light={{
-                  bg: "muted.800",
-                }}
-                _dark={{
-                  bg: "muted.50",
-                }}
-              />
-              <HStack alignItems="center">
-                <MapPinIcon p={2} size={20} color="orange" />
-                {bookingDetail !== null ? (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    {bookingDetail.endStation.name}
-                  </Text>
-                ) : (
-                  <Text p={2} w={300} alignItems="center" color={"gray.500"}>
-                    Đang tải ...
-                  </Text>
-                )}
-              </HStack>
-            </VStack>
-          </Box>
-        </View>
-      </Box>
-    );
-  };
+        <View m={2}>
+          <Box m={2} >
+            <VStack >
+              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                <Box p={2}>
+                  <MapPinIcon size={30} color={themeColors.primary} />
+                </Box>
 
-  const renderFullTripInformation = () => {
-    return (
-      <Box>
-        <View style={styles.cardInsideDateTime} m={2}>
-          {bookingDetail == null ? (
-            <Spinner color={themeColors.primary} />
-          ) : (
-            <VStack justifyContent="space-evenly">
-              <Box style={styles.cardInsideDateTime}>
-                <VStack>
-                  <HStack alignItems="center">
-                    <UserCircleIcon p={2} size={20} color="blue" />
-                    {bookingDetail !== null ? (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        {bookingDetail.startStation.name}
-                      </Text>
-                    ) : (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        Đang tải ...
-                      </Text>
-                    )}
-                  </HStack>
-                  <Divider
+                <VStack w="95%">
+                  <Text fontSize={15} color="black" bold>
+                    Điểm đi:{" "}
+                  </Text>
+                  <Text fontSize={15}>
+                    {bookingDetail.startStation.address}
+                  </Text>
+                </VStack>
+              </HStack>)}
+              {/* <Divider
                     my="2"
                     _light={{
                       bg: "muted.800",
@@ -172,30 +120,81 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
                     _dark={{
                       bg: "muted.50",
                     }}
-                  />
-                  <HStack alignItems="center">
-                    <MapPinIcon p={2} size={20} color="orange" />
-                    {bookingDetail !== null ? (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        {bookingDetail.endStation.name}
-                      </Text>
-                    ) : (
-                      <Text
-                        p={2}
-                        w={300}
-                        alignItems="center"
-                        color={"gray.500"}
-                      >
-                        Đang tải ...
-                      </Text>
-                    )}
-                  </HStack>
+                  /> */}
+              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                <Box p={2}>
+                  <MapPinIcon size={30} color={themeColors.primary} />
+                </Box>
+
+                <VStack w="95%">
+                  <Text fontSize={15} color="black" bold>
+                    Điểm đến:{" "}
+                  </Text>
+                  <Text fontSize={15}>
+                    {bookingDetail.endStation.address}
+                  </Text>
                 </VStack>
+              </HStack>)}
+            </VStack>
+          </Box>
+        </View>
+      </Box>
+    );
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+  const renderFullTripInformation = () => {
+    return (
+      <Box>
+        <View m={2}>
+          {bookingDetail == null ? (
+            <Spinner color={themeColors.primary} />
+          ) : (
+            <VStack justifyContent="space-evenly">
+              <Box py={3}>
+                <VStack >
+                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                    <Box pr={2}>
+                      <MapPinIcon size={30} color={themeColors.primary} />
+                    </Box>
+
+                    <VStack w="95%">
+                      <Text fontSize={15} color="black" bold>
+                        Điểm đi:{" "}
+                      </Text>
+                      <Text fontSize={15}>
+                        {bookingDetail.startStation.address}
+                      </Text>
+                    </VStack>
+                  </HStack>)}
+                  {/* <Divider
+                    my="2"
+                    _light={{
+                      bg: "muted.800",
+                    }}
+                    _dark={{
+                      bg: "muted.50",
+                    }}
+                  /> */}
+                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
+                    <Box pr={2}>
+                      <MapPinIcon size={30} color={themeColors.primary} />
+                    </Box>
+
+                    <VStack w="95%">
+                      <Text fontSize={15} color="black" bold>
+                        Điểm đến:{" "}
+                      </Text>
+                      <Text fontSize={15}>
+                        {bookingDetail.endStation.address}
+                      </Text>
+                    </VStack>
+                  </HStack>)}
+                </VStack>
+
               </Box>
               {/* <VStack my={1} p={1} justifyContent="space-between">
                                 <HStack
@@ -256,10 +255,13 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
                 displayCall={true}
                 bookingDetailId={bookingDetail.id}
               />
+              <Pressable onPress={toggleModal}>
+                <FlagIcon size={25} color={themeColors.primary} />
+              </Pressable>
             </VStack>
           )}
         </View>
-      </Box>
+      </Box >
     );
   };
 
@@ -301,21 +303,21 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
               strokeWidth={3}
               strokeColor="#00A1A1"
               mode="motobike"
-              //onReady={handleDirectionsReady}
+            //onReady={handleDirectionsReady}
             />
 
             <Marker
               coordinate={{
-                latitude: bookingDetail.endStation.latitude,
-                longitude: bookingDetail.endStation.longitude,
+                latitude: customerLocation.latitude,
+                longitude: customerLocation.longitude,
               }}
               title="Driver"
               icon={require("../../assets/icons/vigobike.png")}
             />
             <Marker
               coordinate={{
-                latitude: customerLocation.latitude,
-                longitude: customerLocation.longitude,
+                latitude: bookingDetail.endStation.latitude,
+                longitude: bookingDetail.endStation.longitude,
               }}
               title="Customer"
             >
@@ -323,7 +325,7 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
             </Marker>
           </MapView>
         )}
-      <Box>
+      {customerLocation != null && (<Box>
         <SwipeablePanel
           isActive={true}
           fullWidth={true}
@@ -335,15 +337,45 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
           // openLarge={openLargePanel}
           ref={panelRef}
           largePanelHeight={500}
-          // onlySmall
+        // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}
         </SwipeablePanel>
-      </Box>
+        <ReportModal
+          bookingDetailId={bookingDetail.id}
+          isOpen={isModalOpen}
+          onClose={toggleModal}
+        />
+      </Box>)}
+
     </View>
   );
 };
 const styles = StyleSheet.create({
+  cardInsideDateTime: {
+    flexGrow: 1,
+    backgroundColor: "white",
+    borderRadius: 10,
+
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    flexDirection: "column",
+    flexGrow: 1,
+    margin: 5,
+  },
+  card: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
   container: {
     flexDirection: "column",
     flexGrow: 1,

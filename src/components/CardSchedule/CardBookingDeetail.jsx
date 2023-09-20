@@ -48,7 +48,7 @@ import {
   getCancelFee,
 } from "../../service/bookingDetailService";
 import ViGoSpinner from "../Spinner/ViGoSpinner";
-import { handleError } from "../../utils/alertUtils";
+import { eventNames, handleError } from "../../utils/alertUtils";
 import { NativeEventEmitter } from "react-native";
 import ReportModal from "../Modal/ReportModal";
 const CardBookingDetail = ({ item }) => {
@@ -124,7 +124,7 @@ const CardBookingDetail = ({ item }) => {
             (nếu có) tùy vào thời gian và chuyến xe mà bạn hủy.
           </Text>
           <Text>
-            Phí nhận chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được hoàn về
+            Phí trả trước cho chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được hoàn về
             ví của bạn sau khi hủy chuyến thành công.
           </Text>
           <Text marginTop="2">
@@ -225,7 +225,7 @@ const CardBookingDetail = ({ item }) => {
                 <FlagIcon size={25} color={themeColors.primary} />
               </Pressable>
             )}
-            {item.driver !== null && (
+            {item.driver !== null && item.status !== "COMPLETED" && item.status !== "CANCEL" && (
               <HStack space={4}>
                 <Tooltip label="Nhắn tin" placement="auto">
                   <Pressable
@@ -267,12 +267,12 @@ const CardBookingDetail = ({ item }) => {
             )}
             {(item.status === "PENDING_ASSIGN" ||
               item.status === "ASSIGNED") && (
-              <Tooltip label="Đánh giá" openDelay={500}>
-                <Pressable onPress={openConfirmCancelTrip}>
-                  <XCircleIcon size={25} color={themeColors.primary} />
-                </Pressable>
-              </Tooltip>
-            )}
+                <Tooltip label="Đánh giá" openDelay={500}>
+                  <Pressable onPress={openConfirmCancelTrip}>
+                    <XCircleIcon size={25} color={themeColors.primary} />
+                  </Pressable>
+                </Tooltip>
+              )}
           </HStack>
         </VStack>
         <CancelBookingDetailConfirmAlert

@@ -161,7 +161,7 @@ const HomeComponent = () => {
             renderItem={({ item }) => {
               return <CardHistory key={item.id} element={item} />;
             }}
-            ListEmptyComponent={<Center h="full" >
+            ListEmptyComponent={<Center alignSelf="center">
               <Center>
                 <Text bold fontSize={25} color={themeColors.primary}>Chưa có dữ liệu</Text>
               </Center>
@@ -180,11 +180,11 @@ const HomeComponent = () => {
           />
 
 
-          <HomeTripInformationCard
+          {(currentTrip != null || upcomingTrip != null) && (<HomeTripInformationCard
             currentTrip={currentTrip}
             upcomingTrip={upcomingTrip}
             navigation={navigation}
-          />
+          />)}
 
 
         </ErrorAlert>
