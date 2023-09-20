@@ -207,6 +207,7 @@ export default function LoginScreen() {
         );
         setConfirm(confirmation);
         setEnterOtpModalVisible(true);
+        auth().onAuthStateChanged(onAuthStateChanged);
       } catch (err) {
         setIsLoading(false);
         // console.log(err);
@@ -225,7 +226,6 @@ export default function LoginScreen() {
   const confirmCode = async () => {
     setIsLoading(true);
     try {
-      auth().onAuthStateChanged(onAuthStateChanged);
       const result = await confirm.confirm(code);
       // const credential = auth.PhoneAuthProvider.credential(
       //   confirm.verificationId,

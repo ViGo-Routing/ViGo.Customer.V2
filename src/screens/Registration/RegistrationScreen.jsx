@@ -157,6 +157,7 @@ const RegistrationScreen = () => {
         );
         setConfirm(confirmation);
         setEnterOtpModalVisible(true);
+        auth().onAuthStateChanged(onAuthStateChanged);
       } catch (err) {
         setIsLoading(false);
         // console.log(err);
@@ -176,15 +177,15 @@ const RegistrationScreen = () => {
     setIsLoading(true);
     try {
       const result = await confirm.confirm(code);
-      const credential = auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        code
-      );
-      const loginInfo = await auth().signInWithCredential(credential);
+      // const credential = auth.PhoneAuthProvider.credential(
+      //   confirm.verificationId,
+      //   code
+      // );
+      // const loginInfo = await auth().signInWithCredential(credential);
 
-      if (loginInfo.user) {
-        auth().onAuthStateChanged(onAuthStateChanged);
-      }
+      // if (loginInfo.user) {
+      //   auth().onAuthStateChanged(onAuthStateChanged);
+      // }
     } catch (err) {
       setIsLoading(false);
       if (err.code == "auth/invalid-verification-code") {
@@ -268,42 +269,43 @@ const RegistrationScreen = () => {
           status: "success",
           // placement: "top-right",
           isDialog: true,
-        });
+          onOkPress: async () => {
+            const response = await login(
+              `+84${phoneNumber.substring(1, 10)}`,
+              firebaseToken
+            );
+            setUser(response.user);
+            try {
+              const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+                {
+                  title: "Cho phép ViGo gửi thông báo đến bạn",
+                  message: `Nhận thông báo về trạng thái giao dịch, nhắc nhở chuyến đi 
+                        trong ngày và hơn thế nữa`,
+                  buttonNeutral: "Hỏi lại sau",
+                  buttonNegative: "Từ chối",
+                  buttonPositive: "Đồng ý",
+                }
+              );
 
-        const response = await login(
-          `+84${phoneNumber.substring(1, 10)}`,
-          firebaseToken
-        );
-        setUser(response.user);
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-            {
-              title: "Cho phép ViGo gửi thông báo đến bạn",
-              message: `Nhận thông báo về trạng thái giao dịch, nhắc nhở chuyến đi 
-                    trong ngày và hơn thế nữa`,
-              buttonNeutral: "Hỏi lại sau",
-              buttonNegative: "Từ chối",
-              buttonPositive: "Đồng ý",
+              console.log(granted);
+
+              if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                await messaging().registerDeviceForRemoteMessages();
+                const fcmToken = await messaging().getToken();
+                await updateUserFcmToken(response.user.id, fcmToken);
+              }
+            } catch (err) {
+              handleError("Có lỗi xảy ra khi đăng ký", err);
             }
-          );
 
-          console.log(granted);
-
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            await messaging().registerDeviceForRemoteMessages();
-            const fcmToken = await messaging().getToken();
-            await updateUserFcmToken(response.user.id, fcmToken);
-          }
-        } catch (err) {
-          handleError("Có lỗi xảy ra khi đăng ký", err);
-        }
-
-        // if (response.user.status == "PENDING") {
-        //   navigation.navigate("NewDriverUpdateProfile");
-        // } else {
-        navigation.navigate("Home");
-        // }
+            // if (response.user.status == "PENDING") {
+            //   navigation.navigate("NewDriverUpdateProfile");
+            // } else {
+            navigation.navigate("Home");
+            // }
+          },
+        });
       }
       // console.log(newUserData);
     } catch (err) {
