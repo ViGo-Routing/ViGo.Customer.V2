@@ -12,6 +12,7 @@ import {
 } from "native-base";
 import { XMarkIcon } from "react-native-heroicons/solid";
 import { createReport } from "../../service/reportService";
+import { useNavigation } from "@react-navigation/native";
 
 function ReportModal({ bookingDetailId, isOpen, onClose }) {
   const [inputValue, setInputValue] = useState("");
@@ -43,7 +44,7 @@ function ReportModal({ bookingDetailId, isOpen, onClose }) {
       setInputValue("");
       setSelectedValue("DRIVER_NOT_COMING");
       setTextareaValue("");
-      navi
+      navi;
       Toast.show({
         title: "Báo cáo thành công",
         variant: "top-accent",
@@ -52,7 +53,7 @@ function ReportModal({ bookingDetailId, isOpen, onClose }) {
       });
       navigation.navigate("ReportDetail", {
         reportId: response.id,
-      })
+      });
       onClose();
     }
   };
