@@ -14,6 +14,7 @@ import MyRouteScreen from "../../screens/MyRoute/MyRouteScreen";
 import HomeComponent from "../../screens/Home/HomeComponent";
 import ProfileSreen from "../../screens/Profile/ProfileScreen";
 import { Box } from "native-base";
+import MyCalendarScreen from "../../screens/MyCalendar/MyCalendarScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -53,6 +54,19 @@ const BottomNavigationBar = () => {
         name="ScheduleTab"
         key="ScheduleTab"
         component={MyRouteScreen}
+        options={{
+          tabBarLabel: "LỊCH TRÌNH",
+          tabBarIcon: ({ focused, color, size }) => (
+            <MapIcon size={size} color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
+
+      <Tab.Screen
+        name="CalendarTab"
+        key="CalendarTab"
+        component={MyCalendarScreen}
         options={{
           tabBarLabel: "LỊCH TRÌNH",
           tabBarIcon: ({ focused, color, size }) => (

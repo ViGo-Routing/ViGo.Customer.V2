@@ -39,6 +39,7 @@ import MyReportScreen from "../screens/Report/MyReportScreen";
 import ReportDetailScreen from "../screens/Report/ReportDetailScreen";
 import MessageScreen from "../screens/Chat/MessageScreen";
 import TrackingOnGoingLocationScreen from "../screens/TrackingLocation/TrackingOnGoinglocation";
+import ScheduleInDateScreen from "../screens/MyCalendar/ScheduleInDateScreen";
 // import TopupAmountScreen from "../screens/Wallet/Topup/TopupAmountModal";
 
 const Stack = createNativeStackNavigator();
@@ -231,6 +232,11 @@ export default function AppNavigation() {
           name="Message"
           options={{ headerShown: false, animation: "slide_from_bottom" }}
           component={MessageScreen}
+        />
+        <Stack.Screen
+          name="ScheduleInDate"
+          options={{ headerShown: false }}
+          component={ScheduleInDateScreen}
         />
       </Stack.Navigator>
     </>

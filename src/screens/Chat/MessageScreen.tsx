@@ -43,7 +43,7 @@ const MessageScreen = () => {
       if (vehicles && vehicles.length > 0) {
         const vehicle = vehicles[0];
         setVehiclePlate(vehicle.licensePlate);
-        console.log(vehicle.licensePlate);
+        // console.log(vehicle.licensePlate);
       } else {
         // console.log("False Vehicle");
         // setIsSubmitted(false);

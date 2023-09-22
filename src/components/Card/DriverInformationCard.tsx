@@ -8,8 +8,9 @@ import call from "react-native-phone-call";
 import { handleError } from "../../utils/alertUtils";
 import { getCancelRateTextColor } from "../../utils/userUtils";
 import { useNavigation } from "@react-navigation/native";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { ChatBubbleLeftRightIcon } from "react-native-heroicons/outline";
+import { getVehicles } from "../../service/vehicleService";
 interface DriverInformationCardProps {
   driver: any;
   displayDriverText?: boolean | undefined;
@@ -25,7 +26,7 @@ const DriverInformationCard = ({
 }: DriverInformationCardProps) => {
   const navigation = useNavigation();
 
-  console.log("Driver ", driver)
+  // console.log("Driver ", driver)
   const handleCall = (phoneNumber: string) => {
     const args = {
       number: phoneNumber,
@@ -37,6 +38,28 @@ const DriverInformationCard = ({
       handleError("Có lỗi xảy ra", error);
     }
   };
+
+  const [vehiclePlate, setVehiclePlate] = useState("");
+
+  const getData = async () => {
+    try {
+      const vehicles = await getVehicles(driver.id);
+      console.log(driver.id);
+      if (vehicles && vehicles.length > 0) {
+        const vehicle = vehicles[0];
+        setVehiclePlate(vehicle.licensePlate);
+        console.log(vehicle.licensePlate);
+      } else {
+      }
+    } catch (error) {
+      handleError("Có lỗi xảy ra", error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <>
@@ -63,12 +86,14 @@ const DriverInformationCard = ({
               {!displayDriverText && <Text bold>{driver.name}</Text>}
               <HStack>
                 <Text>
-                  {`${driver.gender == true ? "Nam" : "Nữ"}${driver.dateOfBirth
-                    ? ` | ${calculateAge(driver.dateOfBirth)} tuổi`
-                    : ""
-                    }`}
+                  {`${driver.gender == true ? "Nam" : "Nữ"}${
+                    driver.dateOfBirth
+                      ? ` | ${calculateAge(driver.dateOfBirth)} tuổi`
+                      : ""
+                  }`}
                 </Text>
               </HStack>
+              {vehiclePlate && <Text>{vehiclePlate}</Text>}
               <Text>
                 Tỉ lệ hủy chuyến:{" "}
                 <Text color={getCancelRateTextColor(driver.canceledTripRate)}>
