@@ -126,17 +126,13 @@ export const getDriverSchedulesForPickingTrip = async (bookingDetailId) => {
 };
 
 export const getUpcomingTrip = async (userId) => {
-  const response = await apiManager.get(
-    `api/BookingDetail/Upcoming/${userId}`
-  );
+  const response = await apiManager.get(`api/BookingDetail/Upcoming/${userId}`);
 
   return response.status == 204 ? null : response.data;
 };
 
 export const getCurrentTrip = async (userId) => {
-  const response = await apiManager.get(
-    `api/BookingDetail/Current/${userId}`
-  );
+  const response = await apiManager.get(`api/BookingDetail/Current/${userId}`);
 
   return response.status == 204 ? null : response.data;
 };
@@ -153,5 +149,33 @@ export const getCancelFee = async (bookingDetailId) => {
   const response = await apiManager.get(
     `api/BookingDetail/Cancel/Fee/${bookingDetailId}`
   );
+  return response.data;
+};
+
+export const getCustomerBookingDetails = async (
+  customerId,
+  minDate = null,
+  maxDate = null,
+  status = "",
+  pageSize = 10,
+  pageNumber = 1,
+  orderBy = null
+) => {
+  let endpoint = `/api/BookingDetail/Customer/${customerId}?pageSize=${pageSize}&pageNumber=${pageNumber}`;
+
+  if (minDate != null) {
+    endpoint += `&minDate=${minDate}`;
+  }
+  if (maxDate != null) {
+    endpoint += `&maxDate=${maxDate}`;
+  }
+  if (status) {
+    endpoint += `&status=${status}`;
+  }
+  if (orderBy) {
+    endpoint += `&orderBy=${orderBy}`;
+  }
+
+  const response = await apiManager.get(endpoint);
   return response.data;
 };
