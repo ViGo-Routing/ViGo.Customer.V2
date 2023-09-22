@@ -43,13 +43,15 @@ const DriverInformationCard = ({
 
   const getData = async () => {
     try {
-      const vehicles = await getVehicles(driver.id);
-      console.log(driver.id);
-      if (vehicles && vehicles.length > 0) {
-        const vehicle = vehicles[0];
-        setVehiclePlate(vehicle.licensePlate);
-        console.log(vehicle.licensePlate);
-      } else {
+      if (driver) {
+        const vehicles = await getVehicles(driver.id);
+        console.log(driver.id);
+        if (vehicles && vehicles.length > 0) {
+          const vehicle = vehicles[0];
+          setVehiclePlate(vehicle.licensePlate);
+          console.log(vehicle.licensePlate);
+        } else {
+        }
       }
     } catch (error) {
       handleError("Có lỗi xảy ra", error);
