@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import Geolocation from "@react-native-community/geolocation";
+import Geolocation from "react-native-geolocation-service";
 import SignalRService from "../../utils/signalRUtils"; // Adjust the path
 import { UserContext } from "../../context/UserContext";
 import {
@@ -96,22 +96,24 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
     return (
       <Box>
         <View m={2}>
-          <Box m={2} >
-            <VStack >
-              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                <Box p={2}>
-                  <MapPinIcon size={30} color={themeColors.primary} />
-                </Box>
+          <Box m={2}>
+            <VStack>
+              {bookingDetail != null && (
+                <HStack my={1} alignItems="center" justifyContent="flex-start">
+                  <Box p={2}>
+                    <MapPinIcon size={30} color={themeColors.primary} />
+                  </Box>
 
-                <VStack w="95%">
-                  <Text fontSize={15} color="black" bold>
-                    Điểm đi:{" "}
-                  </Text>
-                  <Text fontSize={15}>
-                    {bookingDetail.startStation.address}
-                  </Text>
-                </VStack>
-              </HStack>)}
+                  <VStack w="95%">
+                    <Text fontSize={15} color="black" bold>
+                      Điểm đi:{" "}
+                    </Text>
+                    <Text fontSize={15}>
+                      {bookingDetail.startStation.address}
+                    </Text>
+                  </VStack>
+                </HStack>
+              )}
               {/* <Divider
                     my="2"
                     _light={{
@@ -121,20 +123,22 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
                       bg: "muted.50",
                     }}
                   /> */}
-              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                <Box p={2}>
-                  <MapPinIcon size={30} color={themeColors.primary} />
-                </Box>
+              {bookingDetail != null && (
+                <HStack my={1} alignItems="center" justifyContent="flex-start">
+                  <Box p={2}>
+                    <MapPinIcon size={30} color={themeColors.primary} />
+                  </Box>
 
-                <VStack w="95%">
-                  <Text fontSize={15} color="black" bold>
-                    Điểm đến:{" "}
-                  </Text>
-                  <Text fontSize={15}>
-                    {bookingDetail.endStation.address}
-                  </Text>
-                </VStack>
-              </HStack>)}
+                  <VStack w="95%">
+                    <Text fontSize={15} color="black" bold>
+                      Điểm đến:{" "}
+                    </Text>
+                    <Text fontSize={15}>
+                      {bookingDetail.endStation.address}
+                    </Text>
+                  </VStack>
+                </HStack>
+              )}
             </VStack>
           </Box>
         </View>
@@ -155,21 +159,27 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
           ) : (
             <VStack justifyContent="space-evenly">
               <Box py={3}>
-                <VStack >
-                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                    <Box pr={2}>
-                      <MapPinIcon size={30} color={themeColors.primary} />
-                    </Box>
+                <VStack>
+                  {bookingDetail != null && (
+                    <HStack
+                      my={1}
+                      alignItems="center"
+                      justifyContent="flex-start"
+                    >
+                      <Box pr={2}>
+                        <MapPinIcon size={30} color={themeColors.primary} />
+                      </Box>
 
-                    <VStack w="95%">
-                      <Text fontSize={15} color="black" bold>
-                        Điểm đi:{" "}
-                      </Text>
-                      <Text fontSize={15}>
-                        {bookingDetail.startStation.address}
-                      </Text>
-                    </VStack>
-                  </HStack>)}
+                      <VStack w="95%">
+                        <Text fontSize={15} color="black" bold>
+                          Điểm đi:{" "}
+                        </Text>
+                        <Text fontSize={15}>
+                          {bookingDetail.startStation.address}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  )}
                   {/* <Divider
                     my="2"
                     _light={{
@@ -179,22 +189,27 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
                       bg: "muted.50",
                     }}
                   /> */}
-                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                    <Box pr={2}>
-                      <MapPinIcon size={30} color={themeColors.primary} />
-                    </Box>
+                  {bookingDetail != null && (
+                    <HStack
+                      my={1}
+                      alignItems="center"
+                      justifyContent="flex-start"
+                    >
+                      <Box pr={2}>
+                        <MapPinIcon size={30} color={themeColors.primary} />
+                      </Box>
 
-                    <VStack w="95%">
-                      <Text fontSize={15} color="black" bold>
-                        Điểm đến:{" "}
-                      </Text>
-                      <Text fontSize={15}>
-                        {bookingDetail.endStation.address}
-                      </Text>
-                    </VStack>
-                  </HStack>)}
+                      <VStack w="95%">
+                        <Text fontSize={15} color="black" bold>
+                          Điểm đến:{" "}
+                        </Text>
+                        <Text fontSize={15}>
+                          {bookingDetail.endStation.address}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  )}
                 </VStack>
-
               </Box>
               {/* <VStack my={1} p={1} justifyContent="space-between">
                                 <HStack
@@ -261,7 +276,7 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
             </VStack>
           )}
         </View>
-      </Box >
+      </Box>
     );
   };
 
@@ -303,7 +318,7 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
               strokeWidth={3}
               strokeColor="#00A1A1"
               mode="motobike"
-            //onReady={handleDirectionsReady}
+              //onReady={handleDirectionsReady}
             />
 
             <Marker
@@ -325,29 +340,30 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
             </Marker>
           </MapView>
         )}
-      {customerLocation != null && (<Box>
-        <SwipeablePanel
-          isActive={true}
-          fullWidth={true}
-          noBackgroundOpacity
-          // showCloseButton
-          allowTouchOutside
-          smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
-          smallPanelHeight={300}
-          // openLarge={openLargePanel}
-          ref={panelRef}
-          largePanelHeight={500}
-        // onlySmall
-        >
-          {<Box px="6">{renderFullTripInformation()}</Box>}
-        </SwipeablePanel>
-        <ReportModal
-          bookingDetailId={bookingDetail.id}
-          isOpen={isModalOpen}
-          onClose={toggleModal}
-        />
-      </Box>)}
-
+      {customerLocation != null && (
+        <Box>
+          <SwipeablePanel
+            isActive={true}
+            fullWidth={true}
+            noBackgroundOpacity
+            // showCloseButton
+            allowTouchOutside
+            smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
+            smallPanelHeight={300}
+            // openLarge={openLargePanel}
+            ref={panelRef}
+            largePanelHeight={500}
+            // onlySmall
+          >
+            {<Box px="6">{renderFullTripInformation()}</Box>}
+          </SwipeablePanel>
+          <ReportModal
+            bookingDetailId={bookingDetail.id}
+            isOpen={isModalOpen}
+            onClose={toggleModal}
+          />
+        </Box>
+      )}
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { BackHandler, StyleSheet, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import Geolocation from "@react-native-community/geolocation";
+import Geolocation from "react-native-geolocation-service";
 import SignalRService from "../../utils/signalRUtils"; // Adjust the path
 import { UserContext } from "../../context/UserContext";
 import {
@@ -40,7 +40,7 @@ import { Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import DriverInformationCard from "../../components/Card/DriverInformationCard";
 import ReportModal from "../../components/Modal/ReportModal";
-const TrackingLocationScreen = ({ }) => {
+const TrackingLocationScreen = ({}) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -65,7 +65,6 @@ const TrackingLocationScreen = ({ }) => {
   };
   const panelRef = useRef(null);
   useEffect(() => {
-
     SignalRService.registerCustomer(tripId);
     const locationTrackingListener = SignalRService.onLocationTracking(
       (latitude, longitude) => {
@@ -123,22 +122,24 @@ const TrackingLocationScreen = ({ }) => {
     return (
       <Box>
         <View style={styles.card}>
-          <Box >
-            <VStack >
-              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                <Box pr={2}>
-                  <MapPinIcon size={30} color={themeColors.primary} />
-                </Box>
+          <Box>
+            <VStack>
+              {bookingDetail != null && (
+                <HStack my={1} alignItems="center" justifyContent="flex-start">
+                  <Box pr={2}>
+                    <MapPinIcon size={30} color={themeColors.primary} />
+                  </Box>
 
-                <VStack w="95%">
-                  <Text fontSize={15} color="black" bold>
-                    Điểm đi:{" "}
-                  </Text>
-                  <Text fontSize={15}>
-                    {bookingDetail.startStation.address}
-                  </Text>
-                </VStack>
-              </HStack>)}
+                  <VStack w="95%">
+                    <Text fontSize={15} color="black" bold>
+                      Điểm đi:{" "}
+                    </Text>
+                    <Text fontSize={15}>
+                      {bookingDetail.startStation.address}
+                    </Text>
+                  </VStack>
+                </HStack>
+              )}
               {/* <Divider
                     my="2"
                     _light={{
@@ -148,20 +149,22 @@ const TrackingLocationScreen = ({ }) => {
                       bg: "muted.50",
                     }}
                   /> */}
-              {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                <Box pr={2}>
-                  <MapPinIcon size={30} color={themeColors.primary} />
-                </Box>
+              {bookingDetail != null && (
+                <HStack my={1} alignItems="center" justifyContent="flex-start">
+                  <Box pr={2}>
+                    <MapPinIcon size={30} color={themeColors.primary} />
+                  </Box>
 
-                <VStack w="95%">
-                  <Text fontSize={15} color="black" bold>
-                    Điểm đến:{" "}
-                  </Text>
-                  <Text fontSize={15}>
-                    {bookingDetail.endStation.address}
-                  </Text>
-                </VStack>
-              </HStack>)}
+                  <VStack w="95%">
+                    <Text fontSize={15} color="black" bold>
+                      Điểm đến:{" "}
+                    </Text>
+                    <Text fontSize={15}>
+                      {bookingDetail.endStation.address}
+                    </Text>
+                  </VStack>
+                </HStack>
+              )}
             </VStack>
           </Box>
         </View>
@@ -178,21 +181,27 @@ const TrackingLocationScreen = ({ }) => {
           ) : (
             <VStack justifyContent="space-evenly">
               <Box p={2}>
-                <VStack >
-                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                    <Box pr={2}>
-                      <MapPinIcon size={30} color={themeColors.primary} />
-                    </Box>
+                <VStack>
+                  {bookingDetail != null && (
+                    <HStack
+                      my={1}
+                      alignItems="center"
+                      justifyContent="flex-start"
+                    >
+                      <Box pr={2}>
+                        <MapPinIcon size={30} color={themeColors.primary} />
+                      </Box>
 
-                    <VStack w="95%">
-                      <Text fontSize={15} color="black" bold>
-                        Điểm đi:{" "}
-                      </Text>
-                      <Text fontSize={15}>
-                        {bookingDetail.startStation.address}
-                      </Text>
-                    </VStack>
-                  </HStack>)}
+                      <VStack w="95%">
+                        <Text fontSize={15} color="black" bold>
+                          Điểm đi:{" "}
+                        </Text>
+                        <Text fontSize={15}>
+                          {bookingDetail.startStation.address}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  )}
                   {/* <Divider
                     my="2"
                     _light={{
@@ -202,37 +211,54 @@ const TrackingLocationScreen = ({ }) => {
                       bg: "muted.50",
                     }}
                   /> */}
-                  {bookingDetail != null && (<HStack my={1} alignItems="center" justifyContent="flex-start">
-                    <Box pr={2}>
-                      <MapPinIcon size={30} color={themeColors.primary} />
-                    </Box>
+                  {bookingDetail != null && (
+                    <HStack
+                      my={1}
+                      alignItems="center"
+                      justifyContent="flex-start"
+                    >
+                      <Box pr={2}>
+                        <MapPinIcon size={30} color={themeColors.primary} />
+                      </Box>
 
-                    <VStack w="95%">
-                      <Text fontSize={15} color="black" bold>
-                        Điểm đến:{" "}
-                      </Text>
-                      <Text fontSize={15}>
-                        {bookingDetail.endStation.address}
-                      </Text>
-                    </VStack>
-                  </HStack>)}
+                      <VStack w="95%">
+                        <Text fontSize={15} color="black" bold>
+                          Điểm đến:{" "}
+                        </Text>
+                        <Text fontSize={15}>
+                          {bookingDetail.endStation.address}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  )}
                 </VStack>
               </Box>
-              {bookingDetail != null && (<Box mt="3" p={3}>
-                <DriverInformationCard
-                  driver={bookingDetail.driver}
-                  displayDriverText={true}
-                  displayCall={true}
-                  bookingDetailId={bookingDetail.id}
-                />
-                <Pressable style={styles.cardInsideDateTime} p={2} onPress={toggleModal} w="40%" borderWidth={1} bg={themeColors.primary}>
-                  <HStack alignItems="center" justifyContent="space-around">
-                    <FlagIcon size={25} color={themeColors.primary} />
-                    <Text fontSize={18} bold color={themeColors.primary}> Báo cáo </Text>
-                  </HStack>
-
-                </Pressable>
-              </Box>)}
+              {bookingDetail != null && (
+                <Box mt="3" p={3}>
+                  <DriverInformationCard
+                    driver={bookingDetail.driver}
+                    displayDriverText={true}
+                    displayCall={true}
+                    bookingDetailId={bookingDetail.id}
+                  />
+                  <Pressable
+                    style={styles.cardInsideDateTime}
+                    p={2}
+                    onPress={toggleModal}
+                    w="40%"
+                    borderWidth={1}
+                    bg={themeColors.primary}
+                  >
+                    <HStack alignItems="center" justifyContent="space-around">
+                      <FlagIcon size={25} color={themeColors.primary} />
+                      <Text fontSize={18} bold color={themeColors.primary}>
+                        {" "}
+                        Báo cáo{" "}
+                      </Text>
+                    </HStack>
+                  </Pressable>
+                </Box>
+              )}
             </VStack>
           )}
         </View>
@@ -285,7 +311,7 @@ const TrackingLocationScreen = ({ }) => {
               strokeWidth={3}
               strokeColor="#00A1A1"
               mode="motobike"
-            //onReady={handleDirectionsReady}
+              //onReady={handleDirectionsReady}
             />
 
             <Marker
@@ -309,28 +335,30 @@ const TrackingLocationScreen = ({ }) => {
         )}
       {customerLocation != null &&
         driverLocation.latitude !== 0 &&
-        driverLocation.longitude !== 0 && (<Box>
-          <SwipeablePanel
-            isActive={true}
-            fullWidth={true}
-            noBackgroundOpacity
-            // showCloseButton
-            allowTouchOutside
-            smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
-            smallPanelHeight={300}
-            // openLarge={openLargePanel}
-            ref={panelRef}
-            largePanelHeight={500}
-          // onlySmall
-          >
-            {<Box px="6">{renderFullTripInformation()}</Box>}
-          </SwipeablePanel>
-          <ReportModal
-            bookingDetailId={bookingDetail.id}
-            isOpen={isModalOpen}
-            onClose={toggleModal}
-          />
-        </Box>)}
+        driverLocation.longitude !== 0 && (
+          <Box>
+            <SwipeablePanel
+              isActive={true}
+              fullWidth={true}
+              noBackgroundOpacity
+              // showCloseButton
+              allowTouchOutside
+              smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
+              smallPanelHeight={300}
+              // openLarge={openLargePanel}
+              ref={panelRef}
+              largePanelHeight={500}
+              // onlySmall
+            >
+              {<Box px="6">{renderFullTripInformation()}</Box>}
+            </SwipeablePanel>
+            <ReportModal
+              bookingDetailId={bookingDetail.id}
+              isOpen={isModalOpen}
+              onClose={toggleModal}
+            />
+          </Box>
+        )}
     </View>
   );
 };

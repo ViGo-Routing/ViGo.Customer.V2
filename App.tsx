@@ -5,6 +5,8 @@ import { NativeBaseProvider, Text, Box } from "native-base";
 import ViGoAlertProvider from "./src/components/Alert/ViGoAlertProvider";
 import PushNotification from "react-native-push-notification";
 
+navigator.geolocation = require("react-native-geolocation-service");
+
 export default function App() {
   PushNotification.createChannel(
     {

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { BackHandler, NativeEventEmitter, StyleSheet } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import Geolocation from "@react-native-community/geolocation";
+import Geolocation from "react-native-geolocation-service";
 import SignalRService from "../../utils/signalRUtils"; // Adjust the path
 import { UserContext } from "../../context/UserContext";
 import {
@@ -31,12 +31,16 @@ import {
   ScrollView,
   Spinner,
   Text,
-  VStack, View,
+  VStack,
+  View,
 } from "native-base";
 import Header from "../../components/Header/Header";
 import MapViewDirections from "react-native-maps-directions";
 import { SwipeablePanel } from "../../components/SwipeablePanel/Panel";
-import { getBookingById, getBookingDetailById } from "../../service/bookingService";
+import {
+  getBookingById,
+  getBookingDetailById,
+} from "../../service/bookingService";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import { Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -46,7 +50,9 @@ import NewHeader from "../../components/Header/NewHeader";
 import { toVnDateString, toVnDateTimeString } from "../../utils/datetimeUtils";
 import { eventNames } from "../../utils/alertUtils";
 import { cancelBookingDetail } from "../../service/bookingDetailService";
-const MyRouteScreen = ({ }) => {
+import ConfirmAlert from "../../components/Alert/ConfirmAlert";
+import { vndFormat } from "../../utils/numberUtils";
+const MyRouteScreen = ({}) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -131,8 +137,8 @@ const MyRouteScreen = ({ }) => {
             (nếu có) tùy vào thời gian và chuyến xe mà bạn hủy.
           </Text>
           <Text>
-            Phí trả trước cho chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được hoàn về
-            ví của bạn sau khi hủy chuyến thành công.
+            Phí trả trước cho chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được
+            hoàn về ví của bạn sau khi hủy chuyến thành công.
           </Text>
           <Text marginTop="2">
             Phí hủy chuyến tạm tính: <Text bold>{vndFormat(cancelFee)}</Text>
@@ -195,15 +201,17 @@ const MyRouteScreen = ({ }) => {
     setIsModalOpen(!isModalOpen);
   };
   return (
-    <View flex={1} bg="white" >
+    <View flex={1} bg="white">
       <ScrollView>
-
-
         <Header title="Chi tiết chuyến đi" />
-        <Box >
+        <Box>
           {bookingDetail == null && (
             <View
-              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <Text bold p={1}>
                 Đang tải
@@ -215,7 +223,7 @@ const MyRouteScreen = ({ }) => {
           {bookingDetail != null && ( // Only render map when customerLocation is available
             <VStack justifyContent="space-evenly">
               <Box p={2}>
-                <VStack >
+                <VStack>
                   {bookingDetail != null && (
                     <Box>
                       <Box mt="3" style={styles.cardInsideDateTime} p={3}>
@@ -225,7 +233,6 @@ const MyRouteScreen = ({ }) => {
                           displayCall={true}
                           bookingDetailId={bookingDetail.id}
                         />
-
                       </Box>
 
                       <Box mt="3" style={styles.cardInsideDateTime} p={3}>
@@ -239,35 +246,80 @@ const MyRouteScreen = ({ }) => {
                           {toVnDateTimeString(bookingDetail.date)}
                         </Text>
                         {booking != null && (
-                          <HStack p={2} bg="gray.100" alignItems="center" justifyContent="center">
-                            <VStack alignContent="center" justifyContent="center">
-                              <Text fontSize={15} alignSelf="center" color="black" bold>
+                          <HStack
+                            p={2}
+                            bg="gray.100"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <VStack
+                              alignContent="center"
+                              justifyContent="center"
+                            >
+                              <Text
+                                fontSize={15}
+                                alignSelf="center"
+                                color="black"
+                                bold
+                              >
                                 {booking.distance} Km
                               </Text>
                               <Text fontSize={15} color="black">
                                 Quãng đường
                               </Text>
                             </VStack>
-                            <Divider bg="gray.300" thickness="2" h="50%" mx="2" orientation="vertical" />
-                            <VStack alignContent="center" justifyContent="center">
-                              <Text fontSize={15} alignSelf="center" color="black" bold>
+                            <Divider
+                              bg="gray.300"
+                              thickness="2"
+                              h="50%"
+                              mx="2"
+                              orientation="vertical"
+                            />
+                            <VStack
+                              alignContent="center"
+                              justifyContent="center"
+                            >
+                              <Text
+                                fontSize={15}
+                                alignSelf="center"
+                                color="black"
+                                bold
+                              >
                                 {booking.duration} Phút
                               </Text>
                               <Text fontSize={15} color="black">
                                 Thời gian di chuyển
                               </Text>
                             </VStack>
-                            <Divider bg="gray.200" thickness="2" mx="2" orientation="vertical" />
-                            <VStack alignContent="center" justifyContent="center">
-                              <Text fontSize={15} alignSelf="center" color="black" bold>
+                            <Divider
+                              bg="gray.200"
+                              thickness="2"
+                              mx="2"
+                              orientation="vertical"
+                            />
+                            <VStack
+                              alignContent="center"
+                              justifyContent="center"
+                            >
+                              <Text
+                                fontSize={15}
+                                alignSelf="center"
+                                color="black"
+                                bold
+                              >
                                 {bookingDetail.customerRouteRoutine.pickupTime}
                               </Text>
                               <Text fontSize={15} color="black">
                                 Thời gian rước
                               </Text>
                             </VStack>
-                          </HStack>)}
-                        <HStack my={1} alignItems="center" justifyContent="flex-start">
+                          </HStack>
+                        )}
+                        <HStack
+                          my={1}
+                          alignItems="center"
+                          justifyContent="flex-start"
+                        >
                           <Box pr={2}>
                             <MapPinIcon size={30} color={themeColors.primary} />
                           </Box>
@@ -281,7 +333,11 @@ const MyRouteScreen = ({ }) => {
                             </Text>
                           </VStack>
                         </HStack>
-                        <HStack my={1} alignItems="center" justifyContent="flex-start">
+                        <HStack
+                          my={1}
+                          alignItems="center"
+                          justifyContent="flex-start"
+                        >
                           <Box pr={2}>
                             <MapPinIcon size={30} color={themeColors.primary} />
                           </Box>
@@ -295,7 +351,6 @@ const MyRouteScreen = ({ }) => {
                             </Text>
                           </VStack>
                         </HStack>
-
                       </Box>
 
                       <Box mt="3" style={styles.cardInsideDateTime} p={3}>
@@ -304,49 +359,85 @@ const MyRouteScreen = ({ }) => {
                         </Text>
                         <HStack py={1} justifyContent="space-between">
                           <Text fontSize={20}>Cước phí</Text>
-                          <Text fontSize={20}> {formatMoney(bookingDetail.price)}</Text>
+                          <Text fontSize={20}>
+                            {" "}
+                            {formatMoney(bookingDetail.price)}
+                          </Text>
                         </HStack>
                       </Box>
                       <HStack>
-                        <Pressable style={styles.cardInsideDateTime} p={2} onPress={toggleModal} w="40%" borderWidth={1} bg={themeColors.primary}>
-                          <HStack alignItems="center" justifyContent="space-around">
+                        <Pressable
+                          style={styles.cardInsideDateTime}
+                          p={2}
+                          onPress={toggleModal}
+                          w="40%"
+                          borderWidth={1}
+                          bg={themeColors.primary}
+                        >
+                          <HStack
+                            alignItems="center"
+                            justifyContent="space-around"
+                          >
                             <FlagIcon size={25} color={themeColors.primary} />
-                            <Text fontSize={18} bold color={themeColors.primary}> Báo cáo </Text>
+                            <Text
+                              fontSize={18}
+                              bold
+                              color={themeColors.primary}
+                            >
+                              {" "}
+                              Báo cáo{" "}
+                            </Text>
                           </HStack>
-
                         </Pressable>
-                        <Pressable style={styles.cardInsideDateTime} p={2} onPress={openConfirmCancelTrip} w="40%" borderWidth={1} color={themeColors.primary}>
-                          <HStack alignItems="center" justifyContent="space-around">
-                            <XCircleIcon size={25} color={themeColors.primary} />
-                            <Text fontSize={18} bold color={themeColors.primary}> Hủy chuyến</Text>
+                        <Pressable
+                          style={styles.cardInsideDateTime}
+                          p={2}
+                          onPress={openConfirmCancelTrip}
+                          w="40%"
+                          borderWidth={1}
+                          color={themeColors.primary}
+                        >
+                          <HStack
+                            alignItems="center"
+                            justifyContent="space-around"
+                          >
+                            <XCircleIcon
+                              size={25}
+                              color={themeColors.primary}
+                            />
+                            <Text
+                              fontSize={18}
+                              bold
+                              color={themeColors.primary}
+                            >
+                              {" "}
+                              Hủy chuyến
+                            </Text>
                           </HStack>
-
                         </Pressable>
                       </HStack>
-
                     </Box>
                   )}
-
                 </VStack>
               </Box>
-
-
             </VStack>
           )}
-          {bookingDetail != null && (<Box>
-            <ReportModal
-              bookingDetailId={bookingDetail.id}
-              isOpen={isModalOpen}
-              onClose={toggleModal}
-            />
-            <CancelBookingDetailConfirmAlert
-              key={"cancel-trip-modal"}
-              confirmOpen={isCancelConfirmOpen}
-              setConfirmOpen={setIsCancelConfirmOpen}
-              handleOkPress={() => handleConfirmCancelTrip()}
-              cancelFee={cancelFee}
-            />
-          </Box>)}
+          {bookingDetail != null && (
+            <Box>
+              <ReportModal
+                bookingDetailId={bookingDetail.id}
+                isOpen={isModalOpen}
+                onClose={toggleModal}
+              />
+              <CancelBookingDetailConfirmAlert
+                key={"cancel-trip-modal"}
+                confirmOpen={isCancelConfirmOpen}
+                setConfirmOpen={setIsCancelConfirmOpen}
+                handleOkPress={() => handleConfirmCancelTrip()}
+                cancelFee={cancelFee}
+              />
+            </Box>
+          )}
         </Box>
       </ScrollView>
     </View>
