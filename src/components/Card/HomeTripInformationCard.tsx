@@ -54,7 +54,7 @@ const HomeTripInformationCard = ({
       {currentTrip && (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("TrackingOnGoingLocation", {
+            navigation.navigate("MyRoute", {
               bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01",
             })
           }
@@ -83,7 +83,7 @@ const HomeTripInformationCard = ({
       {upcomingTrip && !currentTrip && (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("TrackingOnGoingLocation", { bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01", })
+            navigation.navigate("MyRoute", { bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01", })
           }
         >
           <VStack>

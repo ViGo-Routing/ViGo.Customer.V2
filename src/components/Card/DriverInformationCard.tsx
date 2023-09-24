@@ -88,14 +88,13 @@ const DriverInformationCard = ({
               {!displayDriverText && <Text bold>{driver.name}</Text>}
               <HStack>
                 <Text>
-                  {`${driver.gender == true ? "Nam" : "Nữ"}${
-                    driver.dateOfBirth
-                      ? ` | ${calculateAge(driver.dateOfBirth)} tuổi`
-                      : ""
-                  }`}
+                  {`${driver.gender == true ? "Nam" : "Nữ"}${driver.dateOfBirth
+                    ? ` | ${calculateAge(driver.dateOfBirth)} tuổi`
+                    : ""
+                    }`}
                 </Text>
               </HStack>
-              {vehiclePlate && <Text>{vehiclePlate}</Text>}
+              {vehiclePlate && <Box ><Text w={"80px"} bg={"gray.300"}>{vehiclePlate}</Text></Box>}
               <Text>
                 Tỉ lệ hủy chuyến:{" "}
                 <Text color={getCancelRateTextColor(driver.canceledTripRate)}>

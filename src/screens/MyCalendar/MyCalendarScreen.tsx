@@ -160,7 +160,7 @@ const MyCalendarScreen = () => {
   }, []);
 
   const handleClickOnTrip = (itemId: string) => {
-    // navigation.navigate("StartRoute", { item });
+    navigation.navigate("MyRoute", { bookingDetailId: itemId });
     // navigation.navigate("CurrentStartingTrip", { bookingDetailId: item.id });
   };
 

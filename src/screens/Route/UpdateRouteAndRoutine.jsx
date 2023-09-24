@@ -36,14 +36,14 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                 console.log("bookingDetail", response.data);
                 setBooking(response.data);
                 setIsLoading(false)
-
-
-
                 setFrequency(bookingDetail?.customerRoute.routineType);
                 setStartDay(bookingDetail?.startDate);
                 setRouteType(bookingDetail?.customerRoute.type);
                 setRouteId(bookingDetail?.customerRoute.id);
                 setRoundTripRouteId(bookingDetail?.customerRoute.roundTripRouteId);
+                if (bookingDetail?.daysOfWeek != null) {
+                    convertToDayName(bookingDetail?.daysOfWeek);
+                }
 
                 getBookingDetailByBookingId(bookingDetailId, undefined, 2, 1,).then((response) => {
                     console.log("response", response.data.data)
@@ -59,6 +59,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
     useEffect(() => {
         setIsLoading(true)
         fetchData();
+
     }, [bookingDetailId]);
     console.log("Update", pickupPositionLocal, destinationPositionLocal)
 
@@ -160,6 +161,39 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
         setChosenBackTime(formattedTime);
 
         setTimePickerVisible(false);
+    };
+    const convertToDayName = (inputString) => {
+        // Create a dictionary to map day abbreviations to day names
+        const dayAbbreviations = {
+            Sun: 'Sunday',
+            Mon: 'Monday',
+            Tue: 'Tuesday',
+            Wed: 'Wednesday',
+            Thu: 'Thursday',
+            Fri: 'Friday',
+            Sat: 'Saturday',
+        };
+
+        // Split the input string into individual parts
+        const parts = inputString.split(', ');
+
+        // Initialize an array to store the day names
+        const dayNames = [];
+
+        // Loop through the parts and extract day names
+        parts.forEach((part) => {
+            // Extract the day abbreviation (e.g., "Thu")
+            const dayAbbreviation = part.split(' ')[0];
+
+            // Map the abbreviation to the corresponding day name
+            const dayName = dayAbbreviations[dayAbbreviation];
+
+            if (dayName) {
+                dayNames.push(dayName);
+            }
+        });
+
+        return dayNames;
     };
     const getDayOfWeek = (date) => {
         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

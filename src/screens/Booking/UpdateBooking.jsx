@@ -530,16 +530,24 @@ const UpdateBookingScreen = (props) => {
                 Giá gốc:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.originalFare)}
+                {formatMoney(fareCalculation?.originalFare + fareCalculation?.roundTripOriginalFare)}
               </Text>
             </HStack>
 
             <HStack justifyContent="space-between">
               <Text fontSize={15} bold>
+                Tổng khuyến mãi:{" "}
+              </Text>
+              <Text fontSize={15}>
+                {formatMoney(fareCalculation?.routineTypeDiscount + fareCalculation?.roundTripRoutineTypeDiscount)}
+              </Text>
+            </HStack>
+            <HStack justifyContent="space-between">
+              <Text fontSize={15} bold>
                 Phụ phí:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.additionalFare)}
+                {formatMoney(fareCalculation?.additionalFare + fareCalculation?.roundTripAdditionalFare)}
               </Text>
             </HStack>
 
@@ -548,7 +556,7 @@ const UpdateBookingScreen = (props) => {
                 Tổng tiền:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.finalFare)}
+                {formatMoney(fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare)}
               </Text>
             </HStack>
           </VStack>

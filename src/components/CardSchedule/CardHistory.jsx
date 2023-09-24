@@ -211,7 +211,7 @@ const CardHistory = ({ element }) => {
                   Bắt đầu:{" "}
                 </Text>
                 <Text numberOfLines={1} ellipsizeMode="tail">
-                  {element.customerRoute.startStation.name}
+                  {element.customerRoute.startStation.address}
                 </Text>
               </HStack>
               <HStack>
@@ -219,7 +219,7 @@ const CardHistory = ({ element }) => {
                   Kết thúc:
                 </Text>
                 <Text numberOfLines={1} ellipsizeMode="tail">
-                  {element.customerRoute.endStation.name}
+                  {element.customerRoute.endStation.address}
                 </Text>
               </HStack>
               <HStack>
@@ -248,18 +248,7 @@ const CardHistory = ({ element }) => {
           </HStack>
         </VStack>
 
-        {element.status !== "GOING_TO_PICKUP" ? (
-          <Pressable onPress={() => handleDetailBooking(element)}>
-            {/* <Text style={styles.titleButton}>Chi tiết<ArrowRightIcon size={10} />  </Text> */}
-          </Pressable>
-        ) : (
-          <Pressable onPress={() => handleTrackingDriverLocation(element)}>
-            <Text style={styles.titleButton}>
-              Vị trí tài xế
-              <ArrowRightIcon size={10} />{" "}
-            </Text>
-          </Pressable>
-        )}
+
       </Box>
     </Box>
   );

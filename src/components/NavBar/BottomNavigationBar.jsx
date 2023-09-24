@@ -5,6 +5,7 @@ import { themeColors } from "../../assets/theme";
 import {
   BanknotesIcon,
   ChatBubbleLeftRightIcon,
+  ClockIcon,
   HomeIcon,
   MapIcon,
   UserIcon,
@@ -15,6 +16,7 @@ import HomeComponent from "../../screens/Home/HomeComponent";
 import ProfileSreen from "../../screens/Profile/ProfileScreen";
 import { Box } from "native-base";
 import MyCalendarScreen from "../../screens/MyCalendar/MyCalendarScreen";
+import ActivityScreen from "../../screens/History/ActivityScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -51,13 +53,13 @@ const BottomNavigationBar = () => {
       />
 
       <Tab.Screen
-        name="ScheduleTab"
-        key="ScheduleTab"
-        component={MyRouteScreen}
+        name="ActivityTab"
+        key="ActivityTab"
+        component={ActivityScreen}
         options={{
-          tabBarLabel: "LỊCH TRÌNH",
+          tabBarLabel: "HOẠT ĐỘNG",
           tabBarIcon: ({ focused, color, size }) => (
-            <MapIcon size={size} color={color} />
+            <ClockIcon size={size} color={color} />
           ),
           headerShown: false,
         }}

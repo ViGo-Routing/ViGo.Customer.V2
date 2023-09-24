@@ -218,59 +218,6 @@ const TrackingLocationScreen = ({ }) => {
                   </HStack>)}
                 </VStack>
               </Box>
-              {/* <VStack my={1} p={1} justifyContent="space-between">
-                <HStack
-                  borderWidth={1}
-                  width="100%"
-                  bg="white"
-                  borderColor="gray.200"
-                  borderRadius={10}
-                  shadow={2}
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Box p={2}>
-                    <Avatar
-                      size="lg"
-                      source={{
-                        uri: `${bookingDetail.driver.avatarUrl}`, // Replace with the actual avatar URL
-                      }}
-                    />
-                  </Box>
-
-                  <VStack>
-                    <Text fontSize={15} color={themeColors.primary} bold>
-                      Tài xế:{" "}
-                    </Text>
-                    <Text fontSize={15}>
-                      {bookingDetail.driver.name}
-                    </Text>
-                  </VStack>
-                </HStack>
-                <HStack
-                  borderWidth={1}
-                  width="100%"
-                  borderColor="gray.200"
-                  bg="white"
-                  borderRadius={10}
-                  shadow={2}
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Box p={2}>
-                    <PhoneIcon size={20} color={themeColors.primary} />
-                  </Box>
-
-                  <VStack>
-                    <Text fontSize={15} color={themeColors.primary} bold>
-                      Số điện thoại:{" "}
-                    </Text>
-                    <Text fontSize={15}>
-                      {bookingDetail.driver.phone}
-                    </Text>
-                  </VStack>
-                </HStack>
-              </VStack> */}
               {bookingDetail != null && (<Box mt="3" p={3}>
                 <DriverInformationCard
                   driver={bookingDetail.driver}
@@ -278,8 +225,12 @@ const TrackingLocationScreen = ({ }) => {
                   displayCall={true}
                   bookingDetailId={bookingDetail.id}
                 />
-                <Pressable onPress={toggleModal}>
-                  <FlagIcon size={25} color={themeColors.primary} />
+                <Pressable style={styles.cardInsideDateTime} p={2} onPress={toggleModal} w="40%" borderWidth={1} bg={themeColors.primary}>
+                  <HStack alignItems="center" justifyContent="space-around">
+                    <FlagIcon size={25} color={themeColors.primary} />
+                    <Text fontSize={18} bold color={themeColors.primary}> Báo cáo </Text>
+                  </HStack>
+
                 </Pressable>
               </Box>)}
             </VStack>

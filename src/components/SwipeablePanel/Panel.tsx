@@ -417,7 +417,7 @@ const SwipeablePanelStyles = StyleSheet.create({
     shadowRadius: 1.0,
     elevation: 1,
     // zIndex: 2,
-    borderRadius: 10,
+    borderRadius: 30,
   },
   scrollViewContentContainerStyle: {
     width: "100%",
