@@ -136,7 +136,7 @@ const CardHistory = ({ element }) => {
           backgroundColor: "white",
         }}
       >
-        <VStack alignItems="flex-end" alignSelf="flex-end">
+        <VStack alignItems="flex-end" alignSelf="flex-end" zIndex={20}>
           <Box position="absolute" top="0" left="0">
             {" "}
             {/* This box wraps the Stagger component */}
@@ -210,7 +210,12 @@ const CardHistory = ({ element }) => {
                 <Text width={75} color="black" bold fontSize={15}>
                   Bắt đầu:{" "}
                 </Text>
-                <Text numberOfLines={1} ellipsizeMode="tail">
+                <Text
+                  w={210}
+                  numberOfLines={1}
+                  isTruncated
+                  ellipsizeMode="tail"
+                >
                   {element.customerRoute.startStation.address}
                 </Text>
               </HStack>
@@ -218,7 +223,13 @@ const CardHistory = ({ element }) => {
                 <Text w={75} color="black" bold fontSize={15}>
                   Kết thúc:
                 </Text>
-                <Text numberOfLines={1} ellipsizeMode="tail">
+
+                <Text
+                  w={210}
+                  numberOfLines={1}
+                  isTruncated
+                  ellipsizeMode="tail"
+                >
                   {element.customerRoute.endStation.address}
                 </Text>
               </HStack>
@@ -247,8 +258,6 @@ const CardHistory = ({ element }) => {
             </Box>
           </HStack>
         </VStack>
-
-
       </Box>
     </Box>
   );

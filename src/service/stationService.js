@@ -9,3 +9,9 @@ export const getStation = async (requestData) => {
     console.error("Get List Station failed:", error);
   }
 };
+
+export const getMetroStations = async () => {
+  const response = await apiManager.get(`api/Station/Metro`);
+
+  return response.data;
+};

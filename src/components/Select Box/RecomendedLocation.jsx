@@ -1,14 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { getStation } from "../../service/stationService";
 import { FireIcon } from "react-native-heroicons/solid";
 import { useNavigation } from "@react-navigation/native";
+import { HStack, ScrollView, Text, View } from "native-base";
 
 const RecommendedLocation = ({ title, items, routeType, frequency }) => {
   const [stations, setStations] = useState([]);
@@ -19,66 +14,72 @@ const RecommendedLocation = ({ title, items, routeType, frequency }) => {
       .catch((error) => console.error(error));
   };
   const handelPosition = (item) => {
-    console.log("itemitem", item)
+    console.log("itemitem", item);
     const pickupPosition =
       item?.startStation?.latitude && item?.startStation?.longitude
         ? {
-          geometry: {
-            location: {
-              lat: item.startStation.latitude,
-              lng: item.startStation.longitude,
+            geometry: {
+              location: {
+                lat: item.startStation.latitude,
+                lng: item.startStation.longitude,
+              },
             },
-          },
-          address: item.startStation.address,
-          name: item.startStation.name,
-          formatted_address: item.startStation.address,
-        }
+            address: item.startStation.address,
+            name: item.startStation.name,
+            formatted_address: item.startStation.address,
+          }
         : null;
 
     const destinationPosition =
       item?.endStation?.latitude && item?.endStation?.longitude
         ? {
-          geometry: {
-            location: {
-              lat: item.endStation.latitude,
-              lng: item.endStation.longitude,
+            geometry: {
+              location: {
+                lat: item.endStation.latitude,
+                lng: item.endStation.longitude,
+              },
             },
-          },
-          address: item.endStation.address,
-          name: item.endStation.name,
-          formatted_address: item.endStation.address,
-        }
+            address: item.endStation.address,
+            name: item.endStation.name,
+            formatted_address: item.endStation.address,
+          }
         : null;
 
     navigation.navigate("BikeBooking", {
       pickupPosition: destinationPosition,
       destinationPosition: pickupPosition,
       routeType: routeType,
-      frequency: frequency
-    })
-  }
+      frequency: frequency,
+    });
+  };
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>
+      <HStack alignItems="center" width="95%">
         {/* <Ionicons name="flame" size={25} color="orange" /> */}
         <FireIcon size={25} color="orange" />
-        {title}
-      </Text>
+        <Text mt="0" ml="1" style={styles.title} fontSize="xl">
+          {title}
+        </Text>
+      </HStack>
       <View style={styles.separator} />
       <ScrollView
+        nestedScrollEnabled
         contentContainerStyle={styles.container}
         style={styles.scrollView}
       >
         <View style={styles.list}>
           {items.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.listItem} onPress={() =>
-              handelPosition(item.response)
-            }>
+            <TouchableOpacity
+              key={index}
+              style={styles.listItem}
+              onPress={() => handelPosition(item.response)}
+            >
               {item.iconLeft}
               <View>
                 <Text style={styles.listItemText} numberOfLines={1}>
-                  {item.response.startStation.name} - {item.response.endStation.name}
+                  {item.response.startStation.name} -{" "}
+                  {item.response.endStation.name}
                 </Text>
               </View>
               {item.iconRight}
@@ -101,10 +102,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 20,
-    width: "90%",
+    width: "95%",
   },
   title: {
-    fontSize: 22,
+    // fontSize: 22,
     fontWeight: "bold",
     color: "orange",
   },
@@ -126,6 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
+    // maxWidth: "80%",
   },
   listItemText: {
     flex: 1,

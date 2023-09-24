@@ -2,7 +2,6 @@ import { HStack } from "native-base";
 import { ReactNode, memo, useRef } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { googleMapsApi } from "../../utils/mapUtils";
-import geolocation from "react-native-geolocation-service";
 
 interface ViGoGooglePlacesAutocompleteProps {
   handlePlaceSelection: (details: any) => void;
@@ -41,6 +40,7 @@ const ViGoGooglePlacesAutocomplete = ({
         debounce={400}
         minLength={2}
         // listViewDisplayed={true}
+        // keyboardShouldPersistTaps="always"
       />
     </HStack>
   );

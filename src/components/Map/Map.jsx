@@ -44,6 +44,7 @@ const Map = ({ pickupPosition, destinationPosition, sendRouteId }) => {
   }, [pickupPosition]);
 
   useEffect(() => {
+    console.log("dropoffPosition", destinationPosition);
     if (destinationPosition != null) {
       const { location } = destinationPosition.geometry;
       const { lat, lng } = location;

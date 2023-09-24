@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Alert
+  Alert,
 } from "react-native";
 
 import Map from "../../components/Map/Map";
@@ -159,7 +159,10 @@ const UpdateBookingScreen = (props) => {
         beginTime: pickupTime,
         distance: distance,
         duration: duration,
-        totalNumberOfTickets: routeType != "ROUND_TRIP" ? routines.routeRoutines.length : (routines.routeRoutines.length * 2),
+        totalNumberOfTickets:
+          routeType != "ROUND_TRIP"
+            ? routines.routeRoutines.length
+            : routines.routeRoutines.length * 2,
         tripType: routeType,
         routineType: routineType,
         roundTripBeginTime:
@@ -171,6 +174,7 @@ const UpdateBookingScreen = (props) => {
       // setDestinationPosition(result.data.endStation)
       console.log("setFareCalculation");
       await createFareCalculate(dataResponse).then((response) => {
+        console.log(response);
         setFareCalculation(response);
       });
       await getVehicleTypeById(dataResponse.vehicleTypeId).then((response) => {
@@ -204,7 +208,7 @@ const UpdateBookingScreen = (props) => {
       console.log("routeRoutines", type);
       let routeId = routines.routeId;
       let routeRoutines = routines.routeRoutines;
-      let roundTripRoutines = null
+      let roundTripRoutines = null;
       if (routeType == "ROUND_TRIP") {
         roundTripRoutines = roundTrip.routeRoutines;
       }
@@ -238,7 +242,8 @@ const UpdateBookingScreen = (props) => {
           startDate: routines.routeRoutines[0].routineDate,
           endDate: routines.routeRoutines[routeRoutines.length - 1].routineDate,
           daysOfWeek: vnDays,
-          totalPrice: (fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare),
+          totalPrice:
+            fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare,
           priceAfterDiscount: 0,
           isShared: true,
           duration: duration,
@@ -257,11 +262,11 @@ const UpdateBookingScreen = (props) => {
           text: "Có",
           onPress: async () => {
             try {
-              setIsLoading(true)
+              setIsLoading(true);
               await updateBookingById(bookingId, requestData).then(
                 (response) => {
                   if (response != null) {
-                    setIsLoading(false)
+                    setIsLoading(false);
                     Alert.alert(
                       "Hoàn Thành",
                       "Bạn vừa hoàn tất cập nhật lại chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
@@ -284,6 +289,8 @@ const UpdateBookingScreen = (props) => {
               );
             } catch (error) {
               console.error("Error creating booking:", error);
+            } finally {
+              setIsLoading(false);
             }
           },
         },
@@ -396,8 +403,8 @@ const UpdateBookingScreen = (props) => {
                     {type === null
                       ? ""
                       : type === "ONE_WAY"
-                        ? "Một chiều"
-                        : "Hai chiều"}
+                      ? "Một chiều"
+                      : "Hai chiều"}
                   </Text>
                 </VStack>
               </HStack>
@@ -414,8 +421,8 @@ const UpdateBookingScreen = (props) => {
                     {routeType === null
                       ? ""
                       : routineType === "WEEKLY"
-                        ? "Mỗi tuần"
-                        : "Mỗi tháng"}
+                      ? "Mỗi tuần"
+                      : "Mỗi tháng"}
                   </Text>
                 </VStack>
               </HStack>
@@ -530,7 +537,10 @@ const UpdateBookingScreen = (props) => {
                 Giá gốc:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.originalFare + fareCalculation?.roundTripOriginalFare)}
+                {formatMoney(
+                  fareCalculation?.originalFare +
+                    fareCalculation?.roundTripOriginalFare
+                )}
               </Text>
             </HStack>
 
@@ -539,7 +549,10 @@ const UpdateBookingScreen = (props) => {
                 Tổng khuyến mãi:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.routineTypeDiscount + fareCalculation?.roundTripRoutineTypeDiscount)}
+                {formatMoney(
+                  fareCalculation?.routineTypeDiscount +
+                    fareCalculation?.roundTripRoutineTypeDiscount
+                )}
               </Text>
             </HStack>
             <HStack justifyContent="space-between">
@@ -547,7 +560,10 @@ const UpdateBookingScreen = (props) => {
                 Phụ phí:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.additionalFare + fareCalculation?.roundTripAdditionalFare)}
+                {formatMoney(
+                  fareCalculation?.additionalFare +
+                    fareCalculation?.roundTripAdditionalFare
+                )}
               </Text>
             </HStack>
 
@@ -556,7 +572,10 @@ const UpdateBookingScreen = (props) => {
                 Tổng tiền:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare)}
+                {formatMoney(
+                  fareCalculation?.finalFare +
+                    fareCalculation?.roundTripFinalFare
+                )}
               </Text>
             </HStack>
           </VStack>
@@ -638,7 +657,7 @@ const UpdateBookingScreen = (props) => {
           // openLarge={openLargePanel}
           ref={panelRef}
           largePanelHeight={500}
-        // onlySmall
+          // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}
         </SwipeablePanel>
