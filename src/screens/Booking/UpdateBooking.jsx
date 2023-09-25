@@ -45,6 +45,8 @@ import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import { vndFormat } from "../../utils/numberUtils";
+import { getWalletByUserId } from "../../service/walletService";
+import { handleError } from "../../utils/alertUtils";
 
 const UpdateBookingScreen = (props) => {
   const navigation = useNavigation();
@@ -266,31 +268,45 @@ const UpdateBookingScreen = (props) => {
           text: "Có",
           onPress: async () => {
             try {
-              setIsLoading(true);
-              await updateBookingById(bookingId, requestData).then(
-                (response) => {
-                  if (response != null) {
-                    setIsLoading(false);
-                    Alert.alert(
-                      "Hoàn Thành",
-                      "Bạn vừa hoàn tất cập nhật lại chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
-                      [
-                        {
-                          text: "Tiếp tục",
-                          onPress: () =>
-                            navigation.dispatch(
-                              CommonActions.reset({
-                                index: 0,
-                                routes: [{ name: "Home" }],
-                              })
-                            ),
-                        },
-                      ],
-                      { cancelable: false }
-                    );
-                  }
+              await getWalletByUserId(user.id).then(async (s) => {
+                const walletBalance = s.balance;
+                if (
+                  walletBalance <
+                  fareCalculation?.finalFare +
+                    fareCalculation?.roundTripFinalFare
+                ) {
+                  handleError(
+                    "Rất tiếc",
+                    "Số dư ví của bạn không đủ. Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi."
+                  );
+                } else {
+                  setIsLoading(true);
+                  await updateBookingById(bookingId, requestData).then(
+                    (response) => {
+                      if (response != null) {
+                        setIsLoading(false);
+                        Alert.alert(
+                          "Hoàn Thành",
+                          "Bạn vừa hoàn tất cập nhật lại chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
+                          [
+                            {
+                              text: "Tiếp tục",
+                              onPress: () =>
+                                navigation.dispatch(
+                                  CommonActions.reset({
+                                    index: 0,
+                                    routes: [{ name: "Home" }],
+                                  })
+                                ),
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
+                    }
+                  );
                 }
-              );
+              });
             } catch (error) {
               console.error("Error creating booking:", error);
             } finally {
@@ -328,16 +344,33 @@ const UpdateBookingScreen = (props) => {
               Giá gốc:{" "}
             </Text>
             <Text fontSize={15}>
-              {vndFormat(fareCalculation?.originalFare)}
+              {vndFormat(
+                fareCalculation?.originalFare +
+                  fareCalculation?.roundTripOriginalFare
+              )}
             </Text>
           </HStack>
 
           <HStack justifyContent="space-between">
             <Text fontSize={15} bold>
+              Tổng khuyến mãi:{" "}
+            </Text>
+            <Text fontSize={15}>
+              {vndFormat(
+                fareCalculation?.routineTypeDiscount +
+                  fareCalculation?.roundTripRoutineTypeDiscount
+              )}
+            </Text>
+          </HStack>
+          <HStack justifyContent="space-between">
+            <Text fontSize={15} bold>
               Phụ phí:{" "}
             </Text>
             <Text fontSize={15}>
-              {vndFormat(fareCalculation?.additionalFare)}
+              {vndFormat(
+                fareCalculation?.additionalFare +
+                  fareCalculation?.roundTripAdditionalFare
+              )}
             </Text>
           </HStack>
 
@@ -345,7 +378,11 @@ const UpdateBookingScreen = (props) => {
             <Text fontSize={15} bold>
               Tổng tiền:{" "}
             </Text>
-            <Text fontSize={15}>{vndFormat(fareCalculation?.finalFare)}</Text>
+            <Text fontSize={15}>
+              {vndFormat(
+                fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare
+              )}
+            </Text>
           </HStack>
         </VStack>
         <Button bg={themeColors.primary} onPress={updateBooking}>
