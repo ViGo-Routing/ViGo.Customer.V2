@@ -130,7 +130,7 @@ const TrackingLocationScreen = ({}) => {
                     <MapPinIcon size={30} color={themeColors.primary} />
                   </Box>
 
-                  <VStack w="95%">
+                  <VStack w="93%">
                     <Text fontSize={15} color="black" bold>
                       Điểm đi:{" "}
                     </Text>
@@ -155,7 +155,7 @@ const TrackingLocationScreen = ({}) => {
                     <MapPinIcon size={30} color={themeColors.primary} />
                   </Box>
 
-                  <VStack w="95%">
+                  <VStack w="93%">
                     <Text fontSize={15} color="black" bold>
                       Điểm đến:{" "}
                     </Text>
@@ -192,7 +192,7 @@ const TrackingLocationScreen = ({}) => {
                         <MapPinIcon size={30} color={themeColors.primary} />
                       </Box>
 
-                      <VStack w="95%">
+                      <VStack w="90%">
                         <Text fontSize={15} color="black" bold>
                           Điểm đi:{" "}
                         </Text>
@@ -221,7 +221,7 @@ const TrackingLocationScreen = ({}) => {
                         <MapPinIcon size={30} color={themeColors.primary} />
                       </Box>
 
-                      <VStack w="95%">
+                      <VStack w="90%">
                         <Text fontSize={15} color="black" bold>
                           Điểm đến:{" "}
                         </Text>
@@ -347,7 +347,7 @@ const TrackingLocationScreen = ({}) => {
               smallPanelHeight={300}
               // openLarge={openLargePanel}
               ref={panelRef}
-              largePanelHeight={500}
+              // largePanelHeight={500}
               // onlySmall
             >
               {<Box px="6">{renderFullTripInformation()}</Box>}

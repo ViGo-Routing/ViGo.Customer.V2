@@ -95,8 +95,8 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
   const renderSmallTripInformation = () => {
     return (
       <Box>
-        <View m={2}>
-          <Box m={2}>
+        <View>
+          <Box>
             <VStack>
               {bookingDetail != null && (
                 <HStack my={1} alignItems="center" justifyContent="flex-start">
@@ -104,7 +104,7 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
                     <MapPinIcon size={30} color={themeColors.primary} />
                   </Box>
 
-                  <VStack w="95%">
+                  <VStack w="90%">
                     <Text fontSize={15} color="black" bold>
                       Điểm đi:{" "}
                     </Text>
@@ -129,7 +129,7 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
                     <MapPinIcon size={30} color={themeColors.primary} />
                   </Box>
 
-                  <VStack w="95%">
+                  <VStack w="90%">
                     <Text fontSize={15} color="black" bold>
                       Điểm đến:{" "}
                     </Text>
@@ -349,10 +349,10 @@ const TrackingOnGoingLocationScreen = ({ route }) => {
             // showCloseButton
             allowTouchOutside
             smallPanelItem={<Box px="6">{renderSmallTripInformation()}</Box>}
-            smallPanelHeight={300}
+            smallPanelHeight={330}
             // openLarge={openLargePanel}
             ref={panelRef}
-            largePanelHeight={500}
+            // largePanelHeight={500}
             // onlySmall
           >
             {<Box px="6">{renderFullTripInformation()}</Box>}
