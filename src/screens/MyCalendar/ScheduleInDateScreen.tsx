@@ -20,6 +20,7 @@ const ScheduleInDateScreen = () => {
   const { date } = route.params as any;
   // console.log(date);
   const [tripsInDate, setTripsInDate] = useState([] as any[]);
+  const formattedCurrentDate = moment().format("YYYY-MM-DD").toString();
   const formattedDate = moment(date).format("YYYY-MM-DD").toString();
   const { user } = useContext(UserContext);
 
@@ -40,9 +41,14 @@ const ScheduleInDateScreen = () => {
       );
       setTripsInDate(
         tripsResponse.data
-          .filter((trip: any) =>
-            moment(trip.customerDesiredPickupTime, "HH:mm:ss").isAfter(moment())
-          )
+          .filter((trip: any) => {
+            if (formattedDate == formattedCurrentDate) {
+              return moment(trip.customerDesiredPickupTime, "HH:mm:ss").isAfter(
+                moment()
+              );
+            }
+            return true;
+          })
           .map((trip: any) => {
             return {
               firstPosition: generateMapPoint(trip.startStation),
