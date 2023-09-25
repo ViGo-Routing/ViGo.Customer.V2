@@ -57,7 +57,7 @@ const BottomNavigationBar = () => {
         key="ActivityTab"
         component={ActivityScreen}
         options={{
-          tabBarLabel: "HOẠT ĐỘNG",
+          tabBarLabel: "LỊCH SỬ",
           tabBarIcon: ({ focused, color, size }) => (
             <ClockIcon size={size} color={color} />
           ),
