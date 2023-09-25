@@ -14,12 +14,29 @@ import { getVehicleTypeById } from "../../service/vehicleTypeService";
 import { getWalletByUserId } from "../../service/walletService";
 import { UserContext } from "../../context/UserContext";
 import { MapPinIcon, UserCircleIcon } from "react-native-heroicons/solid";
-import { Box, HStack, View, Text, VStack, ScrollView, Divider } from "native-base";
+import {
+  Box,
+  HStack,
+  View,
+  Text,
+  VStack,
+  ScrollView,
+  Divider,
+} from "native-base";
 import { createRoutine } from "../../service/routineService";
+import { vndFormat } from "../../utils/numberUtils";
 
 const BookingDetailScreen = ({ route }) => {
   const { user } = useContext(UserContext);
-  const { routines, roundTrip, data, dataRoundTrip, routeId, daysOfWeek, numberOfOccurrences } = route.params;
+  const {
+    routines,
+    roundTrip,
+    data,
+    dataRoundTrip,
+    routeId,
+    daysOfWeek,
+    numberOfOccurrences,
+  } = route.params;
   const currentDate = new Date();
   console.log(
     "routinesroutines",
@@ -50,20 +67,24 @@ const BookingDetailScreen = ({ route }) => {
           beginTime: data[0].pickupTime,
           distance: result.data.distance,
           duration: result.data.duration,
-          totalNumberOfTickets: result.data.type != "ROUND_TRIP" ? data.length : (data.length * 2),
+          totalNumberOfTickets:
+            result.data.type != "ROUND_TRIP" ? data.length : data.length * 2,
           eachWeekTripsCount: daysOfWeek.length,
           totalFrequencyCount: numberOfOccurrences,
           tripType: result.data.type,
           routineType: result.data.routineType,
-          roundTripBeginTime: (dataRoundTrip != null && result.data.type == "ROUND_TRIP") ? dataRoundTrip[0].pickupTime : data[0].pickupTime,
+          roundTripBeginTime:
+            dataRoundTrip != null && result.data.type == "ROUND_TRIP"
+              ? dataRoundTrip[0].pickupTime
+              : data[0].pickupTime,
         };
-        setRouteType(result.data.type)
+        setRouteType(result.data.type);
         setRoute(dataResponse);
         handelPosition(result.data);
         setPickupPosition(result.data.startStation);
         setDestinationPosition(result.data.endStation);
         await createFareCalculate(dataResponse).then((response) => {
-          console.log("dataResponse", response)
+          console.log("dataResponse", response);
           setFareCalculation(response);
         });
         await getVehicleTypeById(dataResponse.vehicleTypeId).then(
@@ -82,7 +103,8 @@ const BookingDetailScreen = ({ route }) => {
     startDate: data[0].routineDate,
     endDate: data[data.length - 1].routineDate,
     daysOfWeek: vnDays,
-    totalPrice: (fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare),
+    totalPrice:
+      fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare,
     roundTripTotalPrice: fareCalculation?.roundTripFinalFare,
     priceAfterDiscount: 0,
     isShared: true,
@@ -97,31 +119,31 @@ const BookingDetailScreen = ({ route }) => {
     const pickupPositionLocal =
       item?.startStation?.latitude && item?.startStation?.longitude
         ? {
-          geometry: {
-            location: {
-              lat: item.startStation.latitude,
-              lng: item.startStation.longitude,
+            geometry: {
+              location: {
+                lat: item.startStation.latitude,
+                lng: item.startStation.longitude,
+              },
             },
-          },
-          address: item.startStation.address,
-          name: item.startStation.name,
-          formatted_address: item.startStation.address,
-        }
+            address: item.startStation.address,
+            name: item.startStation.name,
+            formatted_address: item.startStation.address,
+          }
         : null;
 
     const destinationPositionLocal =
       item?.endStation?.latitude && item?.endStation?.longitude
         ? {
-          geometry: {
-            location: {
-              lat: item.endStation.latitude,
-              lng: item.endStation.longitude,
+            geometry: {
+              location: {
+                lat: item.endStation.latitude,
+                lng: item.endStation.longitude,
+              },
             },
-          },
-          address: item.endStation.address,
-          name: item.endStation.name,
-          formatted_address: item.endStation.address,
-        }
+            address: item.endStation.address,
+            name: item.endStation.name,
+            formatted_address: item.endStation.address,
+          }
         : null;
   };
   const formatDateString = (date) => {
@@ -175,13 +197,18 @@ const BookingDetailScreen = ({ route }) => {
                 text: "Có",
                 onPress: async () => {
                   try {
-
-                    const responseCreateRoutines = await createRoutine(routines)
-                    let responseCreateRoundTrip = null
+                    const responseCreateRoutines = await createRoutine(
+                      routines
+                    );
+                    let responseCreateRoundTrip = null;
                     if (roundTrip != null) {
-                      responseCreateRoundTrip = await createRoutine(roundTrip)
+                      responseCreateRoundTrip = await createRoutine(roundTrip);
                     }
-                    if (responseCreateRoutines != null || (responseCreateRoutines != null && responseCreateRoundTrip != null)) {
+                    if (
+                      responseCreateRoutines != null ||
+                      (responseCreateRoutines != null &&
+                        responseCreateRoundTrip != null)
+                    ) {
                       createBooking(requestData).then((response) => {
                         if (response != null) {
                           Alert.alert(
@@ -204,8 +231,6 @@ const BookingDetailScreen = ({ route }) => {
                         }
                       });
                     }
-
-
                   } catch (error) {
                     console.error("Error creating booking:", error);
                   }
@@ -298,8 +323,8 @@ const BookingDetailScreen = ({ route }) => {
                 routeData === null
                   ? ""
                   : routeData?.tripType === "ONE_WAY"
-                    ? "Một chiều"
-                    : "Hai chiều"
+                  ? "Một chiều"
+                  : "Hai chiều"
               }
             />
             <DetailCard
@@ -328,39 +353,68 @@ const BookingDetailScreen = ({ route }) => {
             />
             <DetailCard
               title="Số chuyến đi"
-              info={routeData === null
-                ? ""
-                : routeData.tripType != "ROUND_TRIP" ? data.length : (data.length * 2)}
+              info={
+                routeData === null
+                  ? ""
+                  : routeData.tripType != "ROUND_TRIP"
+                  ? data.length
+                  : data.length * 2
+              }
             />
           </View>
           <Text fontSize={25} bold color="black">
             Thanh toán:
           </Text>
-          {fareCalculation != null && <View style={styles.cardInsideDateTime} m={2}>
-            <DetailCard
-              title="Giá gốc"
-              info={formatMoney(fareCalculation?.originalFare + fareCalculation?.roundTripOriginalFare)}
-            />
-            <DetailCard
-              title="Tổng khuyến mãi"
-              info={formatMoney(fareCalculation?.routineTypeDiscount + fareCalculation?.roundTripRoutineTypeDiscount)}
-            />
-            <DetailCard
-              title="Phụ phí"
-              info={formatMoney(fareCalculation?.additionalFare + fareCalculation?.roundTripAdditionalFare)}
-            />
-            <DetailCard
-              title="Tổng tiền"
-              info={formatMoney(fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare)}
-            />
-          </View>}
+          {fareCalculation != null && (
+            <View style={styles.cardInsideDateTime} m={2}>
+              <DetailCard
+                title="Giá gốc"
+                info={vndFormat(
+                  fareCalculation?.originalFare +
+                    fareCalculation?.roundTripOriginalFare
+                )}
+              />
+              <DetailCard
+                title="Tổng khuyến mãi"
+                info={vndFormat(
+                  fareCalculation?.routineTypeDiscount +
+                    fareCalculation?.roundTripRoutineTypeDiscount
+                )}
+              />
+              <DetailCard
+                title="Phụ phí"
+                info={vndFormat(
+                  fareCalculation?.additionalFare +
+                    fareCalculation?.roundTripAdditionalFare
+                )}
+              />
+              <DetailCard
+                title="Tổng tiền"
+                info={vndFormat(
+                  fareCalculation?.finalFare +
+                    fareCalculation?.roundTripFinalFare
+                )}
+              />
+            </View>
+          )}
         </View>
         <View style={styles.footer}>
-          {fareCalculation != null ? (<TouchableOpacity style={styles.button} onPress={checkBalance}>
-            <Text style={{ color: "white", fontWeight: "bold" }}>Tiếp tục</Text>
-          </TouchableOpacity>) : (<TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-            <Text style={{ color: "white", fontWeight: "bold" }}>Quay lại</Text>
-          </TouchableOpacity>)}
+          {fareCalculation != null ? (
+            <TouchableOpacity style={styles.button} onPress={checkBalance}>
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Tiếp tục
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Quay lại
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </View>

@@ -1,7 +1,12 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
-import { getBookingById, getBookingDetail, getBookingDetailByBookingId, getBookingDetailById } from "../../service/bookingService";
+import {
+  getBookingById,
+  getBookingDetail,
+  getBookingDetailByBookingId,
+  getBookingDetailById,
+} from "../../service/bookingService";
 import CardHistory from "../../components/CardSchedule/CardHistory";
 import { themeColors, vigoStyles } from "../../assets/theme";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
@@ -63,19 +68,22 @@ const CancelScreen = ({ id, navigation, isLoading, setIsLoading }) => {
 
   return (
     <View style={styles.container}>
-      {/* <ViGoSpinner isLoading={isLoading} /> */}
-      {/* {list.length > 0 ? (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      <ViGoSpinner isLoading={isLoading} />
+      {list.length > 0 ? (
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={styles.scrollViewContainer}
+        >
           {list.map((element) => (
-            <CardHistory key={element.id} element={element} />
+            <CardBookingDetail item={element} key={element.id} />
           ))}
         </ScrollView>
       ) : (
-        <View style={styles.noDataContainer}>
+        <Center mt="2">
           <Text style={styles.text}>Chưa có dữ liệu</Text>
-        </View>
-      )} */}
-      <FlatList
+        </Center>
+      )}
+      {/* <FlatList
         style={vigoStyles.list}
         data={list}
         keyExtractor={(item) => item.id}
@@ -90,7 +98,7 @@ const CancelScreen = ({ id, navigation, isLoading, setIsLoading }) => {
         onEndReached={loadMoreTrips}
         onScroll={() => setOnScroll(true)}
         onEndReachedThreshold={0.5}
-      />
+      /> */}
     </View>
   );
 };

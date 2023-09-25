@@ -2,22 +2,25 @@ import React, { memo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { themeColors } from "../../assets/theme";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
+import { Box } from "native-base";
 
 const SelectRouteHeader = ({ title, subtitle, onBack }) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={onBack}>
-        <Text style={styles.backButton}>
-          <ArrowLeftIcon size={30} color="white" />
-        </Text>
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle} numberOfLines={null}>
-          {subtitle}
-        </Text>
+    <Box style={{ backgroundColor: "white" }}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={onBack}>
+          <Text style={styles.backButton}>
+            <ArrowLeftIcon size={30} color="white" />
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.subtitle} numberOfLines={null}>
+            {subtitle}
+          </Text>
+        </View>
       </View>
-    </View>
+    </Box>
   );
 };
 
@@ -46,6 +49,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingTop: 10,
     color: themeColors.linear,
+    textAlign: "center",
   },
 });
 

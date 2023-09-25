@@ -124,8 +124,8 @@ const CardBookingDetail = ({ item }) => {
             (nếu có) tùy vào thời gian và chuyến xe mà bạn hủy.
           </Text>
           <Text>
-            Phí trả trước cho chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được hoàn về
-            ví của bạn sau khi hủy chuyến thành công.
+            Phí trả trước cho chuyến đi (sau khi đã trừ phí hủy chuyến) sẽ được
+            hoàn về ví của bạn sau khi hủy chuyến thành công.
           </Text>
           <Text marginTop="2">
             Phí hủy chuyến tạm tính: <Text bold>{vndFormat(cancelFee)}</Text>
@@ -220,39 +220,43 @@ const CardBookingDetail = ({ item }) => {
         {/* Row 5 */}
         <VStack mt={2} space={4} alignItems="flex-end">
           <HStack space={4} alignItems="flex-end">
-            {item.driver !== null && (
-              <Pressable onPress={toggleModal}>
-                <FlagIcon size={25} color={themeColors.primary} />
-              </Pressable>
-            )}
-            {item.driver !== null && item.status !== "COMPLETED" && item.status !== "CANCEL" && (
-              <HStack space={4}>
-                <Tooltip label="Nhắn tin" placement="auto">
-                  <Pressable
-                    onPress={() =>
-                      navigation.navigate("Message", {
-                        bookingDetailId: item.id,
-                        driver: item.driver,
-                      })
-                    }
-                  >
-                    <ChatBubbleLeftRightIcon
-                      size={25}
-                      color={themeColors.primary}
-                    />
+            {/* {item.driver !== null && (
+              
+            )} */}
+            {item.driver !== null &&
+              item.status !== "COMPLETED" &&
+              item.status !== "CANCELLED" && (
+                <HStack space={4}>
+                  <Pressable onPress={toggleModal}>
+                    <FlagIcon size={25} color={themeColors.primary} />
                   </Pressable>
-                </Tooltip>
-                <Tooltip label="Gọi điện" openDelay={500}>
-                  <Pressable onPress={() => handleCall(item.driver.phone)}>
-                    <PhoneArrowUpRightIcon
-                      size={25}
-                      color={themeColors.primary}
-                    />
-                  </Pressable>
-                </Tooltip>
-              </HStack>
-            )}
-            {item.status === "COMPLETED" && (
+                  <Tooltip label="Nhắn tin" placement="auto">
+                    <Pressable
+                      onPress={() =>
+                        navigation.navigate("Message", {
+                          bookingDetailId: item.id,
+                          driver: item.driver,
+                        })
+                      }
+                    >
+                      <ChatBubbleLeftRightIcon
+                        size={25}
+                        color={themeColors.primary}
+                      />
+                    </Pressable>
+                  </Tooltip>
+                  <Tooltip label="Gọi điện" openDelay={500}>
+                    <Pressable onPress={() => handleCall(item.driver.phone)}>
+                      <PhoneArrowUpRightIcon
+                        size={25}
+                        color={themeColors.primary}
+                      />
+                    </Pressable>
+                  </Tooltip>
+                </HStack>
+              )}
+            {(item.status === "COMPLETED" ||
+              item.status === "ARRIVE_AT_DROPOFF") && (
               <Tooltip label="Đánh giá" placement="auto">
                 <Pressable
                   onPress={() =>
@@ -267,12 +271,12 @@ const CardBookingDetail = ({ item }) => {
             )}
             {(item.status === "PENDING_ASSIGN" ||
               item.status === "ASSIGNED") && (
-                <Tooltip label="Đánh giá" openDelay={500}>
-                  <Pressable onPress={openConfirmCancelTrip}>
-                    <XCircleIcon size={25} color={themeColors.primary} />
-                  </Pressable>
-                </Tooltip>
-              )}
+              <Tooltip label="Hủy chuyến" openDelay={500}>
+                <Pressable onPress={openConfirmCancelTrip}>
+                  <XCircleIcon size={25} color={themeColors.primary} />
+                </Pressable>
+              </Tooltip>
+            )}
           </HStack>
         </VStack>
         <CancelBookingDetailConfirmAlert

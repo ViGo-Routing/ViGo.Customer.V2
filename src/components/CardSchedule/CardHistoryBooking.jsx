@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { StyleSheet } from "react-native";
 import { themeColors } from "../../assets/theme";
 import {
   Box,
@@ -16,7 +16,6 @@ import {
   Icon,
   Divider,
 } from "native-base";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import {
   ArrowRightIcon,
@@ -27,6 +26,7 @@ import {
   MapPinIcon,
 } from "react-native-heroicons/solid";
 import { toVnDateTimeString } from "../../utils/datetimeUtils";
+import { TouchableOpacity } from "react-native";
 const CardHistoryBooking = ({ item }) => {
   const img = require("../../assets/icons/BikeIcon.png");
   const navigation = useNavigation();
@@ -110,99 +110,109 @@ const CardHistoryBooking = ({ item }) => {
   }
   const { isOpen, onToggle } = useDisclose();
   return (
-    <Box
-      w="full"
-      alignItems="center"
-      p="2"
-      _web={{
-        shadow: 10,
-        borderWidth: 0,
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("MyRoute", { bookingDetailId: item.id });
       }}
     >
       <Box
-        w="100%"
-        maxW="sm"
-        rounded="xl"
+        w="full"
+        alignItems="center"
         p="2"
-        overflow="hidden"
-        borderColor="coolGray.200"
-        borderWidth="1"
-        shadow={4}
-        _dark={{
-          borderColor: "coolGray.600",
-          backgroundColor: "white",
-        }}
         _web={{
-          shadow: 6,
+          shadow: 10,
           borderWidth: 0,
         }}
-        _light={{
-          backgroundColor: "white",
-        }}
       >
-        <VStack>
-          <VStack alignItems="flex-start" space={4} justifyContent="flex-start">
-            <HStack alignItems="flex-start">
-              <Box backgroundColor={themeColors.linear} p="2" rounded="xl">
-                <Image
-                  p="1"
-                  size={"xs"}
-                  resizeMode="cover"
-                  source={require("../../assets/icons/vigobike.png")}
-                  alt="Alternate Text"
-                />
-              </Box>
-              <VStack ml="2">
-                <Text color="black" bold fontSize={15}>
-                  {item.dropoffTime
-                    ? toVnDateTimeString(item.dropoffTime)
-                    : "Không có dữ liệu"}
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode="tail">
-                  vigoBike
-                </Text>
-              </VStack>
-            </HStack>
-            <Divider
-              _light={{
-                bg: "muted.800",
-              }}
-              _dark={{
-                bg: "muted.50",
-              }}
-            />
-            <HStack alignItems="center" justifyContent="flex-start">
-              <Box pr={2}>
-                <MapPinIcon size={30} color={themeColors.primary} />
-              </Box>
+        <Box
+          w="100%"
+          maxW="sm"
+          rounded="xl"
+          p="2"
+          overflow="hidden"
+          borderColor="coolGray.200"
+          borderWidth="1"
+          shadow={4}
+          _dark={{
+            borderColor: "coolGray.600",
+            backgroundColor: "white",
+          }}
+          _web={{
+            shadow: 6,
+            borderWidth: 0,
+          }}
+          _light={{
+            backgroundColor: "white",
+          }}
+        >
+          <VStack>
+            <VStack
+              alignItems="flex-start"
+              space={4}
+              justifyContent="flex-start"
+            >
+              <HStack alignItems="flex-start">
+                <Box backgroundColor={themeColors.linear} p="2" rounded="xl">
+                  <Image
+                    p="1"
+                    size={"xs"}
+                    resizeMode="cover"
+                    source={require("../../assets/icons/vigobike.png")}
+                    alt="Alternate Text"
+                  />
+                </Box>
+                <VStack ml="2">
+                  <Text color="black" bold fontSize={15}>
+                    {item.dropoffTime
+                      ? toVnDateTimeString(item.dropoffTime)
+                      : "Không có dữ liệu"}
+                  </Text>
+                  <Text numberOfLines={1} ellipsizeMode="tail">
+                    vigoBike
+                  </Text>
+                </VStack>
+              </HStack>
+              <Divider
+                _light={{
+                  bg: "muted.800",
+                }}
+                _dark={{
+                  bg: "muted.50",
+                }}
+              />
+              <HStack alignItems="center" justifyContent="flex-start">
+                <Box pr={2}>
+                  <MapPinIcon size={30} color={themeColors.primary} />
+                </Box>
 
-              <VStack w="90%">
-                <Text fontSize={15} color="black" bold>
-                  Điểm đi:{" "}
-                </Text>
-                <Text numberOfLines={1} fontSize={15} color="black">
-                  {item.startStation.address}
-                </Text>
-              </VStack>
-            </HStack>
-            <HStack alignItems="center" justifyContent="flex-start">
-              <Box pr={2}>
-                <MapPinIcon size={30} color={themeColors.primary} />
-              </Box>
+                <VStack w="90%">
+                  <Text fontSize={15} color="black" bold>
+                    Điểm đi:{" "}
+                  </Text>
+                  <Text numberOfLines={1} fontSize={15} color="black">
+                    {item.startStation.address}
+                  </Text>
+                </VStack>
+              </HStack>
+              <HStack alignItems="center" justifyContent="flex-start">
+                <Box pr={2}>
+                  <MapPinIcon size={30} color={themeColors.primary} />
+                </Box>
 
-              <VStack w="90%">
-                <Text fontSize={15} color="black" bold>
-                  Điểm đến:{" "}
-                </Text>
-                <Text numberOfLines={1} fontSize={15}>
-                  {item.endStation.address}
-                </Text>
-              </VStack>
-            </HStack>
+                <VStack w="90%">
+                  <Text fontSize={15} color="black" bold>
+                    Điểm đến:{" "}
+                  </Text>
+                  <Text numberOfLines={1} fontSize={15}>
+                    {item.endStation.address}
+                  </Text>
+                </VStack>
+              </HStack>
+            </VStack>
           </VStack>
-        </VStack>
+        </Box>
       </Box>
-    </Box>
+    </TouchableOpacity>
   );
 };
 
