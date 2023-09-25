@@ -77,8 +77,8 @@ const FeedbackScreen = (
   return (
     <Flex
       direction="column"
-      alignItems="center"
-      justifyContent="center"
+      // alignItems="center"
+      // justifyContent="center"
       bg="white"
     >
       <SelectRouteHeader
@@ -87,7 +87,11 @@ const FeedbackScreen = (
         onBack={() => navigation.goBack()}
       />
       <ViGoSpinner isLoading={isLoading} />
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          paddingBottom: 100,
+        }}
+      >
         {bookingDetail == null ? (
           <ViGoSpinner />
         ) : (

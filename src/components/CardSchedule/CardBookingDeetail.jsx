@@ -51,6 +51,8 @@ import ViGoSpinner from "../Spinner/ViGoSpinner";
 import { eventNames, handleError } from "../../utils/alertUtils";
 import { NativeEventEmitter } from "react-native";
 import ReportModal from "../Modal/ReportModal";
+import call from "react-native-phone-call";
+
 const CardBookingDetail = ({ item }) => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
