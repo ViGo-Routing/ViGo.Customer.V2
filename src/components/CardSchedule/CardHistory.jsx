@@ -208,34 +208,34 @@ const CardHistory = ({ element }) => {
             </VStack>
             <VStack>
               <HStack>
-                <Text width={75} color="black" bold fontSize={15}>
+                <Text width={75} color="black" bold>
                   Bắt đầu:{" "}
                 </Text>
                 <Text
-                  w={210}
+                  w={"55%"}
                   numberOfLines={1}
                   isTruncated
                   ellipsizeMode="tail"
                 >
-                  {element.customerRoute.startStation.address}
+                  {element.customerRoute.startStation.name}
                 </Text>
               </HStack>
               <HStack>
-                <Text w={75} color="black" bold fontSize={15}>
+                <Text w={75} color="black" bold>
                   Kết thúc:
                 </Text>
 
                 <Text
-                  w={210}
+                  w={"55%"}
                   numberOfLines={1}
                   isTruncated
                   ellipsizeMode="tail"
                 >
-                  {element.customerRoute.endStation.address}
+                  {element.customerRoute.endStation.name}
                 </Text>
               </HStack>
               <HStack>
-                <Text w={75} color="black" bold fontSize={15}>
+                <Text w={75} color="black" bold>
                   Đã đi:
                 </Text>
                 <Text numberOfLines={1} color="green.500" ellipsizeMode="tail">
