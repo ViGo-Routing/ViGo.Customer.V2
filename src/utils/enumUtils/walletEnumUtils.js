@@ -23,6 +23,8 @@ export const renderTransactionTypeOperator = (transactionType) => {
       return "+";
     case "BOOKING_PAID":
       return "-";
+    case "BOOKING_REFUND":
+      return "+";
     case "TRIP_PICK":
       return "-";
     case "TRIP_PICK_REFUND":
@@ -123,6 +125,22 @@ export const renderTransacionType = (transaction, renderType) => {
             </Text>
           </>
         );
+      case "BOOKING_REFUND":
+        return (
+          <>
+            <Text style={styles.transactionNameListItem}>
+              Hoàn phí hành trình
+            </Text>
+            <Text style={styles.transactionSubtitle}>
+              {transaction.bookingId
+                ? `Hành trình: ${transaction.bookingId}`
+                : `Không có dữ liệu`}
+            </Text>
+            <Text style={styles.transactionSubtitle}>
+              {toVnDateTimeString(transaction.createdTime)}
+            </Text>
+          </>
+        );
       case "TRIP_PICK":
         return (
           <>
@@ -204,6 +222,14 @@ export const renderTransacionType = (transaction, renderType) => {
         return (
           <>
             <Text style={styles.transactionNameDetail}>Phí đặt hành trình</Text>
+          </>
+        );
+      case "BOOKING_REFUND":
+        return (
+          <>
+            <Text style={styles.transactionNameDetail}>
+              Hoàn phí hành trình
+            </Text>
           </>
         );
       case "TRIP_PICK":

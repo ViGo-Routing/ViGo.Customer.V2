@@ -125,6 +125,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
       : null;
   const [selectedDays, setSelectedDays] = useState([]);
   const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+  const [isBackTimePickerVisible, setBackTimePickerVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [chosenTime, setChosenTime] = useState("");
   const [chosenBackTime, setChosenBackTime] = useState("");
@@ -203,7 +204,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
     // Set the chosen time
     setChosenBackTime(formattedTime);
 
-    setTimePickerVisible(false);
+    setBackTimePickerVisible(false);
   };
   const convertToDayName = (inputString) => {
     // Create a dictionary to map day abbreviations to day names
@@ -461,8 +462,26 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
             navigation.navigate("UpdateBooking", {
               routines: requestData1,
               roundTrip: requestData2,
-              pickupPosition: pickupPositionLocal,
-              destinationPosition: destinationPositionLocal,
+              pickupPosition: {
+                geometry: {
+                  location: {
+                    lat: pickupStation.latitude,
+                    lng: pickupStation.longitude,
+                  },
+                },
+                name: pickupStation.name,
+                formatted_address: pickupStation.address,
+              },
+              destinationPosition: {
+                geometry: {
+                  location: {
+                    lat: dropoffStation.latitude,
+                    lng: dropoffStation.longitude,
+                  },
+                },
+                name: dropoffStation.name,
+                formatted_address: dropoffStation.address,
+              },
               routineType: frequency,
               type: routeType,
               pickupTime: chosenTime,
@@ -812,7 +831,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                           flexGrow: 1,
                           justifyContent: "center",
                         }}
-                        onPress={() => setTimePickerVisible(true)}
+                        onPress={() => setBackTimePickerVisible(true)}
                       >
                         <View
                           style={{
@@ -851,10 +870,10 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                           </Text>
                         </View>
                         <DateTimePickerModal
-                          isVisible={isTimePickerVisible}
+                          isVisible={isBackTimePickerVisible}
                           mode="time"
                           onConfirm={handleBackTimeConfirm}
-                          onCancel={() => setTimePickerVisible(false)}
+                          onCancel={() => setIsBackTimePickerVisible(false)}
                         />
                       </TouchableOpacity>
                     </Box>

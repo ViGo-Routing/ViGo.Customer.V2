@@ -25,6 +25,7 @@ import {
 } from "native-base";
 import { createRoutine } from "../../service/routineService";
 import { vndFormat } from "../../utils/numberUtils";
+import { handleError } from "../../utils/alertUtils";
 
 const BookingDetailScreen = ({ route }) => {
   const { user } = useContext(UserContext);
@@ -178,10 +179,13 @@ const BookingDetailScreen = ({ route }) => {
       console.log("Xác nhận");
       await getWalletByUserId(user.id).then(async (s) => {
         const walletBalance = s.balance;
-        if (walletBalance < fareCalculation?.finalFare) {
-          Alert.alert(
+        if (
+          walletBalance <
+          fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare
+        ) {
+          handleError(
             "Rất tiếc",
-            "Số dư của bạn không đủ. Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi."
+            "Số dư ví của bạn không đủ. Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi."
           );
         } else {
           Alert.alert(

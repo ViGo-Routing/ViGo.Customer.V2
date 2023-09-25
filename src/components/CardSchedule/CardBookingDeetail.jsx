@@ -167,135 +167,141 @@ const CardBookingDetail = ({ item }) => {
     setIsModalOpen(!isModalOpen);
   };
   return (
-    <Center flex={1}>
-      <ViGoSpinner isLoading={isLoading} key="spinner-navigation" />
-      <Box
-        borderBottomWidth={1}
-        borderColor={themeColors.primary}
-        p={4}
-        width="full"
-      >
-        {/* Row 1 */}
-        <HStack space={4} alignItems="center">
-          <ClockIcon size={20} color="#00A1A1" />
-          <Text w={100} marginLeft={2} bold color="gray.500">
-            Giờ đón
-          </Text>
-          <Text marginLeft={2} bold color="black">
-            {item.customerRouteRoutine.pickupTime}
-          </Text>
-        </HStack>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("MyRoute", { bookingDetailId: item.id });
+      }}
+    >
+      <Center flex={1}>
+        <ViGoSpinner isLoading={isLoading} key="spinner-navigation" />
+        <Box
+          borderBottomWidth={1}
+          borderColor={themeColors.primary}
+          p={4}
+          width="full"
+        >
+          {/* Row 1 */}
+          <HStack space={4} alignItems="center">
+            <ClockIcon size={20} color="#00A1A1" />
+            <Text w={100} marginLeft={2} bold color="gray.500">
+              Giờ đón
+            </Text>
+            <Text marginLeft={2} bold color="black">
+              {item.customerRouteRoutine.pickupTime}
+            </Text>
+          </HStack>
 
-        {/* Row 2 */}
-        <HStack space={4} alignItems="center">
-          <CalendarIcon size={20} color="#00A1A1" />
-          <Text w={100} marginLeft={2} bold color="gray.500">
-            Ngày đón
-          </Text>
-          <Text marginLeft={2} bold color="black">
-            {item.customerRouteRoutine.routineDate}
-          </Text>
-        </HStack>
+          {/* Row 2 */}
+          <HStack space={4} alignItems="center">
+            <CalendarIcon size={20} color="#00A1A1" />
+            <Text w={100} marginLeft={2} bold color="gray.500">
+              Ngày đón
+            </Text>
+            <Text marginLeft={2} bold color="black">
+              {item.customerRouteRoutine.routineDate}
+            </Text>
+          </HStack>
 
-        {/* Row 3 */}
-        <HStack space={4} alignItems="center">
-          <UserIcon size={20} color="#00A1A1" />
-          <Text w={100} marginLeft={2} bold color="gray.500">
-            Tài xế
-          </Text>
-          <Text marginLeft={2} bold color="black">
-            {item.driver == null ? "Chưa có tài xế" : item.driver.name}
-          </Text>
-        </HStack>
+          {/* Row 3 */}
+          <HStack space={4} alignItems="center">
+            <UserIcon size={20} color="#00A1A1" />
+            <Text w={100} marginLeft={2} bold color="gray.500">
+              Tài xế
+            </Text>
+            <Text marginLeft={2} bold color="black">
+              {item.driver == null ? "Chưa có tài xế" : item.driver.name}
+            </Text>
+          </HStack>
 
-        {/* Row 4 */}
-        <HStack space={4} alignItems="center">
-          <PhoneIcon size={20} color="#00A1A1" />
-          <Text w={100} marginLeft={2} bold color="gray.500">
-            Số điện thoại
-          </Text>
-          <Text marginLeft={2} bold color="black">
-            {item.driver == null ? "Chưa có tài xế" : item.driver.phone}
-          </Text>
-        </HStack>
+          {/* Row 4 */}
+          <HStack space={4} alignItems="center">
+            <PhoneIcon size={20} color="#00A1A1" />
+            <Text w={100} marginLeft={2} bold color="gray.500">
+              Số điện thoại
+            </Text>
+            <Text marginLeft={2} bold color="black">
+              {item.driver == null ? "Chưa có tài xế" : item.driver.phone}
+            </Text>
+          </HStack>
 
-        {/* Row 5 */}
-        <VStack mt={2} space={4} alignItems="flex-end">
-          <HStack space={4} alignItems="flex-end">
-            {/* {item.driver !== null && (
+          {/* Row 5 */}
+          <VStack mt={2} space={4} alignItems="flex-end">
+            <HStack space={4} alignItems="flex-end">
+              {/* {item.driver !== null && (
               
             )} */}
-            {item.driver !== null &&
-              item.status !== "COMPLETED" &&
-              item.status !== "CANCELLED" && (
-                <HStack space={4}>
-                  <Pressable onPress={toggleModal}>
-                    <FlagIcon size={25} color={themeColors.primary} />
+              {item.driver !== null &&
+                item.status !== "COMPLETED" &&
+                item.status !== "CANCELLED" && (
+                  <HStack space={4}>
+                    <Pressable onPress={toggleModal}>
+                      <FlagIcon size={25} color={themeColors.primary} />
+                    </Pressable>
+                    <Tooltip label="Nhắn tin" placement="auto">
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate("Message", {
+                            bookingDetailId: item.id,
+                            driver: item.driver,
+                          })
+                        }
+                      >
+                        <ChatBubbleLeftRightIcon
+                          size={25}
+                          color={themeColors.primary}
+                        />
+                      </Pressable>
+                    </Tooltip>
+                    <Tooltip label="Gọi điện" openDelay={500}>
+                      <Pressable onPress={() => handleCall(item.driver.phone)}>
+                        <PhoneArrowUpRightIcon
+                          size={25}
+                          color={themeColors.primary}
+                        />
+                      </Pressable>
+                    </Tooltip>
+                  </HStack>
+                )}
+              {(item.status === "COMPLETED" ||
+                item.status === "ARRIVE_AT_DROPOFF") && (
+                <Tooltip label="Đánh giá" placement="auto">
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("Feedback", {
+                        bookingDetailId: item.id,
+                      })
+                    }
+                  >
+                    <StarIcon size={25} color={themeColors.primary} />
                   </Pressable>
-                  <Tooltip label="Nhắn tin" placement="auto">
-                    <Pressable
-                      onPress={() =>
-                        navigation.navigate("Message", {
-                          bookingDetailId: item.id,
-                          driver: item.driver,
-                        })
-                      }
-                    >
-                      <ChatBubbleLeftRightIcon
-                        size={25}
-                        color={themeColors.primary}
-                      />
-                    </Pressable>
-                  </Tooltip>
-                  <Tooltip label="Gọi điện" openDelay={500}>
-                    <Pressable onPress={() => handleCall(item.driver.phone)}>
-                      <PhoneArrowUpRightIcon
-                        size={25}
-                        color={themeColors.primary}
-                      />
-                    </Pressable>
-                  </Tooltip>
-                </HStack>
+                </Tooltip>
               )}
-            {(item.status === "COMPLETED" ||
-              item.status === "ARRIVE_AT_DROPOFF") && (
-              <Tooltip label="Đánh giá" placement="auto">
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("Feedback", {
-                      bookingDetailId: item.id,
-                    })
-                  }
-                >
-                  <StarIcon size={25} color={themeColors.primary} />
-                </Pressable>
-              </Tooltip>
-            )}
-            {(item.status === "PENDING_ASSIGN" ||
-              item.status === "ASSIGNED") && (
-              <Tooltip label="Hủy chuyến" openDelay={500}>
-                <Pressable onPress={openConfirmCancelTrip}>
-                  <XCircleIcon size={25} color={themeColors.primary} />
-                </Pressable>
-              </Tooltip>
-            )}
-          </HStack>
-        </VStack>
-        <CancelBookingDetailConfirmAlert
-          key={"cancel-trip-modal"}
-          confirmOpen={isCancelConfirmOpen}
-          setConfirmOpen={setIsCancelConfirmOpen}
-          handleOkPress={() => handleConfirmCancelTrip()}
-          cancelFee={cancelFee}
-        />
-        {/* <ReportModal isVisible={modalVisible} closeModal={closeModal} /> */}
-        <ReportModal
-          bookingDetailId={item.id}
-          isOpen={isModalOpen}
-          onClose={toggleModal}
-        />
-      </Box>
-    </Center>
+              {(item.status === "PENDING_ASSIGN" ||
+                item.status === "ASSIGNED") && (
+                <Tooltip label="Hủy chuyến" openDelay={500}>
+                  <Pressable onPress={openConfirmCancelTrip}>
+                    <XCircleIcon size={25} color={themeColors.primary} />
+                  </Pressable>
+                </Tooltip>
+              )}
+            </HStack>
+          </VStack>
+          <CancelBookingDetailConfirmAlert
+            key={"cancel-trip-modal"}
+            confirmOpen={isCancelConfirmOpen}
+            setConfirmOpen={setIsCancelConfirmOpen}
+            handleOkPress={() => handleConfirmCancelTrip()}
+            cancelFee={cancelFee}
+          />
+          {/* <ReportModal isVisible={modalVisible} closeModal={closeModal} /> */}
+          <ReportModal
+            bookingDetailId={item.id}
+            isOpen={isModalOpen}
+            onClose={toggleModal}
+          />
+        </Box>
+      </Center>
+    </TouchableOpacity>
   );
 };
 
