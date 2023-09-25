@@ -24,6 +24,7 @@ import {
   TrashIcon,
   ClipboardDocumentListIcon,
 } from "react-native-heroicons/solid";
+import { vndFormat } from "../../utils/numberUtils";
 const CardHistory = ({ element }) => {
   const img = require("../../assets/icons/BikeIcon.png");
   const navigation = useNavigation();
@@ -238,7 +239,7 @@ const CardHistory = ({ element }) => {
                   Đã đi:
                 </Text>
                 <Text numberOfLines={1} color="green.500" ellipsizeMode="tail">
-                  {element.totalAssignedBookingDetailsCount}/{" "}
+                  {element.totalCompletedBookingDetailsCount}/{" "}
                   {element.totalBookingDetailsCount}
                 </Text>
               </HStack>
@@ -253,7 +254,7 @@ const CardHistory = ({ element }) => {
           <HStack m={2} pl={20} justifyContent="flex-end">
             <Box backgroundColor={themeColors.linear} p="2" rounded="xl">
               <Text style={styles.titlePrice}>
-                {formatMoney(element.totalPrice)}
+                {vndFormat(element.totalPrice)}
               </Text>
             </Box>
           </HStack>

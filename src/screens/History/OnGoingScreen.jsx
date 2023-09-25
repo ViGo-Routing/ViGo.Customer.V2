@@ -21,16 +21,15 @@ const OnGoingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
 
   const pageSize = 10;
 
-  const status =
-    "ASSIGNED,GOING_TO_PICKUP,ARRIVE_AT_PICKUP,GOING_TO_DROPOFF,ARRIVE_AT_DROPOFF";
+  const status = "ASSIGNED,GOING_TO_PICKUP,ARRIVE_AT_PICKUP,GOING_TO_DROPOFF";
   const fetchData = async () => {
     setIsLoading(true);
-    await getBookingDetailByBookingId(id, status).then((result) => {
+    await getBookingDetailByBookingId(id, status, -1, 1).then((result) => {
       const items = result.data.data;
       setList(items);
       setIsLoading(false);
 
-      console.log("ongoig", id);
+      // console.log("ongoig", result.data);
     });
   };
 
@@ -68,28 +67,34 @@ const OnGoingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
 
   return (
     <View style={styles.container}>
-      {/* <ViGoSpinner isLoading={isLoading} /> */}
-      {/* {list.length > 0 ? (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      <ViGoSpinner isLoading={isLoading} />
+      {list.length > 0 ? (
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={styles.scrollViewContainer}
+        >
           {list.map((element) => (
-            <CardHistory key={element.id} element={element} />
+            <CardBookingDetail item={element} key={element.id} />
           ))}
         </ScrollView>
       ) : (
-        <View style={styles.noDataContainer}>
+        <Center mt="2">
           <Text style={styles.text}>Chưa có dữ liệu</Text>
-        </View>
-      )} */}
-      <FlatList
+        </Center>
+      )}
+      {/* <FlatList
         // style={vigoStyles.list}
+        nestedScrollEnabled
         data={list}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           return <CardBookingDetail item={item} />;
         }}
-        ListEmptyComponent={<Center>
-          <Text style={styles.text}>Chưa có dữ liệu</Text>
-        </Center>}
+        ListEmptyComponent={
+          <Center>
+            <Text style={styles.text}>Chưa có dữ liệu</Text>
+          </Center>
+        }
         refreshing={isLoading}
         onRefresh={() => fetchData()}
         onEndReached={loadMoreTrips}
@@ -98,7 +103,7 @@ const OnGoingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
         contentContainerStyle={{
           paddingBottom: 50,
         }}
-      />
+      /> */}
     </View>
   );
 };
@@ -117,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
     color: themeColors.primary,
   },

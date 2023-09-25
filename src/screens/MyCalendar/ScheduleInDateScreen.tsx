@@ -39,15 +39,19 @@ const ScheduleInDateScreen = () => {
         1 /*, formattedPreviousDate*/
       );
       setTripsInDate(
-        tripsResponse.data.map((trip: any) => {
-          return {
-            firstPosition: generateMapPoint(trip.startStation),
-            secondPosition: generateMapPoint(trip.endStation),
-            // strokeColor: "#00A1A1",
-            // strokeWidth: 3,
-            bookingDetailId: trip.id,
-          };
-        })
+        tripsResponse.data
+          .filter((trip: any) =>
+            moment(trip.customerDesiredPickupTime, "HH:mm:ss").isAfter(moment())
+          )
+          .map((trip: any) => {
+            return {
+              firstPosition: generateMapPoint(trip.startStation),
+              secondPosition: generateMapPoint(trip.endStation),
+              // strokeColor: "#00A1A1",
+              // strokeWidth: 3,
+              bookingDetailId: trip.id,
+            };
+          })
       );
 
       // driverSchedules.push({

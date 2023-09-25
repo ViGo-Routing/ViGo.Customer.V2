@@ -52,7 +52,7 @@ import { eventNames } from "../../utils/alertUtils";
 import { cancelBookingDetail } from "../../service/bookingDetailService";
 import ConfirmAlert from "../../components/Alert/ConfirmAlert";
 import { vndFormat } from "../../utils/numberUtils";
-const MyRouteScreen = ({ }) => {
+const MyRouteScreen = ({}) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -226,14 +226,16 @@ const MyRouteScreen = ({ }) => {
                 <VStack>
                   {bookingDetail != null && (
                     <Box>
-                      {bookingDetail.driver != null && (<Box mt="3" style={styles.cardInsideDateTime} p={3}>
-                        <DriverInformationCard
-                          driver={bookingDetail.driver}
-                          displayDriverText={true}
-                          displayCall={true}
-                          bookingDetailId={bookingDetail.id}
-                        />
-                      </Box>)}
+                      {bookingDetail.driver != null && (
+                        <Box mt="3" style={styles.cardInsideDateTime} p={3}>
+                          <DriverInformationCard
+                            driver={bookingDetail.driver}
+                            displayDriverText={true}
+                            displayCall={true}
+                            bookingDetailId={bookingDetail.id}
+                          />
+                        </Box>
+                      )}
 
                       <Box mt="3" style={styles.cardInsideDateTime} p={3}>
                         <Text pt={1} fontSize={20} color="black" bold>
@@ -361,7 +363,7 @@ const MyRouteScreen = ({ }) => {
                           <Text fontSize={20}>Cước phí</Text>
                           <Text fontSize={20}>
                             {" "}
-                            {formatMoney(bookingDetail.price)}
+                            {vndFormat(bookingDetail.price)}
                           </Text>
                         </HStack>
                       </Box>

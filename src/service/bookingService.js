@@ -17,8 +17,8 @@ export const createFareCalculate = async (requestData) => {
       console.log("Fail to create booking calculate fare", errorDetails);
       Toast.show({
         title: errorDetails,
-        placement: "bottom"
-      })
+        placement: "bottom",
+      });
       return null;
     } else {
       console.log("Error response structure not recognized.");
@@ -28,7 +28,7 @@ export const createFareCalculate = async (requestData) => {
 };
 
 export const createBooking = async (requestData) => {
-  console.log(requestData)
+  console.log(requestData);
   try {
     const response = await apiManager.post("/api/Booking", requestData);
     return response;
@@ -39,8 +39,8 @@ export const createBooking = async (requestData) => {
       console.log("Create Booking failed", errorDetails);
       Toast.show({
         title: errorDetails,
-        placement: "bottom"
-      })
+        placement: "bottom",
+      });
       return null;
     } else {
       console.log("Error response structure not recognized.");
@@ -76,8 +76,7 @@ export const getBookingDetail = async (
 ) => {
   try {
     const url = status
-      ? `api/BookingDetail/Customer/${customerId}?status=${status}&
-      pageSize=${pageSize}&pageNumber=${pageNumber}`
+      ? `api/BookingDetail/Customer/${customerId}?status=${status}&pageSize=${pageSize}&pageNumber=${pageNumber}`
       : `api/BookingDetail/Customer/${customerId}?pageSize=${pageSize}&pageNumber=${pageNumber}`;
     const response = await apiManager.get(url);
     return response;
@@ -141,10 +140,10 @@ export const getBookingDetailByBookingId = async (
 ) => {
   try {
     const url = status
-      ? `api/BookingDetail/Booking/${bookingId}?status=${status}&
-      pageSize=${pageSize}&pageNumber=${pageNumber}`
+      ? `api/BookingDetail/Booking/${bookingId}?status=${status}&pageSize=${pageSize}&pageNumber=${pageNumber}`
       : `api/BookingDetail/Booking/${bookingId}?Type=${type}&pageSize=${pageSize}&pageNumber=${pageNumber}`;
     const response = await apiManager.get(url);
+    console.log(url);
     return response;
   } catch (error) {
     console.error("Get Payment failed:", getErrorMessage(error));
@@ -165,8 +164,8 @@ export const updateBookingById = async (bookingId, requestData) => {
       const errorDetails = error.response.data;
       Toast.show({
         title: errorDetails,
-        placement: "bottom"
-      })
+        placement: "bottom",
+      });
       return null;
     } else {
       console.log("Error response structure not recognized.");

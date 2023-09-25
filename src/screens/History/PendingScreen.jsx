@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
-import { getBookingDetail, getBookingDetailByBookingId } from "../../service/bookingService";
+import {
+  getBookingDetail,
+  getBookingDetailByBookingId,
+} from "../../service/bookingService";
 import CardHistory from "../../components/CardSchedule/CardHistory";
 import { themeColors, vigoStyles } from "../../assets/theme";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
@@ -21,11 +24,11 @@ const PendingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
 
   const fetchData = async () => {
     setIsLoading(true);
-    await getBookingDetailByBookingId(id, status).then((result) => {
+    await getBookingDetailByBookingId(id, status, -1, 1).then((result) => {
       const items = result.data.data;
       setList(items);
       setIsLoading(false);
-      console.log("elementelement", items);
+      // console.log("elementelement", result);
     });
   };
 
@@ -63,19 +66,22 @@ const PendingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
 
   return (
     <View style={styles.container}>
-      {/* <ViGoSpinner isLoading={isLoading} /> */}
-      {/* {list.length > 0 ? (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      <ViGoSpinner isLoading={isLoading} />
+      {list.length > 0 ? (
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={styles.scrollViewContainer}
+        >
           {list.map((element) => (
-            <CardHistory key={element.id} element={element} />
+            <CardBookingDetail item={element} key={element.id} />
           ))}
         </ScrollView>
       ) : (
-        <View style={styles.noDataContainer}>
+        <Center>
           <Text style={styles.text}>Chưa có dữ liệu</Text>
-        </View>
-      )} */}
-      <FlatList
+        </Center>
+      )}
+      {/* <FlatList
         style={vigoStyles.list}
         data={list}
         keyExtractor={(item) => item.id}
@@ -91,7 +97,7 @@ const PendingScreen = ({ id, navigation, isLoading, setIsLoading }) => {
         onEndReached={loadMoreTrips}
         onScroll={() => setOnScroll(true)}
         onEndReachedThreshold={0.5}
-      />
+      /> */}
     </View>
   );
 };

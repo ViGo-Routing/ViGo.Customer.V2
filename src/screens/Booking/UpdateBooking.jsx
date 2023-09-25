@@ -44,6 +44,7 @@ import { getRouteById } from "../../service/routeService";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
+import { vndFormat } from "../../utils/numberUtils";
 
 const UpdateBookingScreen = (props) => {
   const navigation = useNavigation();
@@ -327,7 +328,7 @@ const UpdateBookingScreen = (props) => {
               Giá gốc:{" "}
             </Text>
             <Text fontSize={15}>
-              {formatMoney(fareCalculation?.originalFare)}
+              {vndFormat(fareCalculation?.originalFare)}
             </Text>
           </HStack>
 
@@ -336,7 +337,7 @@ const UpdateBookingScreen = (props) => {
               Phụ phí:{" "}
             </Text>
             <Text fontSize={15}>
-              {formatMoney(fareCalculation?.additionalFare)}
+              {vndFormat(fareCalculation?.additionalFare)}
             </Text>
           </HStack>
 
@@ -344,7 +345,7 @@ const UpdateBookingScreen = (props) => {
             <Text fontSize={15} bold>
               Tổng tiền:{" "}
             </Text>
-            <Text fontSize={15}>{formatMoney(fareCalculation?.finalFare)}</Text>
+            <Text fontSize={15}>{vndFormat(fareCalculation?.finalFare)}</Text>
           </HStack>
         </VStack>
         <Button bg={themeColors.primary} onPress={updateBooking}>
@@ -406,8 +407,8 @@ const UpdateBookingScreen = (props) => {
                     {type === null
                       ? ""
                       : type === "ONE_WAY"
-                        ? "Một chiều"
-                        : "Hai chiều"}
+                      ? "Một chiều"
+                      : "Hai chiều"}
                   </Text>
                 </VStack>
               </HStack>
@@ -424,8 +425,8 @@ const UpdateBookingScreen = (props) => {
                     {routeType === null
                       ? ""
                       : routineType === "WEEKLY"
-                        ? "Mỗi tuần"
-                        : "Mỗi tháng"}
+                      ? "Mỗi tuần"
+                      : "Mỗi tháng"}
                   </Text>
                 </VStack>
               </HStack>
@@ -540,9 +541,9 @@ const UpdateBookingScreen = (props) => {
                 Giá gốc:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(
+                {vndFormat(
                   fareCalculation?.originalFare +
-                  fareCalculation?.roundTripOriginalFare
+                    fareCalculation?.roundTripOriginalFare
                 )}
               </Text>
             </HStack>
@@ -552,9 +553,9 @@ const UpdateBookingScreen = (props) => {
                 Tổng khuyến mãi:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(
+                {vndFormat(
                   fareCalculation?.routineTypeDiscount +
-                  fareCalculation?.roundTripRoutineTypeDiscount
+                    fareCalculation?.roundTripRoutineTypeDiscount
                 )}
               </Text>
             </HStack>
@@ -563,9 +564,9 @@ const UpdateBookingScreen = (props) => {
                 Phụ phí:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(
+                {vndFormat(
                   fareCalculation?.additionalFare +
-                  fareCalculation?.roundTripAdditionalFare
+                    fareCalculation?.roundTripAdditionalFare
                 )}
               </Text>
             </HStack>
@@ -575,15 +576,15 @@ const UpdateBookingScreen = (props) => {
                 Tổng tiền:{" "}
               </Text>
               <Text fontSize={15}>
-                {formatMoney(
+                {vndFormat(
                   fareCalculation?.finalFare +
-                  fareCalculation?.roundTripFinalFare
+                    fareCalculation?.roundTripFinalFare
                 )}
               </Text>
             </HStack>
           </VStack>
-          {/* <DetailCard title="Giá gốc" info={formatMoney(fareCalculation?.originalFare)} />
-                    <DetailCard title="Tổng tiền" info={formatMoney(fareCalculation?.finalFare)} /> */}
+          {/* <DetailCard title="Giá gốc" info={vndFormat(fareCalculation?.originalFare)} />
+                    <DetailCard title="Tổng tiền" info={vndFormat(fareCalculation?.finalFare)} /> */}
         </View>
         <Button bg={themeColors.primary} onPress={updateBooking}>
           <Text bold fontSize={20} color="white">
@@ -660,7 +661,7 @@ const UpdateBookingScreen = (props) => {
           // openLarge={openLargePanel}
           ref={panelRef}
           largePanelHeight={500}
-        // onlySmall
+          // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}
         </SwipeablePanel>
