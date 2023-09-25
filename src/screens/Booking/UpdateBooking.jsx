@@ -70,6 +70,7 @@ const UpdateBookingScreen = (props) => {
   const startDay = props.route.params.startDay;
   const daysOfWeek = props.route.params.daysOfWeek;
   const bookingId = props.route.params.bookingId;
+  const numberOfOccurrences = props.route.params.numberOfOccurrences;
 
   console.log("startDay", startDay);
   const { user } = useContext(UserContext);
@@ -163,6 +164,8 @@ const UpdateBookingScreen = (props) => {
           routeType != "ROUND_TRIP"
             ? routines.routeRoutines.length
             : routines.routeRoutines.length * 2,
+        eachWeekTripsCount: daysOfWeek.length,
+        totalFrequencyCount: numberOfOccurrences,
         tripType: routeType,
         routineType: routineType,
         roundTripBeginTime:
@@ -403,8 +406,8 @@ const UpdateBookingScreen = (props) => {
                     {type === null
                       ? ""
                       : type === "ONE_WAY"
-                      ? "Một chiều"
-                      : "Hai chiều"}
+                        ? "Một chiều"
+                        : "Hai chiều"}
                   </Text>
                 </VStack>
               </HStack>
@@ -421,8 +424,8 @@ const UpdateBookingScreen = (props) => {
                     {routeType === null
                       ? ""
                       : routineType === "WEEKLY"
-                      ? "Mỗi tuần"
-                      : "Mỗi tháng"}
+                        ? "Mỗi tuần"
+                        : "Mỗi tháng"}
                   </Text>
                 </VStack>
               </HStack>
@@ -539,7 +542,7 @@ const UpdateBookingScreen = (props) => {
               <Text fontSize={15}>
                 {formatMoney(
                   fareCalculation?.originalFare +
-                    fareCalculation?.roundTripOriginalFare
+                  fareCalculation?.roundTripOriginalFare
                 )}
               </Text>
             </HStack>
@@ -551,7 +554,7 @@ const UpdateBookingScreen = (props) => {
               <Text fontSize={15}>
                 {formatMoney(
                   fareCalculation?.routineTypeDiscount +
-                    fareCalculation?.roundTripRoutineTypeDiscount
+                  fareCalculation?.roundTripRoutineTypeDiscount
                 )}
               </Text>
             </HStack>
@@ -562,7 +565,7 @@ const UpdateBookingScreen = (props) => {
               <Text fontSize={15}>
                 {formatMoney(
                   fareCalculation?.additionalFare +
-                    fareCalculation?.roundTripAdditionalFare
+                  fareCalculation?.roundTripAdditionalFare
                 )}
               </Text>
             </HStack>
@@ -574,7 +577,7 @@ const UpdateBookingScreen = (props) => {
               <Text fontSize={15}>
                 {formatMoney(
                   fareCalculation?.finalFare +
-                    fareCalculation?.roundTripFinalFare
+                  fareCalculation?.roundTripFinalFare
                 )}
               </Text>
             </HStack>
@@ -657,7 +660,7 @@ const UpdateBookingScreen = (props) => {
           // openLarge={openLargePanel}
           ref={panelRef}
           largePanelHeight={500}
-          // onlySmall
+        // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}
         </SwipeablePanel>
