@@ -1,6 +1,6 @@
 import { Toast } from "native-base";
 import apiManager from "../utils/apiManager";
-import { getErrorMessage } from "../utils/alertUtils";
+import { getErrorMessage, handleError } from "../utils/alertUtils";
 
 export const createFareCalculate = async (requestData) => {
   try {
@@ -159,18 +159,19 @@ export const updateBookingById = async (bookingId, requestData) => {
     );
     return response;
   } catch (error) {
-    if (error.response && error.response.data) {
-      // Assuming the error response has a 'data' property containing error details
-      const errorDetails = error.response.data;
-      Toast.show({
-        title: errorDetails,
-        placement: "bottom",
-      });
-      return null;
-    } else {
-      console.log("Error response structure not recognized.");
-      return null;
-    }
+    // if (error.response && error.response.data) {
+    //   // Assuming the error response has a 'data' property containing error details
+    //   const errorDetails = error.response.data;
+    //   Toast.show({
+    //     title: errorDetails,
+    //     placement: "bottom",
+    //   });
+    //   return null;
+    // } else {
+    //   console.log("Error response structure not recognized.");
+    //   return null;
+    // }
+    handleError("Có lỗi xảy ra", error);
   }
 };
 

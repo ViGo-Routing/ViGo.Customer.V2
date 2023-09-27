@@ -61,6 +61,7 @@ const SelectRouteScreen = ({}) => {
       ); // Filter the data based on routeType
       setStations(filteredItems);
     } catch (error) {
+      handleError("Có lỗi xảy ra", error);
       console.error(error);
     }
   };

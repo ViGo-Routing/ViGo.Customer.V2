@@ -22,6 +22,9 @@ import {
 } from "native-base";
 import { createRoute } from "../../service/routeService";
 import axios from "axios";
+import { handleError } from "../../utils/alertUtils";
+import moment from "moment";
+import { addDays } from "../../utils/datetimeUtils";
 
 const RoutineGenerator = ({ route }) => {
   const navigation = useNavigation();
@@ -149,21 +152,32 @@ const RoutineGenerator = ({ route }) => {
     const roundRoutines = [];
     console.log("nextThreeMonths", nextThreeMonths);
     console.log("validTargetDays", startDay <= currentDate);
+    // console.log(
+    //   weekdays.includes(currentDate.getDay()) && startDay <= currentDate
+    // );
     if (frequency === "WEEKLY") {
       while (currentDate < nextWeeks) {
         if (
           weekdays.includes(currentDate.getDay()) &&
           startDay <= currentDate
         ) {
-          if (currentDate > new Date()) {
+          const now = new Date();
+
+          if (
+            currentDate > now ||
+            (currentDate.getDate() == now.getDate() &&
+              chosenTime > moment().format("HH:mm:ss").toString())
+          ) {
             const options = {
               day: "2-digit", // Two-digit day (e.g., "01", "02", ..., "31")
               month: "2-digit", // Two-digit month (e.g., "01", "02", ..., "12")
               year: "numeric", // Four-digit year (e.g., "2023")
             };
             const day = currentDate.getDate();
+            // console.log(day);
             const month = currentDate.getMonth() + 1;
             const year = currentDate.getFullYear();
+            // console.log(day);
             if (routeType === "ONE_WAY") {
               routines.push({
                 routineDate: `${year}-${month.toString().padStart(2, "0")}-${day
@@ -249,6 +263,8 @@ const RoutineGenerator = ({ route }) => {
   ) => {
     console.log(routines);
     try {
+      const orderedSelectedDays = selectedDays.sort();
+
       let requestData = {};
       if (routeType === "ONE_WAY") {
         requestData = {
@@ -263,14 +279,19 @@ const RoutineGenerator = ({ route }) => {
                 data: routines,
                 dataRoundTrip: roundRoutines,
                 routeId: routeId,
-                daysOfWeek: selectedDays,
+                daysOfWeek: orderedSelectedDays,
                 numberOfOccurrences: parseInt(numberOfOccurrences),
               });
-            } else {
-              toast.show({
-                title: "Lỗi tạo lịch trình",
-                placement: "bottom",
-              });
+              // } else {
+              //   // toast.show({
+              //   //   title: "Lỗi tạo lịch trình",
+              //   //   placement: "bottom",
+              //   // });
+              //   handleError(
+              //     "Có lỗi xảy ra",
+              //     "Lỗi tạo lịch trình, vui lòng kiểm tra lại các thông tin!"
+              //   );
+              // }
             }
           });
         }
@@ -294,22 +315,28 @@ const RoutineGenerator = ({ route }) => {
               data: routines,
               dataRoundTrip: roundRoutines,
               routeId: routeId,
-              daysOfWeek: selectedDays,
+              daysOfWeek: orderedSelectedDays,
               numberOfOccurrences: parseInt(numberOfOccurrences),
             });
-          } else {
-            toast.show({
-              title: "Lỗi tạo lịch trình",
-              placement: "bottom",
-            });
+            // } else {
+            //   // toast.show({
+            //   //   title: "Lỗi tạo lịch trình",
+            //   //   placement: "bottom",
+            //   // });
+            //   handleError(
+            //     "Có lỗi xảy ra",
+            //     "Lỗi tạo lịch trình, vui lòng kiểm tra lại các thông tin!"
+            //   );
+            // }
           }
         }
       }
     } catch (error) {
-      toast.show({
-        title: "Lỗi tạo lịch trình",
-        placement: "bottom",
-      });
+      // toast.show({
+      //   title: "Lỗi tạo lịch trình",
+      //   placement: "bottom",
+      // });
+      handleError("Có lỗi xảy ra", error);
     }
   };
   return (
@@ -477,6 +504,7 @@ const RoutineGenerator = ({ route }) => {
                 <DateTimePickerModal
                   isVisible={isDatePickerVisible}
                   mode="date"
+                  minimumDate={addDays(new Date(), 1)}
                   onConfirm={handleDateConfirm}
                   onCancel={() => setDatePickerVisible(false)}
                 />
@@ -533,6 +561,7 @@ const RoutineGenerator = ({ route }) => {
                     <DateTimePickerModal
                       isVisible={isTimePickerVisible}
                       mode="time"
+                      // minimumDate={new Date()}
                       onConfirm={handleTimeConfirm}
                       onCancel={() => setTimePickerVisible(false)}
                     />
@@ -585,6 +614,7 @@ const RoutineGenerator = ({ route }) => {
                       </Text>
                     </View>
                     <DateTimePickerModal
+                      // minimumDate={new Date()}
                       isVisible={isTimeBackPickerVisible}
                       mode="time"
                       onConfirm={handleBackTimeConfirm}
@@ -690,6 +720,7 @@ const RoutineGenerator = ({ route }) => {
                 </View>
                 <DateTimePickerModal
                   isVisible={isDatePickerVisible}
+                  minimumDate={addDays(new Date(), 1)}
                   mode="date"
                   onConfirm={handleDateConfirm}
                   onCancel={() => setDatePickerVisible(false)}

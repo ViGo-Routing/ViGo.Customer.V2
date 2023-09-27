@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   // Alert,
   PermissionsAndroid,
+  Platform,
 } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import { themeColors, vigoStyles } from "../../assets/theme";
@@ -276,25 +277,56 @@ const RegistrationScreen = () => {
             );
             setUser(response.user);
             try {
-              const granted = await PermissionsAndroid.request(
+              const permissions = [
                 PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-                {
-                  title: "Cho phép ViGo gửi thông báo đến bạn",
-                  message: `Nhận thông báo về trạng thái giao dịch, nhắc nhở chuyến đi 
-                        trong ngày và hơn thế nữa`,
-                  buttonNeutral: "Hỏi lại sau",
-                  buttonNegative: "Từ chối",
-                  buttonPositive: "Đồng ý",
-                }
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+              ];
+
+              const results = await PermissionsAndroid.requestMultiple(
+                permissions /*,
+                      {
+                        title: "Cho phép ViGo gửi thông báo đến bạn",
+                        message: `Nhận thông báo về trạng thái giao dịch, nhắc nhở chuyến đi 
+                    trong ngày và hơn thế nữa`,
+                        buttonNeutral: "Hỏi lại sau",
+                        buttonNegative: "Từ chối",
+                        buttonPositive: "Đồng ý",
+                      }*/
               );
-
-              console.log(granted);
-
-              if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              // setIsLoading(false);
+              if (
+                (Platform.constants["Version"] < 33 ||
+                  results[PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS] ===
+                    PermissionsAndroid.RESULTS.GRANTED) &&
+                results[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
+                  PermissionsAndroid.RESULTS.GRANTED
+              ) {
                 await messaging().registerDeviceForRemoteMessages();
                 const fcmToken = await messaging().getToken();
                 await updateUserFcmToken(response.user.id, fcmToken);
+              } else {
+                console.log("Some permissions denied");
               }
+
+              // const granted = await PermissionsAndroid.request(
+              //   PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+              //   {
+              //     title: "Cho phép ViGo gửi thông báo đến bạn",
+              //     message: `Nhận thông báo về trạng thái giao dịch, nhắc nhở chuyến đi
+              //           trong ngày và hơn thế nữa`,
+              //     buttonNeutral: "Hỏi lại sau",
+              //     buttonNegative: "Từ chối",
+              //     buttonPositive: "Đồng ý",
+              //   }
+              // );
+
+              // console.log(granted);
+
+              // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              //   await messaging().registerDeviceForRemoteMessages();
+              //   const fcmToken = await messaging().getToken();
+              //   await updateUserFcmToken(response.user.id, fcmToken);
+              // }
             } catch (err) {
               handleError("Có lỗi xảy ra khi đăng ký", err);
             }

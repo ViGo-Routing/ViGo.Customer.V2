@@ -55,3 +55,8 @@ export const getDayOfWeek = (date) => {
       return "T7";
   }
 };
+
+export const addDays = (date, days) => {
+  var result = moment(date).add(days, "days");
+  return result.toDate();
+};

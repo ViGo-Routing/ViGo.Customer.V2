@@ -30,6 +30,7 @@ import {
 } from "../../service/bookingService";
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import ViGoStationSelect from "../../components/Map/ViGoStationSelect";
+import { handleError } from "../../utils/alertUtils";
 
 const UpdateRouteAndRoutineScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -64,6 +65,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
         );
       });
     } catch (error) {
+      handleError("Có lỗi xảy ra", error);
       console.error(error);
     }
   };
@@ -436,12 +438,13 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                 bookingId: bookingDetailId,
                 numberOfOccurrences: numberOfOccurrences,
               });
-            } else {
-              toast.show({
-                title: "Bạn đã trùng thời gian với lịch trình khác",
-                placement: "bottom",
-              });
-            }
+            } /*else {
+              // toast.show({
+              //   title: "Bạn đã trùng thời gian với lịch trình khác",
+              //   placement: "bottom",
+              // });
+              handleError("Có lỗi xảy ra", error);
+            }*/
           });
         }
       } else {
@@ -492,19 +495,24 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
               numberOfOccurrences: numberOfOccurrences,
             });
           } else {
-            toast.show({
-              title: "Lỗi tạo lịch trình",
-              placement: "bottom",
-            });
+            // toast.show({
+            //   title: "Lỗi tạo lịch trình",
+            //   placement: "bottom",
+            // });
+            // handleError(
+            //   "Có lỗi xảy ra",
+            //   "Lỗi tạo lịch trình, vui lòng kiểm tra lại các thông tin!"
+            // );
           }
         }
       }
     } catch (error) {
       console.log(error);
-      toast.show({
-        title: "Lỗi tạo lịch trình",
-        placement: "bottom",
-      });
+      // toast.show({
+      //   title: "Lỗi tạo lịch trình",
+      //   placement: "bottom",
+      // });
+      handleError("Có lỗi xảy ra", error);
     }
   };
   const handlePickupPlaceSelection = (details) => {

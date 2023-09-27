@@ -48,6 +48,7 @@ const WalletTransactionsScreen = ({ route }) => {
         setNextPageNumber(null);
       }
     } catch (error) {
+      handleError("Có lỗi xảy ra", error);
       console.error(error);
     } finally {
       setLoading(false);
@@ -80,6 +81,7 @@ const WalletTransactionsScreen = ({ route }) => {
         }
       }
     } catch (error) {
+      handleError("Có lỗi xảy ra", error);
       console.error(error);
     } finally {
     }
