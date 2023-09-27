@@ -44,7 +44,6 @@ function ReportModal({ bookingDetailId, isOpen, onClose }) {
       setInputValue("");
       setSelectedValue("DRIVER_NOT_COMING");
       setTextareaValue("");
-      navi;
       Toast.show({
         title: "Báo cáo thành công",
         variant: "top-accent",
