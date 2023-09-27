@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, TextInput, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { themeColors } from "../../assets/theme";
-import { checkRoutine, createRoutine } from "../../service/routineService";
+import {
+  checkRoundTripRoutines,
+  checkRoutine,
+  createRoutine,
+} from "../../service/routineService";
 import { useNavigation } from "@react-navigation/native";
 import SelectRouteHeader from "../../components/Header/SelectRouteHeader";
 import { Picker } from "@react-native-picker/picker";
@@ -304,11 +308,18 @@ const RoutineGenerator = ({ route }) => {
           routeId: roundTripRouteId,
           routeRoutines: roundRoutines,
         };
+
+        let bothRequestData = {
+          routeId: routeId,
+          routeRoutines: routines,
+          roundRouteRoutines: roundRoutines,
+        };
         if (routines.length > 0 && roundRoutines.length > 0) {
           const check1 = await checkRoutine(requestData1);
           const check2 = await checkRoutine(requestData2);
+          const checkBoth = await checkRoundTripRoutines(bothRequestData);
 
-          if (check1 != null && check2 != null) {
+          if (check1 != null && check2 != null && checkBoth != null) {
             navigation.navigate("BookingDetail", {
               routines: requestData1,
               roundTrip: requestData2,
