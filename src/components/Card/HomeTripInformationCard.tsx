@@ -53,11 +53,17 @@ const HomeTripInformationCard = ({
     >
       {currentTrip && (
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("MyRoute", {
-              bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01",
-            })
-          }
+          onPress={() => {
+            if (currentTrip.status == "GOING_TO_PICKUP") {
+              navigation.navigate("TrackingOnGoingLocation", {
+                bookingDetailId: currentTrip.id,
+              })
+            } else if (currentTrip.status == "GOING_TO_DROPOFF") {
+              navigation.navigate("TrackingLocation", {
+                bookingDetailId: currentTrip.id,
+              })
+            }
+          }}
         >
           <VStack>
             <HStack mt="2">
@@ -83,7 +89,7 @@ const HomeTripInformationCard = ({
       {upcomingTrip && !currentTrip && (
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("MyRoute", { bookingDetailId: "49585b92-c585-428f-9580-63db9e79ee01", })
+            navigation.navigate("MyRoute", { bookingDetailId: upcomingTrip.id, })
           }
         >
           <VStack>
