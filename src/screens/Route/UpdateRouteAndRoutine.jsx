@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, TextInput, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { themeColors } from "../../assets/theme";
-import { checkRoutine, createRoutine } from "../../service/routineService";
+import {
+  checkRoundTripRoutines,
+  checkRoutine,
+  createRoutine,
+} from "../../service/routineService";
 import { useNavigation } from "@react-navigation/native";
 import SelectRouteHeader from "../../components/Header/SelectRouteHeader";
 import { Picker } from "@react-native-picker/picker";
@@ -31,6 +35,8 @@ import {
 import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import ViGoStationSelect from "../../components/Map/ViGoStationSelect";
 import { handleError } from "../../utils/alertUtils";
+import moment from "moment";
+import { addDays } from "../../utils/datetimeUtils";
 
 const UpdateRouteAndRoutineScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -302,7 +308,13 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
           weekdays.includes(currentDate.getDay()) &&
           startDay <= currentDate
         ) {
-          if (currentDate > new Date()) {
+          const now = new Date();
+
+          if (
+            currentDate > now ||
+            (currentDate.getDate() == now.getDate() &&
+              chosenTime > moment().format("HH:mm:ss").toString())
+          ) {
             const options = {
               day: "2-digit", // Two-digit day (e.g., "01", "02", ..., "31")
               month: "2-digit", // Two-digit month (e.g., "01", "02", ..., "12")
@@ -400,6 +412,14 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
         requestData = {
           routeId: routeId,
           routeRoutines: routines,
+          startPoint: {
+            latitude: pickupStation.latitude,
+            longitude: pickupStation.longitude,
+          },
+          endPoint: {
+            latitude: dropoffStation.latitude,
+            longitude: dropoffStation.longitude,
+          },
         };
         if (routines.length > 0) {
           console.log("Tao thanh coong");
@@ -451,17 +471,61 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
         let requestData1 = {
           routeId: routeId,
           routeRoutines: routines,
+          startPoint: {
+            latitude: pickupStation.latitude,
+            longitude: pickupStation.longitude,
+          },
+          endPoint: {
+            latitude: dropoffStation.latitude,
+            longitude: dropoffStation.longitude,
+          },
         };
         let requestData2 = {
           routeId: roundTripRouteId,
           routeRoutines: roundRoutines,
+          startPoint: {
+            latitude: dropoffStation.latitude,
+            longitude: dropoffStation.longitude,
+          },
+          endPoint: {
+            latitude: pickupStation.latitude,
+            longitude: pickupStation.longitude,
+          },
         };
-        console.log("length", roundRoutines.length, routines.length);
+
+        let bothRequestData = {
+          routeId: routeId,
+          routeRoutines: routines,
+          roundRouteRoutines: roundRoutines,
+          startPoint: {
+            latitude: pickupStation.latitude,
+            longitude: pickupStation.longitude,
+          },
+          endPoint: {
+            latitude: dropoffStation.latitude,
+            longitude: dropoffStation.longitude,
+          },
+        };
+
+        // console.log("length", roundRoutines.length, routines.length);
+
+        console.log("Routines ", requestData1);
+        console.log("Round ", requestData2);
+        console.log("Both ", bothRequestData);
+
         if (routines.length > 0 && roundRoutines.length > 0) {
           const check1 = await checkRoutine(requestData1);
-          //const check2 = await checkRoutine(requestData2);
+          let check2 = null;
+          if (roundTripRouteId) {
+            check2 = await checkRoutine(requestData2);
+          }
+          const bothCheck = await checkRoundTripRoutines(bothRequestData);
 
-          if (check1 != null) {
+          if (
+            check1 != null &&
+            (roundTripRouteId == null || check2 != null) &&
+            bothCheck != null
+          ) {
             navigation.navigate("UpdateBooking", {
               routines: requestData1,
               roundTrip: requestData2,
@@ -766,6 +830,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                     <DateTimePickerModal
                       isVisible={isDatePickerVisible}
                       mode="date"
+                      minimumDate={addDays(new Date(), 1)}
                       onConfirm={handleDateConfirm}
                       onCancel={() => setDatePickerVisible(false)}
                     />
@@ -881,7 +946,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                           isVisible={isBackTimePickerVisible}
                           mode="time"
                           onConfirm={handleBackTimeConfirm}
-                          onCancel={() => setIsBackTimePickerVisible(false)}
+                          onCancel={() => setBackTimePickerVisible(false)}
                         />
                       </TouchableOpacity>
                     </Box>
@@ -993,6 +1058,7 @@ const UpdateRouteAndRoutineScreen = ({ route }) => {
                     </View>
                     <DateTimePickerModal
                       isVisible={isDatePickerVisible}
+                      minimumDate={addDays(new Date(), 1)}
                       mode="date"
                       onConfirm={handleDateConfirm}
                       onCancel={() => setDatePickerVisible(false)}
