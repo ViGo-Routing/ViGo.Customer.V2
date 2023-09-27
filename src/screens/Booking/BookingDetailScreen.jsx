@@ -185,7 +185,9 @@ const BookingDetailScreen = ({ route }) => {
         ) {
           handleError(
             "Rất tiếc",
-            "Số dư ví của bạn không đủ. Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi."
+            `Số dư ví của bạn không đủ (${vndFormat(
+              walletBalance
+            )}). Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi.`
           );
         } else {
           Alert.alert(
@@ -236,7 +238,8 @@ const BookingDetailScreen = ({ route }) => {
                       });
                     }
                   } catch (error) {
-                    console.error("Error creating booking:", error);
+                    // console.error("Error creating booking:", error);
+                    handleError("Có lỗi xảy ra", error);
                   }
                 },
               },
@@ -245,7 +248,8 @@ const BookingDetailScreen = ({ route }) => {
         }
       });
     } catch (error) {
-      console.log("Error fetching wallet balance:", error);
+      // console.log("Error fetching wallet balance:", error);
+      handleError("Có lỗi xảy ra", error);
     }
   };
   const convertToVietnameseWeekdays = (englishWeekdays) => {
@@ -259,13 +263,27 @@ const BookingDetailScreen = ({ route }) => {
       Sunday: "Chủ nhật ",
     };
 
-    const vietnameseWeekdays = englishWeekdays.map((weekday) => {
-      const dayNumber = weekdaysMap[weekday].split(" ")[1];
-      return `${weekdaysMap[weekday]}`;
-    });
+    const weekdaysSorter = {
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+      Sunday: 7,
+    };
+
+    const vietnameseWeekdays = englishWeekdays
+      .sort((a, b) => {
+        return weekdaysSorter[a] - weekdaysSorter[b];
+      })
+      .map((weekday) => {
+        const dayNumber = weekdaysMap[weekday].split(" ")[1];
+        return `${weekdaysMap[weekday]}`;
+      });
     const result = vietnameseWeekdays.join(", ");
     setVnDays(result);
-    return vietnameseWeekdays.join(", ");
+    return result;
   };
   return (
     <View bg="white" style={styles.container}>

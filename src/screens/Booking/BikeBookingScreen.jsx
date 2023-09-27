@@ -19,6 +19,7 @@ import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useToast } from "native-base";
 import { createRoute } from "../../service/routeService";
 import axios from "axios";
+import { handleError } from "../../utils/alertUtils";
 
 const BikeBookingScreen = (props) => {
   const navigation = useNavigation();
@@ -134,8 +135,12 @@ const BikeBookingScreen = (props) => {
     try {
       await createRoute(requestData).then((response) => {
         const routeId = response.data.id;
-        const roundTripRouteId = response.data.roundTripRouteId
-        console.log("response", response.data.id, response.data.roundTripRouteId);
+        const roundTripRouteId = response.data.roundTripRouteId;
+        console.log(
+          "response",
+          response.data.id,
+          response.data.roundTripRouteId
+        );
         navigation.navigate("RoutineGenerator", {
           routeId: routeId,
           roundTripRouteId: roundTripRouteId,
@@ -144,10 +149,11 @@ const BikeBookingScreen = (props) => {
         });
       });
     } catch (error) {
-      toast.show({
-        title: "Lỗi tạo lịch trình",
-        placement: "bottom",
-      });
+      // toast.show({
+      //   title: "Lỗi tạo lịch trình",
+      //   placement: "bottom",
+      // });
+      handleError("Có lỗi xảy ra", error);
     }
   };
   const slideUp = new Animated.Value(0);

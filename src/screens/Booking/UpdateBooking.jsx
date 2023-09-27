@@ -148,7 +148,8 @@ const UpdateBookingScreen = (props) => {
         setDuration(durationValue);
         setDistance(distanceValue);
       } catch (error) {
-        console.error("Error fetching directions:", error);
+        handleError("Có lỗi xảy ra", error);
+        // console.error("Error fetching directions:", error);
       }
     };
 
@@ -268,47 +269,50 @@ const UpdateBookingScreen = (props) => {
           text: "Có",
           onPress: async () => {
             try {
-              await getWalletByUserId(user.id).then(async (s) => {
-                const walletBalance = s.balance;
-                if (
-                  walletBalance <
-                  fareCalculation?.finalFare +
-                    fareCalculation?.roundTripFinalFare
-                ) {
-                  handleError(
-                    "Rất tiếc",
-                    "Số dư ví của bạn không đủ. Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi."
-                  );
-                } else {
-                  setIsLoading(true);
-                  await updateBookingById(bookingId, requestData).then(
-                    (response) => {
-                      if (response != null) {
-                        setIsLoading(false);
-                        Alert.alert(
-                          "Hoàn Thành",
-                          "Bạn vừa hoàn tất cập nhật lại chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
-                          [
-                            {
-                              text: "Tiếp tục",
-                              onPress: () =>
-                                navigation.dispatch(
-                                  CommonActions.reset({
-                                    index: 0,
-                                    routes: [{ name: "Home" }],
-                                  })
-                                ),
-                            },
-                          ],
-                          { cancelable: false }
-                        );
-                      }
-                    }
-                  );
+              // await getWalletByUserId(user.id).then(async (s) => {
+              //   const walletBalance = s.balance;
+              //   if (
+              //     walletBalance <
+              //     fareCalculation?.finalFare +
+              //       fareCalculation?.roundTripFinalFare
+              //   ) {
+              //     handleError(
+              //       "Rất tiếc",
+              //       `Số dư ví của bạn không đủ (${vndFormat(
+              //         walletBalance
+              //       )}). Bạn hãy nạp thêm số dư để tiếp tục đặt chuyến đi.`
+              //     );
+              //   } else {
+              setIsLoading(true);
+              await updateBookingById(bookingId, requestData).then(
+                (response) => {
+                  if (response != null) {
+                    setIsLoading(false);
+                    Alert.alert(
+                      "Hoàn Thành",
+                      "Bạn vừa hoàn tất cập nhật lại chuyến xe định kì, hãy đợi chúng tôi tìm tài xế thích hợp cho bạn nhé!",
+                      [
+                        {
+                          text: "Tiếp tục",
+                          onPress: () =>
+                            navigation.dispatch(
+                              CommonActions.reset({
+                                index: 0,
+                                routes: [{ name: "Home" }],
+                              })
+                            ),
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }
                 }
-              });
+              );
+              //   }
+              // });
             } catch (error) {
               console.error("Error creating booking:", error);
+              handleError("Có lỗi xảy ra", error);
             } finally {
               setIsLoading(false);
             }
@@ -317,10 +321,11 @@ const UpdateBookingScreen = (props) => {
       ]);
     } catch (error) {
       console.log("routines.routeRoutines", error);
-      toast.show({
-        title: "Lỗi tạo lịch trình",
-        placement: "bottom",
-      });
+      // toast.show({
+      //   title: "Lỗi tạo lịch trình",
+      //   placement: "bottom",
+      // });
+      handleError("Có lỗi xảy ra", error);
     }
   };
   const slideUp = new Animated.Value(0);

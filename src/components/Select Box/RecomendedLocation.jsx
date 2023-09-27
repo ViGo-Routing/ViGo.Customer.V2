@@ -4,6 +4,7 @@ import { getStation } from "../../service/stationService";
 import { FireIcon } from "react-native-heroicons/solid";
 import { useNavigation } from "@react-navigation/native";
 import { HStack, ScrollView, Text, View } from "native-base";
+import { handleError } from "../../utils/alertUtils";
 
 const RecommendedLocation = ({ title, items, routeType, frequency }) => {
   const [stations, setStations] = useState([]);
@@ -11,7 +12,10 @@ const RecommendedLocation = ({ title, items, routeType, frequency }) => {
   const handleGetStations = () => {
     getStation({ PageNumber: 1, PageSize: 10 })
       .then((response) => setStations(response.data))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        handleError(error);
+      });
   };
   const handelPosition = (item) => {
     console.log("itemitem", item);
