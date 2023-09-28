@@ -302,8 +302,11 @@ const CalendarMap = ({
         setSelectedIndex(index);
         setBookingDetail(bookingDetailResponse);
         if (bookingDetailResponse.driverId) {
+          console.log(bookingDetailResponse.driverId);
           const driver = await getProfile(bookingDetailResponse.driverId);
           setDriver(driver);
+        } else {
+          setDriver(null);
         }
 
         setIsPanelActive(true);
