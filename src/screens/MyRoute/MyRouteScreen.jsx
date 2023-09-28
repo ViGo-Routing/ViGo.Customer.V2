@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { BackHandler, NativeEventEmitter, StyleSheet } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import Geolocation from "react-native-geolocation-service";
@@ -27,6 +33,7 @@ import {
   Divider,
   HStack,
   IconButton,
+  Image,
   Pressable,
   ScrollView,
   Spinner,
@@ -52,6 +59,8 @@ import { eventNames } from "../../utils/alertUtils";
 import { cancelBookingDetail } from "../../service/bookingDetailService";
 import ConfirmAlert from "../../components/Alert/ConfirmAlert";
 import { vndFormat } from "../../utils/numberUtils";
+import { mapDirectionLine } from "../../components/Map/Map";
+import { generateMapPoint, googleMapsApi } from "../../utils/mapUtils";
 const MyRouteScreen = ({}) => {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
@@ -71,6 +80,13 @@ const MyRouteScreen = ({}) => {
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [cancelFee, setCancelFee] = useState(0);
   const slideUp = new Animated.Value(0);
+
+  const [region, setRegion] = useState(null);
+  const [firstPosition, setFirstPosition] = useState(null);
+  const [secondPosition, setSecondPosition] = useState(null);
+
+  const mapRef = useRef();
+
   const handleConfirmCancelTrip = async () => {
     // const bookingId = bookingDetail.bookingId;
     const eventEmitter = new NativeEventEmitter();
@@ -168,6 +184,7 @@ const MyRouteScreen = ({}) => {
     }).start();
   };
   const panelRef = useRef(null);
+
   useEffect(() => {
     const focus_unsub = navigation.addListener("focus", () => {
       loadBookingDetailWithId();
@@ -200,6 +217,79 @@ const MyRouteScreen = ({}) => {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
+  const getRegion = (firstPosition, secondPosition) => {
+    // const lastPoint = directions[-1];
+
+    const { lat: currentFirstLat, lng: currentFirstLong } =
+      firstPosition?.geometry?.location || {};
+    const currentFirstCoords =
+      currentFirstLat && currentFirstLong
+        ? { latitude: currentFirstLat, longitude: currentFirstLong }
+        : null;
+    // const lastCoords = lastLat && lastLong ? {lastLat, lastLong} : null;
+    const { lat: currentSecondLat, lng: currentSecondLong } =
+      secondPosition?.geometry?.location || {};
+    const currentSecondCoords =
+      currentSecondLat && currentSecondLong
+        ? { latitude: currentSecondLat, longitude: currentSecondLong }
+        : null;
+
+    let sumLat = currentFirstCoords?.latitude + currentSecondCoords?.latitude;
+    let sumLong =
+      currentFirstCoords?.longitude + currentSecondCoords?.longitude;
+
+    let avgLat = sumLat / 2 || 0;
+    let avgLong = sumLong / 2 || 0;
+    return {
+      latitude: avgLat - 0.003 || 10.762622,
+      longitude: avgLong || 106.660172,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    };
+  };
+
+  const fitMap = useCallback(() => {
+    // console.log(results);
+    const coords = [
+      {
+        latitude: firstPosition?.geometry?.location.lat,
+        longitude: firstPosition?.geometry?.location.lng,
+      },
+      {
+        latitude: secondPosition?.geometry?.location.lat,
+        longitude: secondPosition?.geometry?.location.lng,
+      },
+    ];
+    // console.log(coords);
+    mapRef.current.fitToCoordinates(coords, {
+      edgePadding: {
+        top: 40,
+        right: 20,
+        bottom: 20,
+        left: 20,
+      },
+    });
+  }, [firstPosition, secondPosition]);
+
+  const handleDirectionReady = async (result) => {
+    // setDistance(result.distance);
+    // setDuration(result.duration);
+  };
+
+  useEffect(() => {
+    if (bookingDetail) {
+      const firstPosition = generateMapPoint(bookingDetail.startStation);
+      const secondPosition = generateMapPoint(bookingDetail.endStation);
+
+      setFirstPosition(firstPosition);
+      setSecondPosition(secondPosition);
+
+      const initialRegion = getRegion(firstPosition, secondPosition);
+      setRegion(initialRegion);
+    }
+  }, [bookingDetail]);
+
   return (
     <View flex={1} bg="white">
       <ScrollView>
@@ -355,6 +445,91 @@ const MyRouteScreen = ({}) => {
                         </HStack>
                       </Box>
 
+                      {firstPosition && secondPosition && region && (
+                        <Box mt="3" style={styles.cardInsideDateTime} p={3}>
+                          <MapView
+                            style={{ height: 200, marginTop: 20 }}
+                            zoomEnabled={false}
+                            pitchEnabled={false}
+                            scrollEnabled={false}
+                            initialRegion={region}
+                            zoomTapEnabled={false}
+                            zoomControlEnabled={false}
+                            rotateEnabled={false}
+                            scrollDuringRotateOrZoomEnabled={false}
+                            toolbarEnabled={false}
+                            // loadingEnabled={true}
+                            moveOnMarkerPress={false}
+                            ref={mapRef}
+                            onLayout={() => fitMap()}
+                          >
+                            <Box key={`markers`}>
+                              <Marker
+                                coordinate={{
+                                  latitude: firstPosition.geometry.location.lat,
+                                  longitude:
+                                    firstPosition.geometry.location.lng,
+                                }}
+                                key={`first-position-marker`}
+                                tappable={false}
+                              >
+                                <Image
+                                  size={"xs"}
+                                  resizeMode="contain"
+                                  source={require("../../assets/icons/maps-pickup-location-icon-3x.png")}
+                                  alt={"Điểm đi"}
+                                />
+                              </Marker>
+                              <Marker
+                                coordinate={{
+                                  latitude:
+                                    secondPosition.geometry.location.lat,
+                                  longitude:
+                                    secondPosition.geometry.location.lng,
+                                }}
+                                key={`second-position-marker`}
+                                tappable={false}
+                              >
+                                <Image
+                                  size={"xs"}
+                                  resizeMode="contain"
+                                  source={require("../../assets/icons/maps-dropoff-location-icon-3x.png")}
+                                  alt={"Điểm đến"}
+                                />
+                              </Marker>
+                            </Box>
+
+                            <Box key={`directions-booking`}>
+                              <MapViewDirections
+                                origin={{
+                                  latitude: firstPosition.geometry.location.lat,
+                                  longitude:
+                                    firstPosition.geometry.location.lng,
+                                }}
+                                destination={{
+                                  latitude:
+                                    secondPosition.geometry.location.lat,
+                                  longitude:
+                                    secondPosition.geometry.location.lng,
+                                }}
+                                apikey={googleMapsApi}
+                                strokeWidth={mapDirectionLine.primary.stroke}
+                                strokeColor={mapDirectionLine.primary.color}
+                                mode="DRIVING"
+                                onReady={(result) =>
+                                  handleDirectionReady(result)
+                                }
+                                key={`maps-directions`}
+                                // lineDashPattern={[5, 5, 5, 5, 5]}
+                                // tappable={true}
+                                // onPress={() => {
+                                //   panelRef.current.openLargePanel();
+                                // }}
+                              />
+                            </Box>
+                          </MapView>
+                        </Box>
+                      )}
                       <Box mt="3" style={styles.cardInsideDateTime} p={3}>
                         <Text py={1} fontSize={20} color="black" bold>
                           Thanh toán
