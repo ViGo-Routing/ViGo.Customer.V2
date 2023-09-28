@@ -40,19 +40,19 @@ export const getDayOfWeek = (date) => {
   const dayOfWeek = moment(date, "YYYY-MM-DD").day();
   switch (dayOfWeek) {
     case 0:
-      return "CN";
+      return "Chủ nhật";
     case 1:
-      return "T2";
+      return "Thứ 2";
     case 2:
-      return "T3";
+      return "Thứ 3";
     case 3:
-      return "T4";
+      return "Thứ 4";
     case 4:
-      return "T5";
+      return "Thứ 5";
     case 5:
-      return "T6";
+      return "Thứ 6";
     case 6:
-      return "T7";
+      return "Thứ 7";
   }
 };
 

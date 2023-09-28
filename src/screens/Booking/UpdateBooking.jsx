@@ -11,7 +11,7 @@ import {
 
 import Map from "../../components/Map/Map";
 // import BottomSheet from '../../components/BottomSheet/BottomSheetComponent';
-import { themeColors } from "../../assets/theme/index";
+import { themeColors, vigoStyles } from "../../assets/theme/index";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import InputCard from "../../components/Card/InputCard";
 import SwtichVehicle from "../../components/Select Box/SwitchVehicle";
@@ -47,6 +47,7 @@ import ViGoSpinner from "../../components/Spinner/ViGoSpinner";
 import { vndFormat } from "../../utils/numberUtils";
 import { getWalletByUserId } from "../../service/walletService";
 import { handleError } from "../../utils/alertUtils";
+import ViewRoutinesModal from "../../components/Modal/ViewRoutinesModal";
 
 const UpdateBookingScreen = (props) => {
   const navigation = useNavigation();
@@ -92,6 +93,7 @@ const UpdateBookingScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const currentDate = new Date();
   const panelRef = useRef(null);
+  const [routinesModalVisible, setRoutinesModalVisible] = useState(false);
 
   const handlePlaceSelection = (details) => {
     setSelectedPlace(details);
@@ -125,13 +127,27 @@ const UpdateBookingScreen = (props) => {
       Sunday: "Chủ nhật ",
     };
 
-    const vietnameseWeekdays = englishWeekdays.map((weekday) => {
-      const dayNumber = weekdaysMap[weekday].split(" ")[1];
-      return `${weekdaysMap[weekday]}`;
-    });
+    const weekdaysSorter = {
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+      Sunday: 7,
+    };
+
+    const vietnameseWeekdays = englishWeekdays
+      .sort((a, b) => {
+        return weekdaysSorter[a] - weekdaysSorter[b];
+      })
+      .map((weekday) => {
+        const dayNumber = weekdaysMap[weekday].split(" ")[1];
+        return `${weekdaysMap[weekday]}`;
+      });
     const result = vietnameseWeekdays.join(", ");
     setVnDays(result);
-    return vietnameseWeekdays.join(", ");
+    return result;
   };
   useEffect(() => {
     const fetchDirections = async () => {
@@ -256,6 +272,8 @@ const UpdateBookingScreen = (props) => {
           duration: duration,
           distance: distance,
           roundTripTotalPrice: fareCalculation?.roundTripFinalFare,
+          additionalFare: fareCalculation?.additionalFare,
+          roundTripAdditionalFare: fareCalculation?.roundTripAdditionalFare,
         },
       };
 
@@ -473,7 +491,7 @@ const UpdateBookingScreen = (props) => {
                 </VStack>
               </HStack>
             </HStack>
-            <HStack my={1} p={1} justifyContent="space-between">
+            {/* <HStack my={1} p={1} justifyContent="space-between">
               <HStack
                 borderWidth={1}
                 width="49%"
@@ -522,12 +540,12 @@ const UpdateBookingScreen = (props) => {
                   </Text>
                 </VStack>
               </HStack>
-            </HStack>
+            </HStack> */}
 
             <VStack p={2}>
               <HStack justifyContent="space-between">
                 <Text fontSize={15} bold>
-                  Ngày trong tuần:{" "}
+                  Ngày bắt đầu:{" "}
                 </Text>
                 <Text fontSize={15}>
                   {routines === null
@@ -536,12 +554,44 @@ const UpdateBookingScreen = (props) => {
                 </Text>
               </HStack>
 
+              {type === "ONE_WAY" && (
+                <HStack justifyContent="space-between">
+                  <Text fontSize={15} bold>
+                    Giờ đón:{" "}
+                  </Text>
+                  <Text fontSize={15}>
+                    {pickupTime === null ? "" : pickupTime}
+                  </Text>
+                </HStack>
+              )}
+              {type === "ROUND_TRIP" && (
+                <>
+                  <HStack justifyContent="space-between">
+                    <Text fontSize={15} bold>
+                      Giờ đón chiều đi:{" "}
+                    </Text>
+                    <Text fontSize={15}>
+                      {pickupTime === null ? "" : pickupTime}
+                    </Text>
+                  </HStack>
+
+                  <HStack justifyContent="space-between">
+                    <Text fontSize={15} bold>
+                      Giờ đón chiều về:{" "}
+                    </Text>
+                    <Text fontSize={15}>
+                      {pickupBackTime === null ? "" : pickupBackTime}
+                    </Text>
+                  </HStack>
+                </>
+              )}
+
               <HStack justifyContent="space-between">
                 <Text fontSize={15} bold>
-                  Ngày đặt:{" "}
+                  Ngày trong tuần:{" "}
                 </Text>
-                <Text fontSize={15}>
-                  {pickupTime === null ? "" : pickupTime}
+                <Text maxW="55%" textAlign="right" fontSize={15}>
+                  {vnDays === null ? "" : vnDays}
                 </Text>
               </HStack>
 
@@ -553,6 +603,39 @@ const UpdateBookingScreen = (props) => {
                   {routines === null ? "" : routines.routeRoutines.length}
                 </Text>
               </HStack>
+
+              <HStack justifyContent="space-between">
+                <Text fontSize={15} bold>
+                  Số chuyến đi:{" "}
+                </Text>
+                <Text fontSize={15}>
+                  {route === null ? "" : route.totalNumberOfTickets}
+                </Text>
+              </HStack>
+
+              <HStack justifyContent="flex-end" mb="1" mt="2">
+                <TouchableOpacity
+                  style={vigoStyles.buttonWhite}
+                  onPress={() => {
+                    setRoutinesModalVisible(true);
+                  }}
+                >
+                  <Text fontSize="xs" style={vigoStyles.buttonWhiteText}>
+                    Xem các chuyến đi
+                  </Text>
+                </TouchableOpacity>
+              </HStack>
+
+              <ViewRoutinesModal
+                modalVisible={routinesModalVisible}
+                setModalVisible={setRoutinesModalVisible}
+                routines={
+                  roundTrip
+                    ? [...routines.routeRoutines, ...roundTrip.routeRoutines]
+                    : routines.routeRoutines
+                }
+                tripType={routeType}
+              />
             </VStack>
           </VStack>
 
@@ -702,7 +785,7 @@ const UpdateBookingScreen = (props) => {
           smallPanelHeight={300}
           // openLarge={openLargePanel}
           ref={panelRef}
-          largePanelHeight={500}
+          // largePanelHeight={500}
           // onlySmall
         >
           {<Box px="6">{renderFullTripInformation()}</Box>}

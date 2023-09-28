@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Header from "../../components/Header/Header";
 import InputCard from "../../components/Card/InputCard";
-import { themeColors } from "../../assets/theme/index";
+import { themeColors, vigoStyles } from "../../assets/theme/index";
 import DetailCard from "../../components/Card/DetailCard";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import {
@@ -22,10 +22,12 @@ import {
   VStack,
   ScrollView,
   Divider,
+  Button,
 } from "native-base";
 import { createRoutine } from "../../service/routineService";
 import { vndFormat } from "../../utils/numberUtils";
 import { handleError } from "../../utils/alertUtils";
+import ViewRoutinesModal from "../../components/Modal/ViewRoutinesModal";
 
 const BookingDetailScreen = ({ route }) => {
   const { user } = useContext(UserContext);
@@ -58,6 +60,8 @@ const BookingDetailScreen = ({ route }) => {
 
   const [pickupPosition, setPickupPosition] = useState(null);
   const [destinationPosition, setDestinationPosition] = useState(null);
+
+  const [routinesModalVisible, setRoutinesModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +112,8 @@ const BookingDetailScreen = ({ route }) => {
       fareCalculation?.finalFare + fareCalculation?.roundTripFinalFare,
     roundTripTotalPrice: fareCalculation?.roundTripFinalFare,
     priceAfterDiscount: 0,
+    additionalFare: fareCalculation?.additionalFare,
+    roundTripAdditionalFare: fareCalculation?.roundTripAdditionalFare,
     isShared: true,
     duration: routeData?.duration,
     distance: routeData?.distance,
@@ -285,6 +291,7 @@ const BookingDetailScreen = ({ route }) => {
     setVnDays(result);
     return result;
   };
+
   return (
     <View bg="white" style={styles.container}>
       <View>
@@ -357,10 +364,29 @@ const BookingDetailScreen = ({ route }) => {
                   : formatDateString(data[0]?.routineDate)
               }
             />
-            <DetailCard
-              title="Giờ đi"
-              info={data[0]?.pickupTime === null ? "" : data[0]?.pickupTime}
-            />
+            {routeData?.tripType === "ONE_WAY" && (
+              <DetailCard
+                title="Giờ đón"
+                info={data[0]?.pickupTime === null ? "" : data[0]?.pickupTime}
+              />
+            )}
+            {routeData?.tripType === "ROUND_TRIP" && (
+              <VStack>
+                <DetailCard
+                  title="Giờ đón chiều đi"
+                  info={data[0]?.pickupTime === null ? "" : data[0]?.pickupTime}
+                />
+                <DetailCard
+                  title="Giờ đón chiều về"
+                  info={
+                    routeData.roundTripBeginTime === null
+                      ? ""
+                      : routeData.roundTripBeginTime
+                  }
+                />
+              </VStack>
+            )}
+
             <DetailCard
               title="Ngày trong tuần"
               info={vnDays === null ? "" : vnDays}
@@ -382,6 +408,29 @@ const BookingDetailScreen = ({ route }) => {
                   ? data.length
                   : data.length * 2
               }
+            />
+            <HStack justifyContent="flex-end" mb="3" mt="3">
+              <TouchableOpacity
+                style={vigoStyles.buttonWhite}
+                onPress={() => {
+                  setRoutinesModalVisible(true);
+                }}
+              >
+                <Text style={vigoStyles.buttonWhiteText}>
+                  Xem các chuyến đi
+                </Text>
+              </TouchableOpacity>
+            </HStack>
+
+            <ViewRoutinesModal
+              modalVisible={routinesModalVisible}
+              setModalVisible={setRoutinesModalVisible}
+              routines={
+                roundTrip
+                  ? [...routines.routeRoutines, ...roundTrip.routeRoutines]
+                  : routines.routeRoutines
+              }
+              tripType={routeData?.tripType}
             />
           </View>
           <Text fontSize={25} bold color="black">
